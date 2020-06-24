@@ -1,29 +1,21 @@
 <template>
-  <v-container>
-    <v-layout row>
-      <v-flex><Welcome user="Antonio" /> </v-flex>
-    </v-layout>
-    <v-layout row>
-      <v-flex><Resume /> </v-flex>
-    </v-layout>
-    <v-layout row>
-      <v-flex><InfoTabs /> </v-flex>
-    </v-layout>
-  </v-container>
+  <q-page class="column no-wrap justify-start justify-start items-center">
+    <welcome-panel />
+    <resume-panel />
+    <notification-panel />
+  </q-page>
 </template>
 
 <script>
-import Welcome from "../components/index/Welcome";
-import Resume from "../components/index/Resume";
-import InfoTabs from "../components/index/InfoTabs";
+import Welcome from "../components/Welcome";
+import Resume from "../components/Resume";
+import Notifications from "../components/Notifications";
 export default {
-  name: "Default",
+  name: 'PageIndex',
   components: {
-    Welcome,
-    Resume,
-    InfoTabs
+    "welcome-panel": Welcome,
+    "resume-panel" : Resume,
+    "notification-panel" : Notifications
   }
-};
+}
 </script>
-
-<style lang="scss" scoped></style>

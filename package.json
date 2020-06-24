@@ -2,7 +2,7 @@
   "name": "quasar-pp8",
   "version": "0.0.1",
   "description": "A quasar version of Proplayer. one codebase for all!",
-  "productName": "Quaser ProPlayer v8",
+  "productName": "ProPlayer v8 by Quaser ",
   "author": "Tony Moses <tonym415@gmail.com>",
   "private": true,
   "scripts": {
@@ -18,6 +18,10 @@
   "devDependencies": {
     "@quasar/app": "^2.0.0",
     "babel-eslint": "^10.0.1",
+    "devtron": "^1.4.0",
+    "electron": "^9.0.0",
+    "electron-debug": "^3.0.1",
+    "electron-devtools-installer": "^3.0.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-loader": "^3.0.3",

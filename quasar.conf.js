@@ -75,16 +75,19 @@ cfg.module.rules.push({
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
+      host: '10.0.0.101',
       https: false,
       port: 8080,
-      open: true // opens browser window automatically
+      open: false // opens browser window automatically
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
       iconSet: 'material-icons', // Quasar icon set
       lang: 'en-us', // Quasar language pack
-      config: {},
+      config: {
+        dark: true
+      },
 
       // Possible values for "importStrategy":
       // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives
@@ -135,6 +138,7 @@ cfg.module.rules.push({
           {
             src: 'icons/icon-384x384.png',
             sizes: '384x384',
+
             type: 'image/png'
           },
           {
