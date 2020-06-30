@@ -75,7 +75,7 @@ cfg.module.rules.push({
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      host: '10.0.0.101',
+      host: '10.0.0.81',
       https: false,
       port: 8080,
       open: false // opens browser window automatically

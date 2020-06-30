@@ -10,11 +10,13 @@
           aria-label="Menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
-
-        <q-toolbar-title>TXBA ProPlayer v8
+        <q-toolbar-title>ProPlayer v8
         </q-toolbar-title>
+        <q-img class='logo' :src="logo"
+         style="height: 60px; max-width: 100px" 
+         contain />
 
-        <div>Quasar v{{ $q.version }}</div>
+        <!-- <div>Quasar v{{ $q.version }}</div> -->
       </q-toolbar>
     </q-header>
 
@@ -55,6 +57,7 @@ export default {
  
   data () {
     return {
+      logo: 'https://cdn.texasbluesalley.com/styles/TXBALogo.svg',
       leftDrawerOpen: false,
       essentialLinks: [
         {
@@ -104,3 +107,15 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.logo {
+  /* border-radius: 50%; */
+  -webkit-transition: -webkit-transform .8s ease-in-out;
+          transition:         transform .8s ease-in-out;
+}
+.logo:hover {
+  -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
+}
+</style>
