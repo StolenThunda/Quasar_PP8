@@ -10,32 +10,34 @@
           aria-label="Menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
-        <q-toolbar-title>ProPlayer v8
-        </q-toolbar-title>
-        <q-img class='logo' :src="logo"
-         style="height: 60px; max-width: 100px" 
-         contain />
+        <q-toolbar-title>ProPlayer v8 </q-toolbar-title>
+        <q-img
+          class="logo"
+          :src="logo"
+          style="height: 60px; max-width: 100px"
+          contain
+        />
 
         <!-- <div>Quasar v{{ $q.version }}</div> -->
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label
+        <q-item-label header>
+          Favorites List
+        </q-item-label>
+        <!-- <q-item>{{favorites}}</q-item> -->
+        <q-expansion-item
+          v-model="favorites"
+          v-for="fav_type in Object.keys(favorites)"
+          :key="fav_type"
+          expand-separator
+          :label="fav_type"
           header
         >
-          Essential Links
-        </q-item-label>
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+        <FavList v-for="link in favorites[fav_type]" :key="link.id" :title="link.title" />
+        </q-expansion-item>
       </q-list>
     </q-drawer>
 
@@ -46,76 +48,38 @@
 </template>
 
 <script>
-import EssentialLink from 'components/EssentialLink.vue'
+import FavList from "components/FavList.vue";
 
 export default {
-  name: 'MainLayout',
+  name: "MainLayout",
 
   components: {
-    EssentialLink
+    FavList
   },
- 
-  data () {
+
+  data() {
     return {
-      logo: 'https://cdn.texasbluesalley.com/styles/TXBALogo.svg',
+      logo: "https://cdn.texasbluesalley.com/styles/TXBALogo.svg",
       leftDrawerOpen: false,
-      essentialLinks: [
-        {
-          title: 'Docs',
-          caption: 'quasar.dev',
-          icon: 'school',
-          link: 'https://quasar.dev'
-        },
-        {
-          title: 'Github',
-          caption: 'github.com/quasarframework',
-          icon: 'code',
-          link: 'https://github.com/quasarframework'
-        },
-        {
-          title: 'Discord Chat Channel',
-          caption: 'chat.quasar.dev',
-          icon: 'chat',
-          link: 'https://chat.quasar.dev'
-        },
-        {
-          title: 'Forum',
-          caption: 'forum.quasar.dev',
-          icon: 'record_voice_over',
-          link: 'https://forum.quasar.dev'
-        },
-        {
-          title: 'Twitter',
-          caption: '@quasarframework',
-          icon: 'rss_feed',
-          link: 'https://twitter.quasar.dev'
-        },
-        {
-          title: 'Facebook',
-          caption: '@QuasarFramework',
-          icon: 'public',
-          link: 'https://facebook.quasar.dev'
-        },
-        {
-          title: 'Quasar Awesome',
-          caption: 'Community Quasar projects',
-          icon: 'favorite',
-          link: 'https://awesome.quasar.dev'
-        }
-      ]
-    }
+      favorites: null
+    };
+  },
+  mounted() {
+    this.$axios
+      .get("./favs.json")
+      .then(response => (this.favorites = response.data));
   }
-}
+};
 </script>
 
 <style scoped>
 .logo {
   /* border-radius: 50%; */
-  -webkit-transition: -webkit-transform .8s ease-in-out;
-          transition:         transform .8s ease-in-out;
+  -webkit-transition: -webkit-transform 0.8s ease-in-out;
+  transition: transform 0.8s ease-in-out;
 }
 .logo:hover {
   -webkit-transform: rotate(360deg);
-          transform: rotate(360deg);
+  transform: rotate(360deg);
 }
 </style>
