@@ -31,11 +31,12 @@
         >
           Essential Links
         </q-item-label>
-        <EssentialLink
+        <FavList />
+        <!-- <EssentialLink
           v-for="link in essentialLinks"
           :key="link.title"
           v-bind="link"
-        />
+        /> -->
       </q-list>
     </q-drawer>
 
@@ -46,13 +47,15 @@
 </template>
 
 <script>
-import EssentialLink from 'components/EssentialLink.vue'
+// import EssentialLink from 'components/EssentialLink.vue'
+import FavList from 'components/FavoritesList.vue';
 
 export default {
   name: 'MainLayout',
 
   components: {
-    EssentialLink
+    // EssentialLink
+    FavList
   },
  
   data () {

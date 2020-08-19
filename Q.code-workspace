@@ -1,9 +1,10 @@
 {
-  "folders": [{
+  "folders": [
+    {
       "path": "."
     },
     {
-      "path": "../ProPlayer_v8/src"
+      "path": "../ProPlayer_v8"
     }
   ],
   "remoteAuthority": "wsl+Ubuntu-18.04",

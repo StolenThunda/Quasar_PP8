@@ -1,39 +1,58 @@
 <template>
-     <q-card class="pa-5 col-md-8 offset-md-2">
-      <q-tabs id="site-updates" q-model="tab" centered icons-and-text>
-        <q-tabs-slider></q-tabs-slider>
-
-        <q-tab name="the_word" icon="bell_alert" label="Announcements" />
-
-        <q-tab name="updates" icon="calendar_multiple_check" label="Course Updates" />
+     <!-- <q-card class="q-ma-xl q-pa-xl" > -->
+         <div  class="q-mt-sm" >
+    <q-splitter
+      v-model="splitterModel"
+      style="height: 70vh"
+    >
+      <template v-slot:before>     
+      <q-tabs id="site-updates" 
+          v-model="tab" 
+          vertical
+        >
+        <q-tab name="the_word" label="Announcements" />
+        <q-tab name="updates"  label="Course Updates" />
       </q-tabs>
 
-      <q-tabs-items q-model="tab" q-if="notifications" outlined>
-        <q-tab-item
-          id="the_word"
-          q-for="item in notifications.announcements"
-          :key="'a_' + item.id"
-        >
-          <notification-item q-bind="item" />
-        </q-tab-item>
-        <q-tab-item
-          id="updates"
-          q-for="item in notifications.updates"
-          :key="'u_' + item.id"
-          outlined
-        >
-          <notification-item q-bind="item" />
-        </q-tab-item>
-      </q-tabs-items>
-    </q-card>
+      </template >
+      <template v-slot:after>
+      <q-tab-panels v-model="tab" v-if="notifications"  class="shadow-2 rounded-borders" animated>
+      
+        <q-tab-panel name="the_word" >
+          <notification-item v-for="item in notifications.announcements"
+          :key="'a_' + item.id" v-bind="item" />
+        </q-tab-panel>
+        
+        <q-tab-panel name="updates" outlined>
+          <notification-item   v-for="item in notifications.updates"
+          :key="'u_' + item.id" v-bind="item" />
+        </q-tab-panel>
+     
+      </q-tab-panels>
+      </template>
+    </q-splitter>
+         </div>
 </template>
 
 <script>
     import NotificationItem from "../components/NotificationItem";
+    import { createNamespacedHelpers } from "vuex";
+  const { mapState } = createNamespacedHelpers("default");
+
     export default {
-        components: {
-            'notification-item': NotificationItem
-        }
+        data() {
+    return {
+      tab: "the_word",
+      show: false,
+      splitterModel: 25
+    };
+  },
+  components: {
+    NotificationItem
+  },
+  computed: {
+    ...mapState(["notifications"])
+  }
     }
 </script>
 

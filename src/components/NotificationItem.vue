@@ -1,28 +1,32 @@
 <template>
-  <v-card class="my-3 pa-2" elevation="15" outlined>
-    <v-row>
-      <v-col cols="1">
-        <div class="d-flex flex-no-wrap justify-start">
-          <v-list-item-avatar>
-            <v-icon dense large>mdi-email</v-icon>
-          </v-list-item-avatar>
-        </div>
-      </v-col>
-      <v-col class="mb-auto">
-        <v-card-title>{{ this.title }}</v-card-title>
-        <v-card-subtitle>
-          {{ this.subtitle }}
-          <router-link v-if="this.action" :to="this.action">{{
-            this.actionText
-          }}</router-link>
-        </v-card-subtitle>
-        <v-container v-if="this.data" v-html="this.data"></v-container>
-      </v-col>
-    </v-row>
-  </v-card>
+   <q-card class="q q-ma-xs" color="grey" bordered>
+      <q-card-section horizontal>
+        <q-card-section>
+          <q-chip>
+          <q-avatar icon="email" />
+      </q-chip>
+        </q-card-section>
+        <q-card-section class="q-pt-xs">
+          <div class="text-weight-bold">{{ this.title }} </div>
+          <div class="text-bold text-grey" >
+            {{ this.subtitle }}
+          </div>
+        </q-card-section>
+
+      <q-card-actions>
+        <q-btn v-if="this.action" @click="this.send(this.action)" text-color="primary" flat>
+             {{ this.actionText }}
+        </q-btn>
+        <q-btn v-if="this.data" flat color="primary">
+          {{ this.data }}
+        </q-btn>
+      </q-card-actions>
+      </q-card-section>
+    </q-card>
 </template>
 
 <script>
+import  openURL from "quasar";
 export default {
   name: "BaseListItem",
   data: () => ({
@@ -36,15 +40,16 @@ export default {
     subtitle: String,
     title: String,
     id: Number
+  },
+  methods: {
+    send(url) {
+      debugger 
+      console.dir(this)
+      if (url !== null ) window.location.href = url}
   }
 };
 </script>
 
 <style scoped>
-.v-card-title {
-  font-size: 0.85em;
-  text-transform: uppercase;
-  font-weight: 900;
-  color: white;
-}
+
 </style>

@@ -7,6 +7,11 @@ const routes = [
       { path: '', component: () => import('pages/Index.vue') }
     ]
   },
+  {
+    name: "browser",
+    path: '/browser',
+    component: ()  => import('pages/Browser.vue')     
+  },
 
   // Always leave this as last one,
   // but you can also remove it
