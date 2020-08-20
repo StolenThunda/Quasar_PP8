@@ -8,42 +8,25 @@
           round
           icon="menu"
           aria-label="Menu"
+          
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
-        <q-toolbar-title>ProPlayer v8 </q-toolbar-title>
+        <q-toolbar-title >ProPlayer v8 </q-toolbar-title>
         <q-img
+          to="/"
           class="logo"
+          
           :src="logo"
           style="height: 60px; max-width: 100px"
           contain
         />
 
-        <!-- <div>Quasar v{{ $q.version }}</div> -->
+        
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list>
-        <q-item-label header>
-          Favorites List
-        </q-item-label>
-        <!-- <q-item>{{favorites}}</q-item> -->
-        <q-expansion-item
-          v-model="favorites"
-          v-for="fav_type in Object.keys(favorites)"
-          :key="fav_type"
-          expand-separator
-          :label="fav_type"
-          header
-        >
-          Essential Links
-        <FavList />
-        <!-- <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        /> -->
-      </q-list>
+    <q-drawer v-model="leftDrawerOpen"  show-if-above bordered>
+      <dyna-tab ref="dTab" :tabList="sidebarTabs" @add-tabs="addTabs" />
     </q-drawer>
 
     <q-page-container>
@@ -53,28 +36,39 @@
 </template>
 
 <script>
-// import EssentialLink from 'components/EssentialLink.vue'
-import FavList from 'components/FavoritesList.vue';
-
+import DynaTab from "components/DynaTab.vue";
+import { createNamespacedHelpers } from "vuex";
+const { mapState, mapActions } = createNamespacedHelpers("default");
 export default {
   name: "MainLayout",
 
   components: {
-    // EssentialLink
-    FavList
+    DynaTab
   },
 
   data() {
     return {
       logo: "https://cdn.texasbluesalley.com/styles/TXBALogo.svg",
       leftDrawerOpen: false,
-      favorites: null
     };
   },
+  computed: {
+    ...mapState(["sidebarTabs"])
+  },
   mounted() {
-    this.$axios
-      .get("./favs.json")
-      .then(response => (this.favorites = response.data));
+    this.$refs.dTab.$on('add-tabs', this.addTabs)
+
+  },
+  methods: {
+    addTabs(e) {
+      // this.resetSideBar();
+      console.log(`Adding from emit: ${e}`)
+      this.addSidebarTabs(e);
+    },
+    ...mapActions(["resetSideBar","removeSidebarTab", "addSidebarTabs"])
+  },
+  mounted() {
+    // this.resetSideBar()
   }
 };
 </script>
