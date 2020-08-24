@@ -2,12 +2,27 @@ const routes = [
   {
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
-    children: [
-      { path: "", component: () => import("pages/Index.vue") },
+    children: [{ path: "", component: () => import("pages/Index.vue") }]
+  },
+  {
+    path: "/browser",
+    component: () => import("layouts/Browser.vue"),
+    children: [     
       {
         name: "browser",
-        path: "/browser",
-        component: () => import("pages/Browser.vue")
+        path: "",
+        component: () => import("pages/Browser")
+      }
+    ]
+  },
+  {
+    path: "/watch",
+    component: () => import("layouts/Watch.vue"),
+    children: [
+      {
+        name: "watch",
+        path: "",
+        component: () => import("pages/Watch")
       }
     ]
   },

@@ -36,14 +36,13 @@
 </template>
 
 <script>
-import DynaTab from "components/DynaTab.vue";
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions } = createNamespacedHelpers("default");
 export default {
   name: "MainLayout",
 
   components: {
-    DynaTab
+    DynaTab: () => import("components/DynaTab")
   },
 
   data() {
@@ -66,9 +65,6 @@ export default {
       this.addSidebarTabs(e);
     },
     ...mapActions(["resetSideBar","removeSidebarTab", "addSidebarTabs"])
-  },
-  mounted() {
-    // this.resetSideBar()
   }
 };
 </script>

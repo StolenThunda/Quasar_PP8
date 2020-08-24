@@ -1,57 +1,56 @@
 <template>
-<div>Browser
-  <!-- <BrowserTabs /> -->
-  <div>
-      <q-btn 
-    color="primary"
-    label="Test"
-    type="button"
-    @click="addTab"
-  />
-  </div>
-      <q-btn 
-    color="primary"
-    label="Reset"
-    type="button"
-    @click="reset_sidebar"
-  />
-  <div>
-
-  </div>
-</div>
+  <q-card>
+    <q-card-section v-if="isLoaded">
+      <result-panel :resultList="this.search_entries">
+        <template #title>Search Results: {{ currentCategory }}</template>
+      </result-panel>
+    </q-card-section>
+    <q-card-section v-else>
+      <result-panel :resultList="this.default_browser_entries">
+        <template #title>Latest Additions:</template> </result-panel
+      >
+    </q-card-section>
+  </q-card>
 </template>
+
 <script>
-import { mapActions } from 'vuex';
-// import { createNamespacedHelpers } from "vuex";
-// const { mapState, mapActions } = createNamespacedHelpers("default");
+import { createNamespacedHelpers } from "vuex";
+const { mapState, mapActions } = createNamespacedHelpers("browser");
+
 export default {
-  name: 'Browser',
+  name: "Browser",
   data: () => ({
-    defaultTabs: [
-      {
-        name: "Browser",
-        componentName: "BrowserTabs",
-        icon: "magnify",
-        cmp: () => import('components/BrowserTabs')
-      }
-    ]
+    categories: ""
   }),
+  components: {
+    ResultPanel: () => import("components/browse/BrowserResultItems")
+  },
   mounted() {
-    this.addTab();
+    this.loadDefaults();
+  },
+  computed: {
+    isLoaded() {
+      return this.search.criteria !== null;
+    },
+    dataTableEntries() {
+      return this.getDTEntries;
+    },
+    ...mapState(["default_browser_entries", "search", "search_entries", "currentCategory"])
   },
   methods: {
-    addTab() {
-        const tabs = this.defaultTabs;
-    console.log(`Create Tab: ${JSON.stringify(tabs)}`)
-    // this.$store.dispatch("default/addSidebarTabs")
-    this.add_tabs(tabs)
+    categoryChange(category) {
+      console.log(`Changing Cat: ${category}`)
+      this.categories = category
     },
-    ...mapActions('default', { 
-      add_tabs: 'addSidebarTabs',
-      reset_sidebar: 'resetSideBar'
-      })
-  //       ...mapActions(["removeSidebarTab", "addSidebarTabs"])
-
+    ...mapActions({
+      loadDefaults: "fetchDefaultSearch"
+    })
   }
-}
+};
 </script>
+
+<style scoped>
+.header {
+  text-align: center !important;
+}
+</style>

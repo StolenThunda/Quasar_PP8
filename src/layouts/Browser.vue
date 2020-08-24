@@ -1,96 +1,67 @@
 <template>
-  <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
+  <q-layout view="hHh lpR fFf"> <!-- Be sure to play with the Layout demo on docs -->
 
     <!-- (Optional) The Header -->
     <q-header elevated>
-      <q-toolbar>
+      <current-search>
+        <template #toggleDrawer>
         <q-btn
           flat
-          round
           dense
+          round
           icon="menu"
-          @click="leftDrawer = !leftDrawer"
+          aria-label="Menu"          
+          @click="leftDrawerOpen = !leftDrawerOpen"
         />
-        <q-toolbar-title>
-          Header
-        </q-toolbar-title>
-      </q-toolbar>
-
-      <q-tabs>
-        <q-route-tab
-          icon="map"
-          to="/your/route"
-          replace
-          label="One Tab"
-        />
-        <q-route-tab
-          icon="assignment"
-          to="/some/other/route"
-          replace
-          label="Other Tab"
-        />
-      </q-tabs>
+        </template>
+        </current-search>
     </q-header>
 
-    <!-- (Optional) The Footer -->
-    <q-footer>
-      <q-tabs switch-indicator>
-        <q-route-tab
-          icon="map"
-          to="/your/route"
-          replace
-          label="One Tab"
-        />
-        <q-route-tab
-          icon="assignment"
-          to="/some/other/route"
-          replace
-          label="Other Tab"
-        />
-      </q-tabs>
-
-      <q-toolbar>
-        <q-btn
-          flat
-          round
-          dense
-          icon="menu"
-          @click="leftDrawer = !leftDrawer"
-        />
-        <q-toolbar-title>
-          Footer
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-footer>
 
     <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
     <q-drawer
-      v-model="leftDrawer"
+      v-model="leftDrawerOpen"
       side="left"
+       show-if-above
       bordered
-      content-class="bg-grey-2"
     >
       <!-- QScrollArea is optional -->
       <q-scroll-area class="fit q-pa-sm">
-        <!-- Content here -->
+        <dyna-tab 
+          @changeCategory="catChange"
+          :tabList="drawer"
+       />
+          <!-- v-if="drawer.length > 0"  -->
       </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
       <!-- This is where pages get injected -->
-      <router-view />
+      <router-view :title="currentCategory" />
     </q-page-container>
 
   </q-layout>
 </template>
 
 <script>
+import { createNamespacedHelpers } from "vuex";
+const { mapState, mapActions } = createNamespacedHelpers("browser");
 export default {
-  // name: 'LayoutName',
-
-  data () {
-    return {
-      leftDrawer: true
+  name: 'BrowserLayout',
+  components: {
+    DynaTab: () => import('components/DynaTab'),
+    CurrentSearch: () => import('components/browse/BrowserToolbar')
+  },
+  data: () => ({
+      leftDrawerOpen: true,
+      category:  null,
+  }),
+  computed: {
+    ...mapState(["drawer", "currentCategory"])
+  },
+  methods: {
+    catChange(cat) {
+      this.category = cat;
     }
   }
 }

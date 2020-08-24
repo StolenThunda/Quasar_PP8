@@ -55,7 +55,7 @@ export default class TXBA_Utilities {
     return this.getAsyncData(slug);
   }
 
-  getDefaultSearchEntries() {
+  async getDefaultSearchEntries() {
     return this.getAsyncData(
       this.default_entries_slug,
       this.parseSearchResults

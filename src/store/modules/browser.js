@@ -2,6 +2,8 @@ import Vue from "vue";
 export default {
   namespaced: true,
   state: {
+    drawer: [],
+    currentCategory: "",
     searching: false,
     default_browser_entries: null,
     search_entries: null,
@@ -11,6 +13,38 @@ export default {
     }
   },
   mutations: {
+    SET_CURRENT_CATEGORY(ctx, category){
+      if (category) ctx.currentCategory = category;
+    },
+    ADD_TO_DRAWER(ctx, content) {
+      // console.log(`Content: ${typeof content}`);
+      console.log(
+        `Before Add: ${JSON.stringify(ctx.drawer)} || ${JSON.stringify(
+          content
+        )}`
+      );
+      if (content) {
+        content.forEach((tab, idx) => {
+          console.log(`InspTab ${JSON.stringify(tab)}`);
+
+          const tabIdx = ctx.drawer.findIndex(x => x.name === tab.name);
+          console.log(
+            `${Boolean(tabIdx > -1) ? "Tab already created" : "Creating tab"}`
+          );
+          if (tabIdx == -1) {
+            tab.id = idx;
+            console.log(`adding new: ${JSON.stringify(tab)}`);
+            ctx.drawer.push(tab);
+
+            console.log(`After adding tab:`);
+            console.dir(ctx.drawer);
+            //  Vue.set(ctx, "drawer", ...ctx.drawer);
+          }
+        }, ctx);
+      }
+      console.log(`drw:`);
+      console.dir(ctx.drawer);
+    },
     TOGGLE_SEARCHING(ctx, bool) {
       ctx.searching = bool;
     },
@@ -19,13 +53,14 @@ export default {
       if (data) ctx.default_browser_entries = data;
     },
     SET_SEARCH_ENTRIES(ctx, data) {
-      console.log("SettingEntries:", data);
+      // console.log("SettingEntries:", data);
       if (data) ctx.search_entries = data;
     },
     SET_CRITERIA(ctx, data) {
       console.log("SettingCriteria:", data);
       if (data.auth) Vue.set(ctx, "auth", data.auth);
       ctx.search.criteria = data.funnels ? data.funnels : null;
+      // console.log(`Criteria: ${JSON.stringify(ctx.search.criteria, null, 2)}`)
     },
     TOGGLE_CURRENT_SEARCH(ctx, data) {
       const cats = ctx.search.searchCategories;
@@ -42,35 +77,35 @@ export default {
     }
   },
   actions: {
+    addToDrawer(ctx, content) {
+      return ctx.commit("ADD_TO_DRAWER", content);
+    },
     toggleSearchCriteria(ctx, itm) {
       ctx.dispatch("setSearching", true);
       return ctx.commit("TOGGLE_CURRENT_SEARCH", itm);
     },
     async fetchDefaultSearch(ctx) {
       // debugger
-      const entries = await ctx.rootState.TXBA_UTILS.getDefaultSearchEntries()
+      const entries = await ctx.rootState.TXBA_UTILS.getDefaultSearchEntries();
       // console.log(JSON.stringify(entries, null,2))
-      return ctx.commit(
-        "SET_DEFAULT_BROWSER_ENTRIES", entries
-      );
+      return ctx.commit("SET_DEFAULT_BROWSER_ENTRIES", entries);
     },
     async setCriteria(ctx, category) {
       const filters = await ctx.rootState.TXBA_UTILS.getSearchFiltersByCategory(
         category
       );
-      ctx.commit( "SET_CRITERIA", filters );
-      const searchEntries = await ctx.rootState.TXBA_UTILS.getSearchEntries(
+      
+      ctx.commit("SET_CURRENT_CATEGORY", category);
+      ctx.commit("SET_CRITERIA", filters);
+      const searchEntries = await ctx.rootState.TXBA_UTILS.getDefaultSearchEntries(
         category,
         ctx.getters.getAuth
       );
 
-      console.log(JSON.stringify(searchEntries, null, 4))
-      ctx.commit(
-        "SET_SEARCH_ENTRIES",
-        searchEntries
-      );
+      // console.log(JSON.stringify(searchEntries, null, 4))
+      ctx.commit("SET_SEARCH_ENTRIES", searchEntries);
     },
-    setSearching: (ctx, bool) => ctx.commit("TOGGLE_SEARCHING", ctx, bool),
+    setSearching: (ctx, bool) => ctx.commit("TOGGLE_SEARCHING", ctx, bool)
     // initStore: ctx => {
     //   ctx.dispatch("fetchDefaultSearch");
     // }

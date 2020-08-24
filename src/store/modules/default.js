@@ -20,10 +20,11 @@ export default {
       if (notes) ctx.notifications = notes;
     },
     ADD_SB_TABS(ctx, tabs) {
-      console.dir(ctx);
-      console.log(`Before Add: ${ctx.sidebarTabs} || ${JSON.stringify(tabs)}`);
+      // console.dir(ctx);
+      // console.log(`Before Add: ${ctx.sidebarTabs} || ${JSON.stringify(tabs)}`);
       if (tabs) {
-        tabs.forEach((tab, idx, srcArr) => {
+        
+        tabs.forEach((tab, idx) => {
           console.log(`InspTab ${JSON.stringify(tab)}`);
 
           const tabIdx = ctx.sidebarTabs.findIndex(x => x.name === tab.name);
@@ -32,10 +33,12 @@ export default {
             tab.id = idx;
             console.log(`adding new: ${JSON.stringify(tab)}`);
             ctx.sidebarTabs.push(tab);
+            console.log(`After adding tab:`);
+            console.dir(ctx.sidebarTabs);
+            // Vue.set(ctx, "sidebarTabs", ...ctx.sidebarTabs);
           }
-        });
+        }, ctx );
       }
-      console.dir(ctx.sidebarTabs);
     },
     DEL_SB_TAB(ctx, name) {
       console.log(`Deleting tab: ${name}`);
@@ -59,8 +62,9 @@ export default {
       return ctx.commit("ADD_SB_TABS", tabs);
     },
     addSidebarTabs(ctx, tabs) {
-      console.log(`ACT_ADD: ${JSON.stringify(tabs)}`);
-      return ctx.commit("ADD_SB_TABS", tabs || []);
+        console.log(`ACT_ADD: ${JSON.stringify(tabs)}`);
+        return ctx.commit("ADD_SB_TABS", tabs || []);
+      
     },
     removeSidebarTab(ctx, name) {
       return ctx.commit("DEL_SB_TABS", name);
@@ -109,7 +113,6 @@ export default {
       ctx.dispatch("fetchFavorites");
       ctx.dispatch("fetchNotifications");
       ctx.dispatch("resetSideBar");
-      
     }
   },
   getters: {

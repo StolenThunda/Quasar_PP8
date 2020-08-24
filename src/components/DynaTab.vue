@@ -27,8 +27,8 @@
 export default {
   name: "DynaTab",
   data: () => ({
-    selectedTab: "Favorites"
-  }),
+    selectedTab: 0    
+    }),
   props: {
     tabList: Array,
     default: []

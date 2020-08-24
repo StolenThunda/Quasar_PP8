@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import Welcome from "../components/Welcome";
-import Resume from "../components/Resume";
+import Welcome from "../components/index/Welcome";
+import Resume from "../components/index/Resume";
 // import Notifications from "../components/Notifications";
 export default {
   name: 'PageIndex',
