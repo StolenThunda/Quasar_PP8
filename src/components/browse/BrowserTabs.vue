@@ -1,6 +1,6 @@
 <template>
-  <div class="q-pa-xs">
-    <q-list bordered class="rounded-borders">
+  <div >
+    <q-list bordered>
       <q-expansion-item
         v-for="criterion in this.search.criteria"
         :key="criterion.sectionId"
@@ -10,20 +10,19 @@
         dense-toggle
         expand-separator
       >
-        <q-card>
-          <q-card-section style="max-width: 300px" :class="{ 'truncate-chip-labels': true }">
+        <!-- <q-card> -->
+          <!-- <q-card-section style="width: 300px" :class="{ 'truncate-chip-labels': true }"> -->
             <q-chip
               @click="toggle(chip)"
               v-for="chip in criterion.chips"
               :key="chip.id"
-              icon=""
               dense
               outline
             >
               {{ chip.text }}
             </q-chip>
-          </q-card-section>
-        </q-card>
+          <!-- </q-card-section> -->
+        <!-- </q-card> -->
       </q-expansion-item>
     </q-list>
   </div>
