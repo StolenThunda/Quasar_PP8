@@ -131,7 +131,7 @@ export default class TXBA_Utilities {
 
   parseSegmentData(seg) {
     let type = {};
-    const yt_slug = "https://www.youtube.com/watch?v=";
+    const yt_slug = "https://www.youtube.com/embed/"; //watch?v=";
 
     if (this.objectHaveKeyLike(seg, "Vimeo"))
       type = {
@@ -146,7 +146,7 @@ export default class TXBA_Utilities {
       };
     if (this.objectHaveKeyLike(seg, "YouTube"))
       type = {
-        to: `youtube/${seg.segmentID}`,
+        to: `/${seg.segmentID}`,
         type: "video/youtube",
         src: `${yt_slug}${seg.segmentYouTubeCode}&html5=true`,
         color: "red"

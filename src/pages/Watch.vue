@@ -1,11 +1,15 @@
 <template>
 <div>
-  Watch this!!
+  Package
+  <!-- <wsb /> -->
 </div>
 </template>
 
 <script>
 export default {
-  // name: 'PageName',
+  name: 'PackageInfo',
+  // components: {
+  //   wsb: () => import('components/watch/WatchSidebar')
+  // }
 }
 </script>

@@ -83,7 +83,7 @@ export default {
           name: "Browser",
           componentName: "Browser",
           icon: "magnify",
-          cmp: () => import("components/browse/BrowserTabs")
+          cmp: () => import("components/browse/BrowserFilters")
         }
       ]);
       return true;

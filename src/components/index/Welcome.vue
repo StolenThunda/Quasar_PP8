@@ -9,7 +9,7 @@
 
       <div class="col-md-6 row justify-evenly content-between">
           <q-btn label="Orientation" color="secondary" icon="play_circle_outlined" size="sm" class="col-md-3 "></q-btn>
-          <q-btn label="Favorites" color="primary" icon="favorite" class="col-md-3 " size="sm"></q-btn>
+          <q-btn label="Favorites" color="primary" icon="favorite" class="col-md-3 " size="sm" @click="toggleDrawer" />
           <q-btn label="Browse" color="primary" icon="search" class="col-md-3 " size="sm" :to="{name: 'browser'}"></q-btn>
       </div>
     </div>
@@ -19,10 +19,9 @@
 export default {
     data: () => ({
         user: "Antonio"
-    })
+    }),
+    methods: {
+      toggleDrawer() { this.$emit('toggle-drawer') }
+    }
 };
 </script>
-
-<style lang="scss" scoped>
-
-</style>

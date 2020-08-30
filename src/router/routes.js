@@ -7,7 +7,7 @@ const routes = [
   {
     path: "/browser",
     component: () => import("layouts/Browser.vue"),
-    children: [     
+    children: [
       {
         name: "browser",
         path: "",
@@ -16,15 +16,18 @@ const routes = [
     ]
   },
   {
+    name: "watch",
     path: "/watch",
-    component: () => import("layouts/Watch.vue"),
-    children: [
-      {
-        name: "watch",
-        path: "",
-        component: () => import("pages/Watch")
-      }
-    ]
+    component: () => import("layouts/WatchLayout.vue"),
+    children: [{ 
+      path: "/watch/:packageID", 
+      component: () => import("pages/Watch"),
+    },{
+        name: "player",
+        path: "/watch/:packageID/:segmentID",
+        component: () => import("components/watch/Player")
+      
+    }]
   },
   // Always leave this as last one,
   // but you can also remove it

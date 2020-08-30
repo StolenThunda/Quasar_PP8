@@ -45,6 +45,10 @@ export default {
       console.log(`drw:`);
       console.dir(ctx.drawer);
     },
+    REMOVE_DRAWER(ctx, name) {
+      console.log(`Removing: ${name}`)
+      ctx.drawer.pop();
+    },
     TOGGLE_SEARCHING(ctx, bool) {
       ctx.searching = bool;
     },
@@ -80,6 +84,9 @@ export default {
     addToDrawer(ctx, content) {
       return ctx.commit("ADD_TO_DRAWER", content);
     },
+    removeDrawer(ctx, name) {      
+      return ctx.commit("REMOVE_DRAWER", name);
+    }, 
     toggleSearchCriteria(ctx, itm) {
       ctx.dispatch("setSearching", true);
       return ctx.commit("TOGGLE_CURRENT_SEARCH", itm);

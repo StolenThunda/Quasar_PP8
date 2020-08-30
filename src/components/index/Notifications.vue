@@ -35,7 +35,7 @@
 </template>
 
 <script>
-    import NotificationItem from "../components/NotificationItem";
+    import NotificationItem from "components/index/NotificationItem.vue";
     import { createNamespacedHelpers } from "vuex";
   const { mapState } = createNamespacedHelpers("default");
 

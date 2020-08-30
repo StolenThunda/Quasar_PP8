@@ -1,37 +1,31 @@
 <template>
-  <q-layout view="hHh lpR fFf"> <!-- Be sure to play with the Layout demo on docs -->
+  <q-layout view="hHh lpR fFf">
+    <!-- Be sure to play with the Layout demo on docs -->
 
     <!-- (Optional) The Header -->
     <q-header elevated>
       <current-search>
         <template #toggleDrawer>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"          
-          @click="leftDrawerOpen = !leftDrawerOpen"
-        />
+          <q-btn
+            flat
+            dense
+            round
+            icon="menu"
+            aria-label="Menu"
+            @click="leftDrawerOpen = !leftDrawerOpen"
+          />
+          <q-btn label="add" @click="addTabs" />
+          <q-btn label="remove" @click="removeDrawer('test1')" />
         </template>
-        </current-search>
+      </current-search>
     </q-header>
 
-
     <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
-    <q-drawer
-      v-model="leftDrawerOpen"
-      side="left"
-       show-if-above
-      bordered
-    >
+    <q-drawer v-model="leftDrawerOpen" side="left" show-if-above bordered>
       <!-- QScrollArea is optional -->
       <q-scroll-area class="fit q-pa-sm">
-        <dyna-tab 
-          @changeCategory="catChange"
-          :tabList="drawer"
-       />
-          <!-- v-if="drawer.length > 0"  -->
+        <dynamic-tab @changeCategory="catChange" :tabList="drawer" />
+        <!-- v-if="drawer.length > 0"  -->
       </q-scroll-area>
     </q-drawer>
 
@@ -39,7 +33,6 @@
       <!-- This is where pages get injected -->
       <router-view :title="currentCategory" />
     </q-page-container>
-
   </q-layout>
 </template>
 
@@ -47,14 +40,14 @@
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions } = createNamespacedHelpers("browser");
 export default {
-  name: 'BrowserLayout',
+  name: "BrowserLayout",
   components: {
-    DynaTab: () => import('components/DynaTab'),
-    CurrentSearch: () => import('components/browse/BrowserToolbar')
+    DynamicTab: () => import("components/base/DynamicTab"),
+    CurrentSearch: () => import("components/browse/BrowserToolbar")
   },
   data: () => ({
-      leftDrawerOpen: true,
-      category:  null,
+    leftDrawerOpen: true,
+    category: null
   }),
   computed: {
     ...mapState(["drawer", "currentCategory"])
@@ -62,7 +55,34 @@ export default {
   methods: {
     catChange(cat) {
       this.category = cat;
-    }
+    },
+    addTabs() {
+      this.addToDrawer([
+        {
+          name: "Test1",
+          componentName: "Test1"
+          // icon: "magnify",
+          // cmp: () => import("components/browse/Test1")
+        },
+        {
+          name: "Test2",
+          componentName: "Test2"
+          // icon: "magnify",
+          // cmp: () => import("components/browse/Test2")
+        },
+        {
+          name: "Test3",
+          componentName: "Test3"
+          // icon: "magnify",
+          // cmp: () => import("components/browse/Test3")
+        }
+      ]);
+      return true;
+    },
+    removeDrawer(name) {
+      this.removeDrawer(name);
+    },
+    ...mapActions(["addToDrawer", "removeDrawer"])
   }
-}
+};
 </script>

@@ -8,7 +8,7 @@ export default {
   },
   mutations: {
     RESET_SIDEBAR(ctx) {
-      console.log(`Resetting Sidebar to default: ${JSON.stringify(ctx)}`);
+      // console.log(`Resetting Sidebar to default: ${JSON.stringify(ctx)}`);
       ctx.sidebarTabs = [];
     },
     SET_FAVS(ctx, favs) {
@@ -25,17 +25,16 @@ export default {
       if (tabs) {
         
         tabs.forEach((tab, idx) => {
-          console.log(`InspTab ${JSON.stringify(tab)}`);
+          // console.log(`InspTab ${JSON.stringify(tab)}`);
 
           const tabIdx = ctx.sidebarTabs.findIndex(x => x.name === tab.name);
-          console.log(`Found: ${Boolean(tabIdx > -1)}`);
+          // console.log(`Found: ${Boolean(tabIdx > -1)}`);
           if (tabIdx == -1) {
             tab.id = idx;
-            console.log(`adding new: ${JSON.stringify(tab)}`);
-            ctx.sidebarTabs.push(tab);
-            console.log(`After adding tab:`);
-            console.dir(ctx.sidebarTabs);
-            // Vue.set(ctx, "sidebarTabs", ...ctx.sidebarTabs);
+            // console.log(`adding new: ${JSON.stringify(tab)}`);
+            ctx.sidebarTabs.unshift(tab);
+            // console.log(`After adding tab:`);
+            // console.dir(ctx.sidebarTabs);
           }
         }, ctx );
       }
@@ -58,11 +57,11 @@ export default {
           cmp: () => import("components/FavoritesList")
         }
       ];
-      console.log(`Adding Def Tab: ${JSON.stringify(tabs)}`);
+      // console.log(`Adding Def Tab: ${JSON.stringify(tabs)}`);
       return ctx.commit("ADD_SB_TABS", tabs);
     },
     addSidebarTabs(ctx, tabs) {
-        console.log(`ACT_ADD: ${JSON.stringify(tabs)}`);
+        // console.log(`ACT_ADD: ${JSON.stringify(tabs)}`);
         return ctx.commit("ADD_SB_TABS", tabs || []);
       
     },

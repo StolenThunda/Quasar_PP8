@@ -4,20 +4,20 @@
       <q-tab
         v-for="tab in this.tabList"
         :key="tab.name"
-        :label="tab.name"
         :name="tab.name"
         :icon="tab.icon"
-        @click="selectedTab = tab"
+        @click="selectedTab = tab.name"
       />
+        <!-- :label="tab.name" -->
     </q-tabs>
 
     <q-tab-panels keep-alive v-model="selectedTab">
       <q-tab-panel 
-         v-for="tab in this.tabList"
-        :key="tab.name"
+        v-for="tab in this.tabList" 
+        :key="tab.name" 
         :name="tab.name"
         >
-        <component :is="tab.cmp" ></component>
+        <component :is="tab.cmp"></component>
       </q-tab-panel>
     </q-tab-panels>
   </div>
@@ -25,13 +25,18 @@
 
 <script>
 export default {
-  name: "DynaTab",
+  name: "DynamicTabs",
   data: () => ({
-    selectedTab: 0    
-    }),
+    selectedTab: null
+  }),
   props: {
     tabList: Array,
-    default: []
+    default: () => new Array()
+  },
+  mounted() {
+    const list = JSON.parse(JSON.stringify(this.$options.propsData.tabList))
+    this.selectedTab = list[0].name;
   }
+
 };
 </script>

@@ -11,7 +11,7 @@
         expand-separator
       >
         <q-card>
-          <q-card-section style="max-width: 300px" :class="{ 'truncate-chip-labels': true }">
+          <q-card-section style="max-width: 30vw" :class="{ 'truncate-chip-labels': true }">
             <q-chip
               @click="toggle(chip)"
               v-for="chip in criterion.chips"
@@ -34,7 +34,7 @@ import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions } = createNamespacedHelpers("browser");
 
 export default {
-  name: "BrowserTabs",
+  name: "BrowserFilters",
   data() {
     return { tab: null };
   },
@@ -48,7 +48,7 @@ export default {
     toggle(chipData) {
       // console.log(chipData)
       this.toggleSearchCriteria(chipData);
-      if (!this.isSearching) this.$root.$emit("toggleSearching");
+      if (!this.isSearching) this.$emit("toggleSearching");
     },
     ...mapActions(["toggleSearchCriteria", "setCriteria"])
   }
