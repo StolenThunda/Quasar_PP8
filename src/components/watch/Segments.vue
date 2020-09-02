@@ -12,13 +12,14 @@
         :key="seg.id"
         :set="(s = getSegInfo(seg))"
         :data-setup="JSON.stringify(seg)"
-        :data-to="'/watch/' + packID + seg.to"
+        :data-to="seg.to"
         ripple
         clickable
         @click="playSegment"
+        width="520px"
       >
         <q-item-section avatar>
-          <q-icon :color="seg.color" :name="s.icon" size="lg"/>
+          <q-icon :color="seg.color" :name="s.icon" size="xs"/>
         </q-item-section>
 
         <q-item-section>
@@ -54,9 +55,7 @@ export default {
       if (e.target.dataset) {
         const data = e.currentTarget.dataset;
         this.setCurrentSegmentSetup(data.setup);
-        const path = `{name: 'player', params: { packageID: ${this.packageID}, segmentID: ${data.to}}`;
-        console.log("Path", path);
-        this.$router.push(path);
+        this.$router.push({ path: `/watch/${this.packageID}/${data.to}` });
       }else{
         console.error(`${e.currentTarget} has no ID`)
       }

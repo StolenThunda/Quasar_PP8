@@ -1,28 +1,17 @@
 <template>
-  <div>
-      <q-list v-model="currentCourse" v-if="currentCourse">
-        <!-- <q-item>
-          <q-item-section>
-            <span class="text-body1" v-html="currentCourse.packageOverview"></span>
-          </q-item-section>
-        </q-item> -->
-        <q-item>
-          <q-item-section>
-            <div class="overline mb-4" v-if="currentCourse">
-              <span v-html="currentCourse.packageDescription"></span>
-            </div>
-          </q-item-section>
-        </q-item>
-        <q-item>
-           <q-item-section>
-            <pre>
-              {{ currentCourse }}
-            </pre>
-          </q-item-section>
-        </q-item>
-      </q-list>
-   
-   </div>
+    <q-banner 
+      class="container q-ma-lg text-thin" bordered
+      v-model="currentCourse" 
+      :set="(s = getCourseInfo)"
+    >
+    <center><q-btn color="secondary" icon="close" label="Close" @click="$emit('closeInfo')"></q-btn></center>
+      <sup>Tuning: {{ s.tuning }} </sup>
+      <hr />
+      <div class="text-center text-bold" v-html="s.description"></div>
+      <hr />
+      <blockquote class="text-subtitle2" v-html="s.overview"></blockquote>
+      <hr />
+    </q-banner>
 </template>
 
 <script>
@@ -35,6 +24,15 @@ export default {
     player: null
   }),
   computed: {
+    getCourseInfo() {
+      return {
+        title: this.currentCourse?.packageTitle,
+        image: this.currentCourse?.packageImage,
+        overview: this.currentCourse?.packageOverview,
+        description: this.currentCourse?.packageDescription,
+        tuning: this.currentCourse?.packageTuning,
+      };
+    },
     ...mapState(["currentCourse"])
   },
   methods: {
@@ -44,3 +42,8 @@ export default {
   }
 };
 </script>
+<style lang="stylus" scoped>
+.container
+  border: 1px solid #555
+  background-color: rgba(84, 84, 84, 0.44)
+</style>
