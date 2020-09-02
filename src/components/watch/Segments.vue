@@ -43,11 +43,10 @@ export default {
     segments: Array
   },
   mounted() {
-    console.log("Seg Props", this.$props);
-    console.log("Route",  this.$route.params);
+    this.packageID = this.$route.params.packageID;
   },
   computed: {
-    packID() { return this.$route.params.packageID }
+    packID() { return  this.packageID }
   },
   methods: {
     ...mapActions(["setCurrentSegmentSetup"]),
@@ -55,8 +54,9 @@ export default {
       if (e.target.dataset) {
         const data = e.currentTarget.dataset;
         this.setCurrentSegmentSetup(data.setup);
-        console.log("seg.to", JSON.stringify(data.to));
-        this.$router.push(data.to);
+        const path = `{name: 'player', params: { packageID: ${this.packageID}, segmentID: ${data.to}}`;
+        console.log("Path", path);
+        this.$router.push(path);
       }else{
         console.error(`${e.currentTarget} has no ID`)
       }
@@ -67,17 +67,17 @@ export default {
       // console.log("seginfo", seg);
       // const type = seg.sources ? seg.sources[0].type : "";
       switch (seg.type) {
-        case "audio/mp3":
+        case "audio":
           ico = {
             icon: "fa fa-volume-up"
           };
           break;
-        case "video/vimeo":
+        case "vimeo":
           ico = {
             icon: "fa fa-video"
           };
           break;
-        case "video/youtube":
+        case "youtube":
           ico = {
             icon: "fa fa-youtube"
           };
@@ -92,7 +92,7 @@ export default {
             icon: "mdi-guitar-pick"
           };
           break;
-        case "application/gpx+xml":
+        case "gpx":
           ico = {
             icon: "mdi-guitar-pick"
           };
@@ -105,7 +105,7 @@ export default {
       }
       // console.log("SEGINFO", seg, ico);
       return ico;
-    }
+    },
   }
-};
+}
 </script>

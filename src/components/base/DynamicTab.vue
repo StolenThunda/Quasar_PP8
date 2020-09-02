@@ -11,7 +11,7 @@
         <!-- :label="tab.name" -->
     </q-tabs>
 
-    <q-tab-panels keep-alive v-model="selectedTab">
+    <q-tab-panels keep-alive v-model="loadFirstPanel">
       <q-tab-panel 
         v-for="tab in this.tabList" 
         :key="tab.name" 
@@ -33,9 +33,13 @@ export default {
     tabList: Array,
     default: () => new Array()
   },
-  mounted() {
-    const list = JSON.parse(JSON.stringify(this.$options.propsData.tabList))
-    this.selectedTab = list[0].name;
+  computed: {
+    loadFirstPanel() {
+      const list = JSON.parse(JSON.stringify(this.$options.propsData.tabList))
+        return (typeof list[0]?.name == 'undefined') ? "" : list[0].name;
+
+    }
+
   }
 
 };

@@ -5,7 +5,7 @@
           round
           icon="menu"
           aria-label="Menu"
-          
+          color="secondary"
           @click="toggleDrawer"
         /></div>
 </template>

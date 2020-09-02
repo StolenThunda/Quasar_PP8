@@ -14,8 +14,7 @@
             aria-label="Menu"
             @click="leftDrawerOpen = !leftDrawerOpen"
           />
-          <q-btn label="add" @click="addTabs" />
-          <q-btn label="remove" @click="removeDrawer('test1')" />
+          
         </template>
       </current-search>
     </q-header>
@@ -46,7 +45,7 @@ export default {
     CurrentSearch: () => import("components/browse/BrowserToolbar")
   },
   data: () => ({
-    leftDrawerOpen: true,
+    leftDrawerOpen: false,
     category: null
   }),
   computed: {

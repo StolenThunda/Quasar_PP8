@@ -16,12 +16,14 @@
         bordered
         padding
       >
-        <q-item
-          v-for="favorite in favorites[item]"
-          :key="favorite.name"    
-        >
+        <q-item v-for="favorite in favorites[item]" :key="favorite.name">
           <q-item-section @click="playMedia(favorite.id)" top side>
-            <q-btn icon="play_circle_filled" color="primary" size="xs" round />
+            <q-btn
+              icon="play_circle_filled"
+              color="secondary"
+              size="xs"
+              round
+            />
           </q-item-section>
 
           <q-item-section>
@@ -48,7 +50,7 @@ const { mapState, mapActions } = createNamespacedHelpers("default");
 export default {
   name: "FavList",
   data: () => ({
-    hover: true, 
+    hover: true
   }),
   computed: {
     ...mapState(["favorites"])
@@ -66,5 +68,3 @@ export default {
   }
 };
 </script>
-
-

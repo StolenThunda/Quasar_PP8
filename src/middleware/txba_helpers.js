@@ -130,76 +130,60 @@ export default class TXBA_Utilities {
   }
 
   parseSegmentData(seg) {
-    let type = {};
-    const yt_slug = "https://www.youtube.com/embed/"; //watch?v=";
+    let type = {  };
 
     if (this.objectHaveKeyLike(seg, "Vimeo"))
       type = {
-        to: `vimeo/${seg.segmentID}`,
-        // sources: [
-        //   {
-        type: "video/vimeo",
+        'webkit-playsinline': true,
+        'playsinline' : true,
+        'allowfullscreen': true,
+        type: "vimeo",
         src: seg.segmentVimeoCode,
-        //   }
-        // ],
         color: "orange"
       };
     if (this.objectHaveKeyLike(seg, "YouTube"))
       type = {
-        to: `/${seg.segmentID}`,
-        type: "video/youtube",
-        src: `${yt_slug}${seg.segmentYouTubeCode}&html5=true`,
+        type: "youtube",
+        src: `https://www.youtube.com/watch?v=${seg.segmentYouTubeCode}&html5=true`,
+        "webkit-playsinline": true,
+        playsinline: true,
+        preload: "none",
         color: "red"
       };
     if (this.objectHaveKeyLike(seg, "MP3"))
       type = {
-        to: seg.segmentID,
-        // sources: [
-        //   {
-        type: "audio/mp3",
+        controls: true,
+        playsinline: true,
+        type: "audio",
         src: `https://cdn.texasbluesalley.com/audio/${seg.segmentMP3Filename}`,
-        //   }
-        // ],
         color: "teal"
       };
-    if (this.objectHaveKeyLike(seg, "SoundSlice"))
+      if (this.objectHaveKeyLike(seg, "SoundSlice"))
       type = {
-        to: `soundslice/${seg.segmentID}`,
-        // sources: [
-        //   {
         src: seg.segmentSoundSliceCode,
-        type: "soundslice",
-        //   }
-        // ],
+        type: "soundslicicle",
         color: "orange"
       };
     if (this.objectHaveKeyLike(seg, "PDF"))
       type = {
-        to: `pdf/${seg.segmentID}`,
-        // sources: [
-        //   {
-        src: seg.segmentPDFCode,
+        src: `https://texasbluesalley.com/includes/pdfjs/web/viewer.html?file=/assets/pdfs/${seg.segmentPDFCode}`,
         type: "pdf",
-        //   }
-        // ],
         color: "yellow"
       };
     if (this.objectHaveKeyLike(seg, "GPX"))
       type = {
-        to: `soundslice/${seg.segmentID}`,
-        // sources: [
-        //   {
-        type: "application/gpx+xml",
+        type: "gpx",
         src: seg.segmentGPXFilename,
-        //   }
-        // ],
         color: "purple"
       };
-
+      type.to = seg.segmentID;
     return type;
   }
 
   parseIdx(clickString) {
+    /**
+    *  purpose: Parse packageID from html source (ex. thePlayer.openUnknownPackageType({ 'packageID': '9009', 'type': 'entry'}, true); return false;)
+     */
     clickString = clickString.replace(/'/g, '"');
     const pkg = JSON.parse(clickString.match(/\{([^}]+)\}/g));
     pkg.packageID = parseInt(pkg.packageID);

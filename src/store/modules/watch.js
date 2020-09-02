@@ -9,10 +9,10 @@ export default {
     sections: null,
     previousCourses: [],
     playerOpts: {
-      autoplay: false,
-      controls: false,
-      live: false,
-      aspectRatio: "16:9",
+      // autoplay: false,
+      controls: true,
+      // live: false,
+      // aspectRatio: "4:3",
     }
   },
   mutations: {

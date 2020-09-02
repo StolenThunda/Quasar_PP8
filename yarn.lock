@@ -1315,20 +1315,6 @@
   resolved "https://registry.yarnpkg.com/@quasar/fastclick/-/fastclick-1.1.4.tgz#21ed3e9a4387dcb43022a08af4ef08a5f1abf159"
   integrity sha512-i9wbyV4iT+v4KhtHJynUFhH5LiEPvAEgSnwMqPN4hf/8uRe82nDl5qP5agrp2el1h0HzyBpbvHaW7NB0BPrtvA==
 
-"@quasar/quasar-app-extension-qmediaplayer@^1.0.28":
-  version "1.0.28"
-  resolved "https://registry.yarnpkg.com/@quasar/quasar-app-extension-qmediaplayer/-/quasar-app-extension-qmediaplayer-1.0.28.tgz#9f159d8ba021e9c8420a0d1ef416281cd7d73d75"
-  integrity sha512-FBmTw15ksPaEPNNy1hdivsDQ3KOIZXm/Q9bXXebl20171GGbh/W+QMmUTNccnTSHXh2OP4ssGdn4wPCRweqjtg==
-  dependencies:
-    "@quasar/quasar-ui-qmediaplayer" "^1.0.28"
-
-"@quasar/quasar-ui-qmediaplayer@^1.0.28":
-  version "1.0.28"
-  resolved "https://registry.yarnpkg.com/@quasar/quasar-ui-qmediaplayer/-/quasar-ui-qmediaplayer-1.0.28.tgz#e5b8550eb2c75b74821ad79115af74b6749ee498"
-  integrity sha512-tuR15G2h9pLDtn8T0efU63zC7+iON2ynS1vhdenHq3GFIA+BTbHols14FXwXJRDPeCBaGCC9Kbw14jvutpCO0Q==
-  dependencies:
-    q-colorize-mixin "^1.0.9"
-
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -8059,11 +8045,6 @@ punycode@^2.1.0, punycode@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
-
-q-colorize-mixin@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/q-colorize-mixin/-/q-colorize-mixin-1.0.9.tgz#f7ceafbae73e68b27754861b63e7d460552ce830"
-  integrity sha512-p1L45Fdeem2cCuHohi4m1EIPeFUbx1Y6qSvtL4iWIhSkGTZEXoBo/knr/5BNwpUO9Pni7iSFjY2b5yTuUsR6Zg==
 
 q@^1.1.2:
   version "1.5.1"

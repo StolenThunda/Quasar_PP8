@@ -77,9 +77,9 @@ cfg.module.rules.push({
     devServer: {
       host: '10.0.0.81',
       https: false,
-      port: 8080,
+      port: 8081,
       open: true, // opens browser window automatically
-      vueDevtools: true
+      // vueDevtools: true
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
@@ -87,7 +87,17 @@ cfg.module.rules.push({
       iconSet: 'material-icons', // Quasar icon set
       lang: 'en-us', // Quasar language pack
       config: {
-        dark: true
+        dark: true,
+        brand: {
+          primary: '#555555',
+          secondary: '#0099ff',
+          accent: '#65ac65',
+          dark: '#1d1d1d',
+          positive: '#21BA45',
+          negative: '#C10015',
+          info: '#31CCEC',
+          warninng: '#f2c037'
+        }
       },
 
       // Possible values for "importStrategy":

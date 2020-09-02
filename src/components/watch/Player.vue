@@ -1,42 +1,41 @@
 <template>
   <div>
     <div>
-      MEDIA PLAYER
-      <p><pre>{{ currentSetup }} </pre></p>
+      PLAYER Wrapper
+      <!-- <p><pre>{{ currentSetup }} </pre></p> -->
     </div>
-    <q-media-player
-    type="video"
-    :poster="currentSetup.poster"
-    :sources="getSources"
-    />
-
-    <!-- <object width="640" height="360">
-      <param
-        name="movie"
-        :value="currentSetup.src + '&amp;rel=0&amp;hl=en_US&amp;version=3'" 
-        />
-      <param name="allowFullScreen" value="true" />
-      <param name="allowscriptaccess" value="always" />
-      <embed
-        width="640"
-        height="360"
-        :src="currentSetup.src + '&amp;rel=0&amp;hl=en_US&amp;version=3'"
-        class="youtube-player"
-        type="text/html"
-        allowscriptaccess="always"
-        allowfullscreen="true"
-      />
-    </object> -->
+    <h6 class="text-uppercase">{{ currentSetup.type }} </h6>
+    <div
+      v-if="currentSetup.type == 'pdf'"
+      id="video-player-wrapper"
+      class="no-controls"
+    >
+      <iframe
+        width="1000"
+        height="800"
+        :src="currentSetup.src"
+        frameborder="0"
+        allowfullscreen
+      ></iframe>
+    </div>
+    <div v-if="currentSetup.type == 'soundslice'">
+      <iframe id="ssembed" :src="getSoundsliceLink" width="100%" height="800px" frameBorder="0"></iframe>
+    </div>
+    <media-player v-bind="currentSetup" v-else />
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
 export default {
-  name: "MediaPlayer",
-  computed: {
-    getSources() { return [{src: this.currentSetup.src + '&amp;rel=0&amp;hl=en_US&amp;version=3', type:  this.currentSetup.type}]},
-    ...mapState("watch", ["currentSetup"])
+  name: "MediaContentPlayerWrapper",
+  components: {
+    "media-player": () => import("components/watch/MediaPlayer")
   },
+  computed: {
+    getSoundsliceLink: () => { return `https://www.soundslice.com/scores/${currentSetup.src}/embed/?api=1&show_title=0&branding=2`
+    },
+    ...mapState("watch", ["currentSetup"])
+  }
 };
 </script>

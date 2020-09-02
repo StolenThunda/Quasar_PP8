@@ -2,7 +2,6 @@
   <div>
     <slot name="title" class="text-overline"></slot>
     <q-list dense bordered>
-      
       <q-card v-for="entry in this.resultList" :key="entry.id">
         <q-separator spaced />
         <q-item>
@@ -23,7 +22,7 @@
 
             <q-item-section style="width: 60vw;">
               <q-item-label
-                text-color="primary"
+                text-color="secondary"
                 class="text-weight-bolder text-body2"
               >
                 {{ entry.title }}
@@ -43,10 +42,10 @@
 
 <script>
 export default {
-  props:{
-      resultList: Array,
-      default: []
-    }
+  props: {
+    resultList: Array,
+    default: []
+  }
 };
 </script>
 <style scoped></style>

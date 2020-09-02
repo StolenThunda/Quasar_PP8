@@ -3,9 +3,9 @@
     <q-header elevated>
       <q-toolbar>
         <drawer-toggle @toggle-drawer="leftDrawerOpen = !leftDrawerOpen" />
-        <q-toolbar-title>ProPlayer v8 </q-toolbar-title>
+        <q-toolbar-title  class="text-h6 text-bold"><span color="secondary">ProPlayer v8</span> </q-toolbar-title>
 
-        <q-btn to="/browser" icon="mdi-magnify" flat />
+        <q-btn size="25px" color="secondary" to="/browser" icon="mdi-magnify" flat />
         <tool-list />
       </q-toolbar>
     </q-header>

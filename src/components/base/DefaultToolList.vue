@@ -1,5 +1,5 @@
 <template>
-   <q-btn icon="fa fa-cogs" flat>
+   <q-btn icon="fa fa-cogs" size="20px" color="secondary" flat>
         <q-menu  transition-show="flip-right"
           transition-hide="flip-left">
           <q-list style="min-width: 100px;" dense>

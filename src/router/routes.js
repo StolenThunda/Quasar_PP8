@@ -20,12 +20,12 @@ const routes = [
     path: "/watch",
     component: () => import("layouts/WatchLayout.vue"),
     children: [{ 
+      name: "player",
+      path: "/watch/:packageID/:segmentID",
+      component: () => import("components/watch/Player")
+    },{
       path: "/watch/:packageID", 
       component: () => import("pages/Watch"),
-    },{
-        name: "player",
-        path: "/watch/:packageID/:segmentID",
-        component: () => import("components/watch/Player")
       
     }]
   },

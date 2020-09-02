@@ -5,7 +5,7 @@
       <q-toolbar-title class="text-uppercase text-subvalue2 text-justify">
         Browser - {{ model }}
       </q-toolbar-title>
-      <q-btn flat round dense icon="close" to="/" />
+      <q-btn   label="Close" color="secondary" icon="close" to="/" />
     </q-toolbar>
 
     <q-toolbar>
@@ -75,13 +75,13 @@ export default {
     loadCategory(category) {
       console.log(`Cat: ${category}`);
       this.setCriteria(category);
-      if (!this.tabsAdded) this.tabsAdded = this.addTabs();
+      if (!this.tabsAdded) this.tabsAdded = this.addTabs(category);
     },
-    addTabs() {
+    addTabs(category) {
       this.addToDrawer([
         {
-          name: "Browser",
-          componentName: "Browser",
+          name: category,
+          componentName: category,
           icon: "magnify",
           cmp: () => import("components/browse/BrowserFilters")
         }
