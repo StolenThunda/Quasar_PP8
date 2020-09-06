@@ -4,8 +4,9 @@
     class="q-ma-none q-pa-none"
     expand-separator
     :caption="title"
+    group="somegroup"
   >
-    <q-list bordered dense>
+    <q-list bordered dense style="max-width: 600px">
       <q-item
         :id="'seg-' + seg.id"
         v-for="seg in segments"
@@ -16,7 +17,8 @@
         ripple
         clickable
         @click="playSegment"
-        width="520px"
+        height="20px"
+        
       >
         <q-item-section avatar>
           <q-icon :color="seg.color" :name="s.icon" size="xs"/>
@@ -24,11 +26,7 @@
 
         <q-item-section>
           <q-item-label caption>{{ seg.title }}</q-item-label>
-          <!-- <q-item-label
-            ><sup>({{ seg.type }})</sup></q-item-label
-          > -->
         </q-item-section>
-        <!-- <q-separator /> -->
       </q-item>
     </q-list>
   </q-expansion-item>

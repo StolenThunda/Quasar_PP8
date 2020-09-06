@@ -31,7 +31,7 @@ module.exports = function (/* ctx */) {
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
-      'mdi-v5',
+      // 'mdi-v5',
       'fontawesome-v5',
       // 'eva-icons',
       // 'themify',
@@ -75,9 +75,9 @@ cfg.module.rules.push({
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      host: '10.0.0.81',
+      // host: '10.0.0.81',
       https: false,
-      port: 8081,
+      port: 8080,
       open: true, // opens browser window automatically
       // vueDevtools: true
     },
@@ -111,7 +111,7 @@ cfg.module.rules.push({
 
     // animations: 'all', // --- includes all animations
     // https://quasar.dev/options/animations
-    animations: [],
+    animations: ['all'],
 
     // https://quasar.dev/quasar-cli/developing-ssr/configuring-ssr
     ssr: {
