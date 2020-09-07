@@ -8,16 +8,16 @@
       id="videoPlayer" 
       class="" 
       :controls="this.controls"
-      :src="this.value.src" 
+      :src="this.src" 
       :allowfullscreen="this.allowfullscreen"
       :playsinline="this.playsinline"
-      :webkit-playsinline="this['webkit-playsinline']"
       :preload="this.preload" 
       crossorigin="anonymous">
       <source :src="this.cdn_url + '/audio/' + this.id" type="audio/mp3" v-if="this.type=='audio'" />
     </video> 
+      <!-- :webkit-playsinline="this['webkit-playsinline']" -->
   </div>
-</template>
+</template> 
 
 <script>
 
@@ -25,6 +25,13 @@ export default {
   inheritAttrs: false,
   name: "MediaPlayer",
   props: {
+    id: {
+      type: Number
+    },
+    type: {
+      type: String,
+      default: ""
+    },
     controls: {
       type: Boolean,
       default: false

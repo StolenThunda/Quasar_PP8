@@ -11,7 +11,12 @@
         <!-- :label="tab.name" -->
     </q-tabs>
 
-    <q-tab-panels keep-alive v-model="selectedTab">
+    <q-tab-panels 
+      animated
+      transition-prev="scale"
+      transition-next="scale"
+      keep-alive 
+      v-model="selectedTab">
       <q-tab-panel 
         v-for="tab in this.tabList" 
         :key="tab.name" 
@@ -33,14 +38,15 @@ export default {
     tabList: Array,
     default: () => new Array()
   },
-  computed: {
-    loadFirstPanel() {
+  mounted() {
       const tl = this.$options.propsData.tabList
+      if (tl.length === 0) return; 
       const list = JSON.parse(JSON.stringify(tl))
-      console.log(`Loading Tab: ${list[0].name} of ${list.join(', ')}`)
-      return typeof list[0]?.name === 'undefined' ? "" : list[0].name;
+      const firstName = list[0]?.name || 0
+      // console.log(`Loading Tab: ${firstName} of ${JSON.stringify(list)}`)
+      this.selectedTab = typeof list[0]?.name === 'undefined' ? "" : firstName;
 
     }
   }
-};
+
 </script>

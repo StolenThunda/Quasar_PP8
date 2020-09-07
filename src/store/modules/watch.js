@@ -55,7 +55,7 @@ export default {
       ctx.commit("SET_CURRENT_SEGMENT", response);
     },
     setCurrentSegmentSetup(ctx, setup) {
-      console.log("store: ", setup);
+      console.log(JSON.stringify(setup));
       if (setup) ctx.commit("SET_CURRENT_SEGMENT_SETUP", JSON.parse(setup));
     }
   },

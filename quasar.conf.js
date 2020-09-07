@@ -38,7 +38,7 @@ module.exports = function (/* ctx */) {
       // 'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
-      // 'roboto-font', // optional, you are not bound to it
+      'roboto-font', // optional, you are not bound to it
       'material-icons', // optional, you are not bound to it
     ],
 
@@ -75,7 +75,7 @@ cfg.module.rules.push({
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      // host: '10.0.0.81',
+      host: '10.0.0.81',
       https: false,
       port: 8080,
       open: true, // opens browser window automatically
@@ -111,7 +111,7 @@ cfg.module.rules.push({
 
     // animations: 'all', // --- includes all animations
     // https://quasar.dev/options/animations
-    animations: ['all'],
+    animations: [],
 
     // https://quasar.dev/quasar-cli/developing-ssr/configuring-ssr
     ssr: {
