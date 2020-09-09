@@ -31,7 +31,7 @@ module.exports = function (/* ctx */) {
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
-      // 'mdi-v5',
+      'mdi-v5',
       'fontawesome-v5',
       // 'eva-icons',
       // 'themify',
@@ -77,14 +77,14 @@ cfg.module.rules.push({
     devServer: {
       host: '10.0.0.81',
       https: false,
-      port: 8080,
+      port: 8081,
       open: true, // opens browser window automatically
       // vueDevtools: true
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
-      iconSet: 'material-icons', // Quasar icon set
+      // iconSet: 'material-icons', // Quasar icon set
       lang: 'en-us', // Quasar language pack
       config: {
         dark: true,

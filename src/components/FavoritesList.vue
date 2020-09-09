@@ -17,12 +17,13 @@
         padding
       >
         <q-item v-for="favorite in favorites[item]" :key="favorite.name">
-          <q-item-section @click="playMedia(favorite.id)" top side>
+          <q-item-section top side>
             <q-btn
               icon="play_circle_filled"
               color="secondary"
               size="xs"
               round
+              :to="'/watch/' + favorite.id"
             />
           </q-item-section>
 
@@ -56,10 +57,8 @@ export default {
     ...mapState(["favorites"])
   },
   methods: {
-    playMedia(id) {
-      this.$router.push(`/watch/${id}`);
-    },
     removeFavorite(id) {
+      //TODO: Code removal of favs
       // const ret =  this.removeFavorite(id)
       // console.log(ret);
       console.log(`Removing ${id}`);

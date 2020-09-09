@@ -11,9 +11,10 @@
     <q-toolbar>
       <q-btn-toggle
         v-model="model"
-        toggle-color="secondary"
+        toggle-color="primary"
         :options="tabs"
         @input="loadCategory"
+        padding="2px 2px 5px 7px"
       >
       </q-btn-toggle>
 
@@ -40,12 +41,12 @@ export default {
         }
       },
       {
-        value: "free lesson friday",
+        value: "free_lesson_friday",
         label: "free lesson friday",
         icon: "mdi-sign-direction"
       },
       {
-        value: "tone tuesday",
+        value: "tone_tuesday",
         label: "tone tuesday",
         icon: "mdi-bugle"
       },
@@ -55,12 +56,12 @@ export default {
         icon: "mdi-music-clef-treble"
       },
       {
-        value: "backing tracks",
+        value: "backing_tracks",
         label: "backing tracks",
         icon: "mdi-volume-high"
       },
       {
-        value: "imported",
+        value: "youtube_videos",
         label: "imported",
         icon: "mdi-import"
       },
@@ -81,7 +82,7 @@ export default {
       this.addToDrawer([
         {
           name: category,
-          componentName: category,
+          componentName: "category",
           icon: "magnify",
           cmp: () => import("components/browse/BrowserFilters")
         }

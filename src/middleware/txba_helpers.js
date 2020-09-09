@@ -30,6 +30,7 @@ export default class TXBA_Utilities {
   async getAsyncData(slug, callback) {
     try {
       const url = `${this.baseURL}${slug}`;
+      console.log(`Req Url: ${url}`)
       const response = await axios
         .get(url)
         .then(async response => await response.data);
@@ -40,7 +41,10 @@ export default class TXBA_Utilities {
     }
   }
   getFavs() {
-    return this.getAsyncData(this.favorites_slug, this.parseFavoriteHtml);
+    return this.getAsyncData(
+      this.favorites_slug, 
+      this.parseFavoriteHtml
+    );
   }
 
   getNotification() {
@@ -51,8 +55,9 @@ export default class TXBA_Utilities {
   }
 
   getUserLoops(segID) {
-    const slug = `${this.user_loops_slug}/${segID}`;
-    return this.getAsyncData(slug);
+    return this.getAsyncData(
+      `${this.user_loops_slug}/${segID}`
+    );
   }
 
   async getDefaultSearchEntries() {
@@ -61,15 +66,18 @@ export default class TXBA_Utilities {
       this.parseSearchResults
     );
   }
-
+  
+  async getSearchEntries(category, auth) {
+    return this.getAsyncData(
+      `${this.search_slug}/${category}/${auth}${this.slug_code[category]}`,
+      this.parseSearchResults
+    );
+  }
   async getSearchFiltersByCategory(code) {
-    code = code === "pro_player_packages" ? "courses" : code;
-    const url = `${this.baseURL}${this.filter_slug}/${code}`;
-    // console.log(url)
-    return await axios
-      .get(url)
-      .then(async response => await response.data)
-      .then(response => this.parseCriteria(response));
+    return this.getAsyncData(
+      `${this.filter_slug}/${code}`, 
+      this.parseCriteria
+    )
   }
 
   async getPackage(ID) {
@@ -85,10 +93,13 @@ export default class TXBA_Utilities {
   }
 
   async getSegment(ID) {
-    const slug = `${this.segment_slug}/${ID}`;
-    const seg = await this.getAsyncData(slug);
-    console.log("retr Seg", seg)
-    return seg;
+    // const slug = `${this.segment_slug}/${ID}`;
+    // const seg = await this.getAsyncData(slug);
+    // console.log("retr Seg", seg)
+    // return seg;
+    return this.getAsyncData(
+      `${this.segment_slug}/${ID}`
+    );
   }
 
   parseSections(sections, poster) {
@@ -137,14 +148,18 @@ export default class TXBA_Utilities {
         'webkit-playsinline': true,
         'playsinline' : true,
         'allowfullscreen': true,
-        type: "vimeo",
-        src: seg.segmentVimeoCode,
+        sources: [{
+          type: "vimeo",
+          src: seg.segmentVimeoCode,
+        }],
         color: "orange"
       };
     if (this.objectHaveKeyLike(seg, "YouTube"))
       type = {
-        type: "youtube",
-        src: `https://www.youtube.com/watch?v=${seg.segmentYouTubeCode}&html5=true`,
+        sources: [{
+          type: "video/youtube",
+          src: `https://www.youtube.com/watch?v=${seg.segmentYouTubeCode}`, //&html5=true`,
+        }],
         "webkit-playsinline": true,
         playsinline: true,
         preload: "none",
@@ -154,26 +169,34 @@ export default class TXBA_Utilities {
       type = {
         controls: true,
         playsinline: true,
-        type: "audio",
-        src: `https://cdn.texasbluesalley.com/audio/${seg.segmentMP3Filename}`,
+        sources: [{
+          type: "audio",
+          src: `https://cdn.texasbluesalley.com/audio/${seg.segmentMP3Filename}`
+        }],
         color: "teal"
       };
       if (this.objectHaveKeyLike(seg, "SoundSlice"))
       type = {
-        src: seg.segmentSoundSliceCode,
-        type: "soundslicicle",
+        sources: [{
+          src: seg.segmentSoundSliceCode,
+        type: "soundslicicle"
+        }],
         color: "orange"
       };
     if (this.objectHaveKeyLike(seg, "PDF"))
       type = {
-        src: `https://texasbluesalley.com/includes/pdfjs/web/viewer.html?file=/assets/pdfs/${seg.segmentPDFCode}`,
-        type: "pdf",
+        sources: [{
+          src: `https://texasbluesalley.com/includes/pdfjs/web/viewer.html`, //?file=/assets/pdfs/${seg.segmentPDFCode}`,
+          type: "pdf"
+        }],
         color: "yellow"
       };
     if (this.objectHaveKeyLike(seg, "GPX"))
       type = {
-        type: "gpx",
-        src: seg.segmentGPXFilename,
+        sources: [{
+          type: "gpx",
+          src: seg.segmentGPXFilename
+        }],
         color: "purple"
       };
       type.to = seg.segmentID;

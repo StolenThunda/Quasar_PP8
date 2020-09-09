@@ -7,7 +7,7 @@ export default {
     currentSetup: null,
     currentLoops: null,
     sections: null,
-    previousCourses: [],
+    courseHistory: [], 
     playerOpts: {
       // autoplay: false,
       controls: true
@@ -20,7 +20,7 @@ export default {
       if (!data) return;
       // console.log("SettingCourse:", data);
       if (ctx.currentCourse !== null)
-        ctx.previousCourses.push(ctx.currentCourse);
+        ctx.courseHistory.push(ctx.currentCourse);
       ctx.currentCourse = data;
       // map course to state
       for (let [k, v] of Object.entries(data)) {

@@ -63,7 +63,7 @@ export default {
       var ico = {};
       // console.log("seginfo", seg);
       // const type = seg.sources ? seg.sources[0].type : "";
-      switch (seg.type) {
+      switch (seg.sources[0].type) {
         case "audio":
           ico = {
             icon: "fa fa-volume-up"

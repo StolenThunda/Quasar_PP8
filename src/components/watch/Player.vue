@@ -1,139 +1,156 @@
 <template>
-<div id="mediaWrapper">
-  <q-page id="mediaPlayerWrapper" v-model="currentSetup">
-    <div
-      v-if="currentSetup.type == 'pdf'"
-      id="video-player-wrapper"
-      class="no-controls"
+  <div id="mediaWrapper">
+    <q-page 
+      id="mediaPlayerWrapper" 
+      v-if="currentSetup"
+      :set="(s = currentSetup.sources[0])"
     >
-    <div id="video-player-wrapper" class="no-controls">
 
-      <iframe
-        width="1000"
-        height="800"
-        :src="currentSetup.src"
-        frameborder="0"
-        allowfullscreen
-      ></iframe>
-      </div>
-    </div>
-    <div v-if="currentSetup.type == 'soundslice'">
-      <iframe
-        id="ssembed"
-        :src="
-          `https://www.soundslice.com/scores/${currentSetup.src}/embed/?api=1&show_title=0&branding=2`
-        "
-        width="100%"
-        height="800px"
-        frameBorder="0"
-      ></iframe>
-    </div>
-    <media-player v-model="currentSetup" v-else />
-
-    <!-- Player Controls -->
-    <div id="mediaControlsWrapper">
-      <div id="progressSliderWrapper">
-        <div id="current-time">0.00</div>
-        <div id="time-left"></div>
-        <div id="progressSlider">
-          <div id="loop-region" style="display: none"></div>
-          <div id="chapters-wrapper"></div>
+    <!-- BEGIN PDF RENDER -->
+      <div
+        v-if="s.type == 'pdf'"
+        id="video-player-wrapper"
+        class="no-controls"
+      >
+        <div id="video-player-wrapper" class="no-controls">
+          <iframe
+            width="1000"
+            height="800"
+            :src="s.src"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
         </div>
       </div>
+      <!-- END PDF RENDER -->
 
-      <div id="transportButtonsWrapper">
-        <ul id="transportButtonsList">
-          <li>
-            <button
-              id="playback-play"
-              class="transport-button"
-              onClick="thePlayer.theEngine.onButtonTogglePlayback();"
-              disabled
-              title="Toggle Playback."
-            >
-              <i class="fa fa-play" disabled></i>
-            </button>
-          </li>
-          <li class="">
-            <button
-              id="playback-beginning"
-              class="transport-button"
-              onClick="thePlayer.theEngine.onButtonPlaybackRestart();"
-              disabled
-              title="Back to the beginning."
-            >
-              <i class="fa fa-fast-backward" disabled></i>
-            </button>
-          </li>
-          <li class="">
-            <button
-              id="playback-rewind"
-              class="transport-button"
-              onClick="thePlayer.theEngine.onButtonPlaybackRewind5();"
-              disabled
-              title="Rewind 5 Seconds."
-            >
-              <i class="fa fa-backward"></i> <sup>5</sup>
-            </button>
-          </li>
-          <li class="">
-            <button
-              id="playback-forward"
-              class="transport-button"
-              onClick="thePlayer.theEngine.onButtonPlaybackForward5();"
-              disabled
-              title="Forward 5 Seconds."
-            >
-              <i class="fa fa-forward"></i> <sup>5</sup>
-            </button>
-          </li>
-          <li class="">
-            <button
-              id="looping-start"
-              class="transport-button"
-              onClick="thePlayer.theEngine.onButtonSetLoopStart();"
-              disabled
-              title="Set loop starting point."
-            >
-              [ A
-            </button>
-          </li>
-          <li class="">
-            <button
-              id="looping-stop"
-              class="transport-button"
-              onClick="thePlayer.theEngine.onButtonSetLoopEnd();"
-              disabled
-              title="Set loop stopping point."
-            >
-              B ]
-            </button>
-          </li>
-          <li class="">
-            <button
-              id="looping-toggle"
-              class="transport-button"
-              onClick="thePlayer.theEngine.onButtonToggleLooping()"
-              disabled
-              title="Begin/End Looping."
-            >
-              <i class="fa fa-refresh"></i><i class="fa fa-play"></i>
-            </button>
-          </li>
-          <li>
-            <button
-              id="controls-toggle"
-              class="transport-button"
-              title="Video Settings."
-              onClick="thePlayer.theEngine.toggleVideoControls();"
-            >
-              <i class="fa fa-gear"></i>
-            </button>
-          </li>
-        </ul>
+      <!-- BEGIN SOUNDSLICE RENDER -->
+      <div v-if="s.type == 'soundslice'">
+        <iframe
+          id="ssembed"
+          :src="
+            `https://www.soundslice.com/scores/${s.src}/embed/?api=1&show_title=0&branding=2`
+          "
+          width="100%"
+          height="800px"
+          frameBorder="0"
+        ></iframe>
       </div>
-    </div>
-  </q-page>
+      <!-- END SOUNDSLICE RENDER -->
+
+      <!-- MEDIAPLAYER RENDER -->
+      <media-player 
+        @toggle-play="playing = !playing"
+        v-else 
+      />
+      <!-- END MEDIAPLAYER RENDER -->
+
+      <!-- Player Controls -->
+      <div id="mediaControlsWrapper">
+        <div id="progressSliderWrapper">
+          <div id="current-time">0.00</div>
+          <div id="time-left"></div>
+          <div id="progressSlider">
+            <div id="loop-region" style="display: none"></div>
+            <div id="chapters-wrapper"></div>
+          </div>
+        </div>
+
+        <div id="transportButtonsWrapper">
+          <ul id="transportButtonsList">
+            <li>
+              <button
+                @click.prevent="playing = !playing"
+                id="playback-play"
+                class="transport-button"
+                title="Toggle Playback."
+              >
+                <i v-show="!playing" class="fa fa-play" disabled></i>
+                <i v-show="playing" class="fa fa-pause" disabled></i>
+              </button>
+            </li>
+            <li class="">
+              <button
+                id="playback-beginning"
+                class="transport-button"
+                onClick="thePlayer.theEngine.onButtonPlaybackRestart();"
+                disabled
+                title="Back to the beginning."
+              >
+                <i class="fa fa-fast-backward" disabled></i>
+              </button>
+            </li>
+            <li class="">
+              <button
+                id="playback-rewind"
+                class="transport-button"
+                onClick="thePlayer.theEngine.onButtonPlaybackRewind5();"
+                disabled
+                title="Rewind 5 Seconds."
+              >
+                <i class="fa fa-backward"></i> <sup>5</sup>
+              </button>
+            </li>
+            <li class="">
+              <button
+                id="playback-forward"
+                class="transport-button"
+                onClick="thePlayer.theEngine.onButtonPlaybackForward5();"
+                disabled
+                title="Forward 5 Seconds."
+              >
+                <i class="fa fa-forward"></i> <sup>5</sup>
+              </button>
+            </li>
+            <li class="">
+              <button
+                id="looping-start"
+                class="transport-button"
+                onClick="thePlayer.theEngine.onButtonSetLoopStart();"
+                disabled
+                title="Set loop starting point."
+              >
+                [ A
+              </button>
+            </li>
+            <li class="">
+              <button
+                id="looping-stop"
+                class="transport-button"
+                onClick="thePlayer.theEngine.onButtonSetLoopEnd();"
+                disabled
+                title="Set loop stopping point."
+              >
+                B ]
+              </button>
+            </li>
+            <li class="">
+              <button
+                id="looping-toggle"
+                class="transport-button"
+                onClick="thePlayer.theEngine.onButtonToggleLooping()"
+                disabled
+                title="Begin/End Looping."
+              >
+                <i class="fa fa-refresh"></i><i class="fa fa-play"></i>
+              </button>
+            </li>
+            <li>
+              <button
+                id="controls-toggle"
+                class="transport-button"
+                title="Video Settings."
+                onClick="thePlayer.theEngine.toggleVideoControls();"
+              >
+                <q-icon name="mdi-cog"></q-icon>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- End Player Controls -->
+
+    </q-page>
   </div>
 </template>
 
@@ -141,11 +158,33 @@
 import { mapState } from "vuex";
 export default {
   name: "MediaContentPlayerWrapper",
+  data: () => ({
+    video: null,
+    playing: false
+  }),
+  mounted() {
+
+  },
+  watch: {
+    playing(value) {
+      if (value) { return this.$refs.mediaplayer.play(); }
+      this.$refs.mediaplayer.pause();
+    }
+  },
   components: {
     "media-player": () => import("components/watch/MediaPlayer")
   },
   computed: {
     ...mapState("watch", ["currentSetup"])
+  },
+  methods: {
+    btnTogglePlayback() {
+      if (this.isPlaying) {
+        this.$refs.mediaplayer.pause()
+      } else {
+        this.$refs.mediaplayer.play()
+      }
+    }
   }
 };
 </script>

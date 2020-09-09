@@ -55,33 +55,10 @@ export default {
     catChange(cat) {
       this.category = cat;
     },
-    addTabs() {
-      this.addToDrawer([
-        {
-          name: "Test1",
-          componentName: "Test1"
-          // icon: "magnify",
-          // cmp: () => import("components/browse/Test1")
-        },
-        {
-          name: "Test2",
-          componentName: "Test2"
-          // icon: "magnify",
-          // cmp: () => import("components/browse/Test2")
-        },
-        {
-          name: "Test3",
-          componentName: "Test3"
-          // icon: "magnify",
-          // cmp: () => import("components/browse/Test3")
-        }
-      ]);
-      return true;
-    },
     removeDrawer(name) {
       this.removeDrawer(name);
     },
-    ...mapActions(["addToDrawer", "removeDrawer"])
+    ...mapActions(["removeDrawer"])
   }
 };
 </script>

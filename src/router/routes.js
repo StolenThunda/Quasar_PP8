@@ -24,9 +24,9 @@ const routes = [
       path: "/watch/:packageID/:segmentID",
       component: () => import("components/watch/Player")
     },{
+      name: "package",
       path: "/watch/:packageID", 
       component: () => import("pages/Watch"),
-      
     }]
   },
   // Always leave this as last one,
