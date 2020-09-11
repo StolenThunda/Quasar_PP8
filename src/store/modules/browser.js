@@ -8,8 +8,9 @@ export default {
     default_browser_entries: null,
     search_entries: null,
     search: {
+      current: [],
       criteria: null,
-      searchCategories: []
+      status: {}
     }
   },
   mutations: {
@@ -58,23 +59,35 @@ export default {
       // console.log("SettingEntries:", data);
       if ( data ) ctx.search_entries = data;
     },
-    SET_CRITERIA ( ctx, data ) {
+    SET_SEARCH ( ctx, data ) {
       // console.log( "SettingCriteria:", data );
       if ( data.auth ) Vue.set( ctx, "auth", data.auth );
       ctx.search.criteria = data.funnels ? data.funnels : null;
-      // console.log(`Criteria: ${JSON.stringify(ctx.search.criteria, null, 2)}`)
+      // create object keys of ids in the status object
+      for (const id of data.ids) { ctx.search.status[id] = false}
+      ctx.search.current = [];
+      ctx.search.status = {};
     },
-    TOGGLE_CURRENT_SEARCH ( ctx, data ) {
-      const cats = ctx.search.searchCategories;
-      const idx = cats.findIndex( obj => obj === data );
-      if ( idx >= 0 ) {
-        // already in array so remove
-        ctx.search.searchCategories = [
-          ...cats.slice( 0, idx ),
-          ...cats.slice( idx + 1 )
+    TOGGLE_CURRENT_SEARCH ( ctx, data) {
+      // toggle selection status
+      const chipID = data.section + '__' + data.chip.id
+      ctx.search.status[chipID] = !ctx.search.status[chipID];
+      if (ctx.search.status[chipID]) ctx.search.current.push(data.chip)
+    },
+    UPDATE_FILTER_SELECTIONS(ctx, data) {
+      if (!data){ ctx.search.current = []; return;}
+      // update list of current selections
+      const current = ctx.search.current;
+      const idx = current.findIndex( obj => obj === data);
+      if ( idx >= 0 ) {        // already in array so remove
+        ctx.search.current = [
+          ...current.slice( 0, idx ),
+          ...current.slice( idx + 1 )
         ];
+      } else if (idx == -1) {
+        ctx.search.current.push( data );
       } else {
-        ctx.search.searchCategories.push( data );
+        if (ctx.search.current.length == 1) ctx.search.current = [];
       }
     }
   },
@@ -85,9 +98,16 @@ export default {
     removeDrawer ( ctx, name ) {
       return ctx.commit( "REMOVE_DRAWER", name );
     },
+    removeFilter (ctx, data ) {
+      // console.log(`rm filter: ${JSON.stringify(data)}`)
+      ctx.commit("UPDATE_FILTER_SELECTIONS", data);
+    },
     toggleSearchCriteria ( ctx, itm ) {
-      ctx.dispatch( "setSearching", true );
-      return ctx.commit( "TOGGLE_CURRENT_SEARCH", itm );
+      console.dir(itm)
+      const data = JSON.parse(JSON.stringify(itm))
+      // ctx.dispatch( "setSearching", true );
+      ctx.commit( "TOGGLE_CURRENT_SEARCH", data );
+      ctx.commit( "UPDATE_FILTER_SELECTIONS", data.chip );
     },
     async fetchDefaultSearch ( ctx ) {
       // debugger
@@ -98,10 +118,14 @@ export default {
     async setCriteria ( ctx, category ) {
       const filters = await ctx.rootState.TXBA_UTILS.getSearchFiltersByCategory(
         category
-      );
-
+        );
+        
       ctx.commit( "SET_CURRENT_CATEGORY", category );
-      ctx.commit( "SET_CRITERIA", filters );
+      
+      ctx.commit( "SET_SEARCH", filters );
+      
+      // ctx.commit( "UPDATE_FILTER_SELECTIONS");
+
       const searchEntries = await ctx.rootState.TXBA_UTILS.getSearchEntries(
         category,
         ctx.getters.getAuth
@@ -110,18 +134,18 @@ export default {
       // console.log(JSON.stringify(searchEntries, null, 4))
       ctx.commit( "SET_SEARCH_ENTRIES", searchEntries );
     },
-    setSearching: ( ctx, bool ) => ctx.commit( "TOGGLE_SEARCHING", ctx, bool )
-    // initStore: ctx => {
-    //   ctx.dispatch("fetchDefaultSearch");
-    // }
+    setSearching: ( ctx, bool ) => ctx.commit( "TOGGLE_SEARCHING", ctx, bool ),
+    initStore: ctx => {
+      ctx.dispatch("fetchDefaultSearch");
+    }
   },
   getters: {
-    isChipSelected: ( state) => (data ) => state.search.searchCategories.find( obj => obj.name === data.name ),
+    
     default_browser_entries: state => state.default_browser_entries,
     showCurrentSearches: state => {
       return (
-        state.search.searchCategories &&
-        state.search.searchCategories.length > 0
+        state.searchCategories &&
+        state.searchCategories.length > 0
       );
     },
     getAuth: () => {

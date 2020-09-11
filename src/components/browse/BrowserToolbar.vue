@@ -9,9 +9,9 @@
     </q-toolbar>
 
     <q-toolbar>
+        <!-- toggle-color="primary" -->
       <q-btn-toggle
         v-model="model"
-        toggle-color="primary"
         :options="tabs"
         @input="loadCategory"
         padding="2px 2px 5px 7px"
@@ -28,7 +28,7 @@ export default {
   name: "BrowserToolBar",
   data: () => ({
     model: null,
-    tabsAdded: false,
+    filtersAdded: false,
     tabs: [
       {
         value: "courses",
@@ -74,7 +74,7 @@ export default {
     loadCategory(category) {
       console.log(`Cat: ${category}`);
       this.setCriteria(category);
-      if (!this.tabsAdded) this.tabsAdded = this.addTabs(category);
+      if (!this.filtersAdded) this.filtersAdded = this.addTabs(category);
     },
     addTabs(category) {
       this.addToDrawer([

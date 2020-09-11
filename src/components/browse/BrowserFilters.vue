@@ -12,12 +12,14 @@
         keep-alive
       >
         <q-card>
-          <q-card-section style="max-width: 30vw" :class="{ 'truncate-chip-labels': true }">
-              <!-- :selected.sync="this.selected(chip)" -->
+          <!-- style="max-width: 30vw" :class="{ 'truncate-chip-labels': true }" -->
+          <q-card-section>
             <q-chip
               v-for="chip in criterion.chips"
-              @click="toggle(chip)"
-              :key="chip.id"
+              @click="toggle(criterion.sectionId, chip)"
+              :selected="search.status[criterion.sectionId + '__' +chip.id]"
+              :id="criterion.sectionId + '__' + chip.id"
+              :key="criterion.sectionId + '__' + chip.id"
               outline
               clickable
             >
@@ -36,19 +38,14 @@ const { mapState, mapActions } = createNamespacedHelpers("browser");
 
 export default {
   name: "BrowserFilters",
-  data() {
-    return { tab: null };
-  },
   computed: {
-    // selected(chip) { return this.isChipSelected(chip)},
-    // ...mapGetters(['isChipSelected']),
     ...mapState(["search"])
   },
   methods: {
-    toggle(chipData) {
-      alert(JSON.stringify(chipData,2 ,null))
-      // this.toggleSearchCriteria(chipData);
-      // if (!this.isSearching) this.$emit("toggleSearching");
+    toggle(section, chipData) {
+      // alert(JSON.stringify(chipData,2 ,null))
+      const data = {section: section, chip: chipData}
+      this.toggleSearchCriteria(data);
     },
     ...mapActions(["toggleSearchCriteria"])
   }

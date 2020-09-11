@@ -353,7 +353,8 @@ export default class TXBA_Utilities {
 
     return {
       auth: hiddenFields,
-      funnels: funnelList
+      funnels: funnelList.collection,
+      ids: funnelList.ids
     };
   }
 
@@ -370,6 +371,7 @@ export default class TXBA_Utilities {
   parseFunnels(group) {
     // console.log('group', group)
     const $ = cheerio.load(group.html());
+    const ids = [];
     const collection = {};
     group.each((idx, e) => {
       const section = $(e).data();
@@ -387,11 +389,16 @@ export default class TXBA_Utilities {
               .next()
               .text()
           };
-          collection[section.sectionId]["chips"].push(chip);
-          collection[section.sectionId]["tags"].push(chip.text);
+          collection[section.sectionId].chips.push(chip);
+          collection[section.sectionId].tags.push(chip.text);
+          ids.push(section.sectionId + '__' + chip.id);
+
         });
     });
-    return collection;
+    return {
+      ids: ids, 
+      collection:collection
+    };
   }
 
   isFav(packageID) {
