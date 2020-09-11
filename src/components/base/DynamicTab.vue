@@ -6,7 +6,7 @@
         :key="tab.name"
         :name="tab.name"
         :icon="tab.icon"
-        @click="selectedTab = tab.name"
+        @click.prevent="selectedTab = tab.name"
       />
         <!-- :label="tab.name" -->
     </q-tabs>
@@ -40,11 +40,12 @@ export default {
   },
   mounted() {
       const tl = this.$options.propsData.tabList
-      if (tl.length === 0) return; 
+      if (!tl || tl.length === 0) return; 
       const list = JSON.parse(JSON.stringify(tl))
       const firstName = list[0]?.name || 0
       // console.log(`Loading Tab: ${firstName} of ${JSON.stringify(list)}`)
       this.selectedTab = typeof list[0]?.name === 'undefined' ? "" : firstName;
+      console.log(`Selected Sidebar Tab: ${this.selectedTab}`)
 
     }
   }

@@ -10,8 +10,9 @@
             flat
             dense
             round
-            icon="menu"
-            aria-label="Menu"
+            title="Filters"
+            icon="mdi-filter"
+            aria-label="Filters"
             @click="leftDrawerOpen = !leftDrawerOpen"
           />
           

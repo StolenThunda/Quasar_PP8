@@ -1,9 +1,10 @@
 <template>
   <div>
-    <slot name="title" class="text-overline"></slot>
+    
+    <span class="text-h6">  <slot name="title"></slot>
+      </span> 
     <q-list dense bordered>
-      <q-card v-for="entry in this.resultList" :key="entry.id">
-        <q-separator spaced />
+      <q-card v-for="entry in this.resultList" :key="entry.id">        
         <q-item>
           <q-item-section v-model="entry.avatar" avatar>
             <q-btn
@@ -35,6 +36,7 @@
             </q-item-section>
           </q-item>
         </q-item>
+        <q-separator/>
       </q-card>
     </q-list>
   </div>

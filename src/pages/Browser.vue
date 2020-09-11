@@ -1,15 +1,11 @@
 <template>
   <q-card>
-    <q-card-section v-if="isLoaded">
-      <result-panel :resultList="this.search_entries">
-        <template #title>Search Results: {{ currentCategory }}</template>
+      <result-panel v-model="search_entries" :resultList="search_entries">
+        <template #title v-if="search_entries">Search Results: </template>
       </result-panel>
-    </q-card-section>
-    <q-card-section v-else>
-      <result-panel :resultList="this.default_browser_entries">
-        <template #title>Latest Additions:</template> </result-panel
-      >
-    </q-card-section>
+      <result-panel v-if="search_entries === null" :resultList="default_browser_entries">
+        <template #title>Latest Additions:</template> 
+      </result-panel>
   </q-card>
 </template>
 
@@ -19,9 +15,6 @@ const { mapState, mapActions } = createNamespacedHelpers("browser");
 
 export default {
   name: "Browser",
-  data: () => ({
-    categories: ""
-  }),
   components: {
     ResultPanel: () => import("components/browse/BrowserResultItems")
   },
@@ -29,28 +22,12 @@ export default {
     this.loadDefaults();
   },
   computed: {
-    isLoaded() {
-      return this.search.criteria !== null;
-    },
-    dataTableEntries() {
-      return this.getDTEntries;
-    },
-    ...mapState(["default_browser_entries", "search", "search_entries", "currentCategory"])
+    ...mapState(["default_browser_entries", "search_entries"])
   },
   methods: {
-    categoryChange(category) {
-      console.log(`Changing Cat: ${category}`)
-      this.categories = category
-    },
     ...mapActions({
       loadDefaults: "fetchDefaultSearch"
     })
   }
 };
 </script>
-
-<style scoped>
-.header {
-  text-align: center !important;
-}
-</style>

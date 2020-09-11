@@ -9,16 +9,17 @@
         dense
         dense-toggle
         expand-separator
+        keep-alive
       >
         <q-card>
           <q-card-section style="max-width: 30vw" :class="{ 'truncate-chip-labels': true }">
+              <!-- :selected.sync="this.selected(chip)" -->
             <q-chip
-              @click="toggle(chip)"
               v-for="chip in criterion.chips"
+              @click="toggle(chip)"
               :key="chip.id"
-              icon=""
-              dense
               outline
+              clickable
             >
               {{ chip.text }}
             </q-chip>
@@ -39,18 +40,17 @@ export default {
     return { tab: null };
   },
   computed: {
+    // selected(chip) { return this.isChipSelected(chip)},
+    // ...mapGetters(['isChipSelected']),
     ...mapState(["search"])
-  },
-  created() {
-    // this.setCriteria();
   },
   methods: {
     toggle(chipData) {
-      // console.log(chipData)
-      this.toggleSearchCriteria(chipData);
-      if (!this.isSearching) this.$emit("toggleSearching");
+      alert(JSON.stringify(chipData,2 ,null))
+      // this.toggleSearchCriteria(chipData);
+      // if (!this.isSearching) this.$emit("toggleSearching");
     },
-    ...mapActions(["toggleSearchCriteria", "setCriteria"])
+    ...mapActions(["toggleSearchCriteria"])
   }
 };
 </script>

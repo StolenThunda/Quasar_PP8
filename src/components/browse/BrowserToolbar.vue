@@ -17,8 +17,6 @@
         padding="2px 2px 5px 7px"
       >
       </q-btn-toggle>
-
-      <!-- @click="leftDrawer = !leftDrawer" -->
     </q-toolbar>
   </div>
 </template>
@@ -81,9 +79,9 @@ export default {
     addTabs(category) {
       this.addToDrawer([
         {
-          name: category,
-          componentName: "category",
-          icon: "magnify",
+          name: "filters",
+          componentName: "category_filters",
+          icon: "mdi-filter-plus-outline",
           cmp: () => import("components/browse/BrowserFilters")
         }
       ]);

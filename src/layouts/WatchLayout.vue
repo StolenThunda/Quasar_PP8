@@ -64,7 +64,7 @@ export default {
       {
         name: "Segments",
         componentName: "Segments",
-        icon: "menu",
+        icon: "mdi-segment",
         cmp: () => import("components/watch/WatchSidebar")
       }
     ]);

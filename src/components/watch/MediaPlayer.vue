@@ -1,5 +1,5 @@
 <template>
-  <!-- <section >    -->
+  <section >   
     <mediaelement :set="cs = currentSetup"
     v-bind="cs"
       id="mediaplayer" 
@@ -9,19 +9,13 @@
       :preload="cs.preload" 
       :controls="cs.controls" 
       :source="cs.sources[0].src"
-      >
-      <!-- <source
-        v-for="source in cs.sources"
-        :key="source.src"
-        :type="source.type"
-        :src="source.src"
-      /> -->
+      >     
     </mediaelement>
-    <!-- <details>
+    <details>
       <summary>currentSetup</summary> 
       <p><pre>{{ cs }}</pre></p> 
     </details>
-  </section> -->
+  </section>
 </template>
 
 <script>

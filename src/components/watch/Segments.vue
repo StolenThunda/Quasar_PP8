@@ -6,7 +6,7 @@
     :caption="title"
     group="somegroup"
   >
-    <q-list bordered dense style="max-width: 600px">
+    <q-list keep-alive bordered dense style="max-width: 600px">
       <q-item
         :id="'seg-' + seg.id"
         v-for="seg in segments"

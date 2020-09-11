@@ -17,7 +17,7 @@ export default class TXBA_Utilities {
     this.load_media_slug = "--ajax-load-media";
     this.load_vimeo_slug = "/--ajax-load-media/vimeo/";
     this.slug_code = {
-      pro_player_packages: "wcm9fcGxheWVyX3BhY2thZ2VzXC8iLCJjaGFubmVsIjoicHJvX3BsYXllcl9wYWNrYWdlcyJ9",
+      courses: "wcm9fcGxheWVyX3BhY2thZ2VzXC8iLCJjaGFubmVsIjoicHJvX3BsYXllcl9wYWNrYWdlcyJ9",
       free_lesson_friday: "mcmVlX2xlc3Nvbl9mcmlkYXlcLyIsImNoYW5uZWwiOiJmcmVlX2xlc3Nvbl9mcmlkYXkifQ",
       tone_tuesday: "0b25lX3R1ZXNkYXlcLyIsImNoYW5uZWwiOiJ0b25lX3R1ZXNkYXkifQ",
       performances: "wZXJmb3JtYW5jZXNcLyIsImNoYW5uZWwiOiJwZXJmb3JtYW5jZXMifQ",
@@ -30,7 +30,7 @@ export default class TXBA_Utilities {
   async getAsyncData(slug, callback) {
     try {
       const url = `${this.baseURL}${slug}`;
-      console.log(`Req Url: ${url}`)
+      // console.log(`Req Url: ${url}`)
       const response = await axios
         .get(url)
         .then(async response => await response.data);
@@ -304,9 +304,9 @@ export default class TXBA_Utilities {
   }
 
   parseSearchFilters(group) {
-    // console.log("gfi:group", group)
+    // console.trace("gfi:group", group)
     const html = group.html();
-    // console.log("html", html)
+    // console.info("html", html)
     const $ = cheerio.load(html);
     let collection = [];
     group.each((idx, e) => {
