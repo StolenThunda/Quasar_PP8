@@ -39,6 +39,13 @@ export default {
     default: () => new Array()
   },
   mounted() {
+    this.getFirst();
+  },
+  watch: {
+    tabList: function() { this.getFirst(); }
+  },
+  methods: {
+    getFirst() {
       const tl = this.$options.propsData.tabList
       if (!tl || tl.length === 0) return; 
       const list = JSON.parse(JSON.stringify(tl))
@@ -46,8 +53,8 @@ export default {
       // console.log(`Loading Tab: ${firstName} of ${JSON.stringify(list)}`)
       this.selectedTab = typeof list[0]?.name === 'undefined' ? "" : firstName;
       console.log(`Selected Sidebar Tab: ${this.selectedTab}`)
-
     }
   }
+}
 
 </script>

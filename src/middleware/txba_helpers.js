@@ -217,6 +217,7 @@ export default class TXBA_Utilities {
     const mockHtml = this.fakeFavHTML();
     const $ = cheerio.load(html);
     const favHtml = $(".accordion-title");
+    console.log((favHtml.length >0)? "Loading Live Favs" : "Loading Mock Fav Data")
     return this.parseFavoriteData(favHtml.length > 0 ? favHtml : mockHtml);
   }
 
@@ -354,7 +355,7 @@ export default class TXBA_Utilities {
     return {
       auth: hiddenFields,
       funnels: funnelList.collection,
-      ids: funnelList.ids
+      status: funnelList.status
     };
   }
 
@@ -371,7 +372,7 @@ export default class TXBA_Utilities {
   parseFunnels(group) {
     // console.log('group', group)
     const $ = cheerio.load(group.html());
-    const ids = [];
+    const status = {};
     const collection = {};
     group.each((idx, e) => {
       const section = $(e).data();
@@ -381,7 +382,9 @@ export default class TXBA_Utilities {
       $(e)
         .find(".filter-checkbox")
         .each((i, itm) => {
+          const syncName = `${section.sectionId}__${itm.attribs.id}`
           const chip = {
+            sync: syncName,
             id: itm.attribs.id,
             name: itm.attribs.name,
             value: itm.attribs.value,
@@ -391,12 +394,12 @@ export default class TXBA_Utilities {
           };
           collection[section.sectionId].chips.push(chip);
           collection[section.sectionId].tags.push(chip.text);
-          ids.push(section.sectionId + '__' + chip.id);
+          status[chip.sync] = false;
 
         });
     });
     return {
-      ids: ids, 
+      status: status, 
       collection:collection
     };
   }

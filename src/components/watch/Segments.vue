@@ -48,7 +48,6 @@ export default {
     packID() { return  this.packageID }
   },
   methods: {
-    ...mapActions(["setCurrentSegmentSetup"]),
     playSegment(e) {
       if (e.target.dataset) {
         const data = e.currentTarget.dataset;
@@ -57,7 +56,6 @@ export default {
       }else{
         console.error(`${e.currentTarget} has no ID`)
       }
-
     },
     getSegInfo(seg) {
       var ico = {};
@@ -103,6 +101,7 @@ export default {
       // console.log("SEGINFO", seg, ico);
       return ico;
     },
+    ...mapActions(["setCurrentSegmentSetup"])
   }
 }
 </script>

@@ -1,4 +1,6 @@
 import Vue from "vue";
+
+const compObjects = (obj1, obj2) => Object.entries(obj1).join() === Object.entries(obj2).join() 
 export default {
   namespaced: true,
   state: {
@@ -18,31 +20,15 @@ export default {
       if ( category ) ctx.currentCategory = category;
     },
     ADD_TO_DRAWER ( ctx, content ) {
-      // console.log(`Content: ${typeof content}`);
-      // console.log(
-      //   `Before Add: ${JSON.stringify( ctx.drawer )} || ${JSON.stringify(
-      //     content
-      //   )}`
-      // );
       if ( content ) {
         content.forEach( ( tab, idx ) => {
-          // console.log( `InspTab ${JSON.stringify( tab )}` );
           const tabIdx = ctx.drawer.findIndex( x => x.name === tab.name );
-          // console.log(
-          //   `${Boolean( tabIdx > -1 ) ? "Tab already created" : "Creating tab"}`
-          // );
           if ( tabIdx == -1 ) {
             tab.id = idx;
-            // console.log( `adding new: ${JSON.stringify( tab )}` );
             ctx.drawer.push( tab );
-
-            // console.log( `After adding tab:` );
-            // console.dir( ctx.drawer );
           }
         }, ctx );
       }
-      // console.log( `drw:` );
-      // console.dir( ctx.drawer );
     },
     REMOVE_DRAWER ( ctx, name ) {
       console.log( `Removing: ${name}` )
@@ -63,31 +49,30 @@ export default {
       // console.log( "SettingCriteria:", data );
       if ( data.auth ) Vue.set( ctx, "auth", data.auth );
       ctx.search.criteria = data.funnels ? data.funnels : null;
-      // create object keys of ids in the status object
-      for (const id of data.ids) { ctx.search.status[id] = false}
+      ctx.search.status = data.status;
       ctx.search.current = [];
-      ctx.search.status = {};
     },
     TOGGLE_CURRENT_SEARCH ( ctx, data) {
       // toggle selection status
-      const chipID = data.section + '__' + data.chip.id
-      ctx.search.status[chipID] = !ctx.search.status[chipID];
-      if (ctx.search.status[chipID]) ctx.search.current.push(data.chip)
+      ctx.search.status[data.chip.sync] = !ctx.search.status[data.chip.sync];
     },
     UPDATE_FILTER_SELECTIONS(ctx, data) {
       if (!data){ ctx.search.current = []; return;}
       // update list of current selections
-      const current = ctx.search.current;
-      const idx = current.findIndex( obj => obj === data);
-      if ( idx >= 0 ) {        // already in array so remove
+      // const current = ctx.search.current;
+      const idx = ctx.search.current.findIndex(obj => compObjects(obj, data));
+      console.log(`TEST 
+      CHIP(${idx}): ${JSON.stringify(data)}  
+      CURRENT ${JSON.stringify(ctx.search.current)}`)
+      if ( idx >= 1 ) {        // already in array so remove
         ctx.search.current = [
-          ...current.slice( 0, idx ),
-          ...current.slice( idx + 1 )
+          ...ctx.search.current.slice( 0, idx ),
+          ...ctx.search.current.slice( idx + 1 )
         ];
       } else if (idx == -1) {
         ctx.search.current.push( data );
       } else {
-        if (ctx.search.current.length == 1) ctx.search.current = [];
+        ctx.search.current.shift();
       }
     }
   },
