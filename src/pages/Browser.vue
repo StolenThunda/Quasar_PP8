@@ -1,10 +1,11 @@
 <template>
   <q-card class="q-gutter-xs">
     <result-panel v-model="search_entries" :resultList="search_entries">
-      <template #title>
-        <current-search />
-      </template>
+        <template #title>
+          <current-search key="search"/>
+        </template>
     </result-panel>
+
     <result-panel
       v-if="search_entries === null"
       :resultList="default_browser_entries"
@@ -22,7 +23,7 @@ export default {
   name: "Browser",
   components: {
     ResultPanel: () => import("components/browse/BrowserResultItems"),
-    CurrentSearch: () => import('components/browse/CurrentSearch')
+    CurrentSearch: () => import("components/browse/CurrentSearch")
   },
   mounted() {
     this.loadDefaults();
@@ -32,7 +33,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadDefaults: "fetchDefaultSearch",
+      loadDefaults: "fetchDefaultSearch"
     })
   }
 };

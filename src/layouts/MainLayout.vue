@@ -11,7 +11,7 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <dynamic-tab ref="dTab" :tabList="sidebarTabs" @add-tabs="addTabs" />
+      <dynamic-tab :tabList="sidebarTabs" />
     </q-drawer>
 
     <q-page-container>
@@ -25,7 +25,6 @@ import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions } = createNamespacedHelpers("default");
 export default {
   name: "MainLayout",
-
   components: {
     DynamicTab: () => import("components/base/DynamicTab"),
     DrawerToggle: () => import("components/base/DrawerToggle"),
@@ -44,12 +43,8 @@ export default {
     this.resetSideBar();
   },
   methods: {
-    addTabs(e) {
-      // this.resetSideBar();
-      console.log(`Adding from emit: ${e}`);
-      this.addSidebarTabs(e);
-    },
-    ...mapActions(["resetSideBar", "removeSidebarTab", "addSidebarTabs"])
+    // addTabs(
+    ...mapActions(["resetSideBar"])
   }
 };
 </script>

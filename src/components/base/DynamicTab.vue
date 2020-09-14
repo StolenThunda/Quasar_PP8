@@ -7,8 +7,11 @@
         :name="tab.name"
         :icon="tab.icon"
         @click.prevent="selectedTab = tab.name"
-      />
-        <!-- :label="tab.name" -->
+      >
+      <q-menu v-if="tab.menu">
+        <component :is="tab.menu"></component>        
+      </q-menu>
+      </q-tab>
     </q-tabs>
 
     <q-tab-panels 

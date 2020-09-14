@@ -375,7 +375,8 @@ export default class TXBA_Utilities {
     const status = {};
     const collection = {};
     group.each((idx, e) => {
-      const section = $(e).data();
+      let section = $(e).data();
+      // console.log(`Section: ${JSON.stringify(section)}`)
       collection[section.sectionId] = section;
       collection[section.sectionId]["tags"] = [];
       collection[section.sectionId]["chips"] = [];
@@ -383,11 +384,14 @@ export default class TXBA_Utilities {
         .find(".filter-checkbox")
         .each((i, itm) => {
           const syncName = `${section.sectionId}__${itm.attribs.id}`
+          const {chips, tags, ...rest} = section
+          // console.log(rest)
           const chip = {
             sync: syncName,
             id: itm.attribs.id,
             name: itm.attribs.name,
             value: itm.attribs.value,
+            group: rest,
             text: $(itm)
               .next()
               .text()

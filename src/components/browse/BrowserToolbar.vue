@@ -2,32 +2,36 @@
   <div>
     <q-toolbar>
       <slot name="toggleDrawer"></slot>
-      <q-toolbar-title class="text-uppercase text-subvalue2 text-justify">
-        Browser - {{ model }}
+      <q-toolbar-title class="text-capitalize text-subvalue2 text-justify">
+        Browser <span v-if="category"> - {{ category.replaceAll('_',' ') }} </span>
       </q-toolbar-title>
       <q-btn   label="Close" color="secondary" icon="close" to="/" />
     </q-toolbar>
 
-    <q-toolbar>
-        <!-- toggle-color="primary" -->
+    <q-toolbar inset>
+      <!-- <q-scroll-area class="fit"> -->
       <q-btn-toggle
-        v-model="model"
+        v-model="category"
         :options="tabs"
         @input="loadCategory"
-        padding="2px 2px 5px 7px"
+        toggle-color="secondary"
+        push
+        flat
+        stretch
       >
       </q-btn-toggle>
+      <!-- </q-scroll-area> -->
     </q-toolbar>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "BrowserToolBar",
   data: () => ({
-    model: null,
+    category: null,
     filtersAdded: false,
     tabs: [
       {
@@ -70,11 +74,17 @@ export default {
       }
     ]
   }),
+  computed: {
+    ...mapState(['currentCategory'])
+  },
   methods: {
     loadCategory(category) {
       console.log(`Cat: ${category}`);
       this.setCriteria(category);
       if (!this.filtersAdded) this.filtersAdded = this.addTabs(category);
+
+      // TODO: toggle drawer
+      // this.$root.$emit('toggle-drawer')
     },
     addTabs(category) {
       this.addToDrawer([
@@ -82,7 +92,8 @@ export default {
           name: "filters",
           componentName: "category_filters",
           icon: "mdi-filter-plus-outline",
-          cmp: () => import("components/browse/BrowserFilters")
+          cmp: () => import("components/browse/BrowserFilters"),
+          menu: () => import("components/browse/BrowserSettings")
         }
       ]);
       return true;

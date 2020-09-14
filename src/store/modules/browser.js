@@ -54,16 +54,12 @@ export default {
     },
     TOGGLE_CURRENT_SEARCH ( ctx, data) {
       // toggle selection status
-      ctx.search.status[data.chip.sync] = !ctx.search.status[data.chip.sync];
+      ctx.search.status[data.sync] = !ctx.search.status[data.sync];
     },
     UPDATE_FILTER_SELECTIONS(ctx, data) {
       if (!data){ ctx.search.current = []; return;}
       // update list of current selections
-      // const current = ctx.search.current;
       const idx = ctx.search.current.findIndex(obj => compObjects(obj, data));
-      console.log(`TEST 
-      CHIP(${idx}): ${JSON.stringify(data)}  
-      CURRENT ${JSON.stringify(ctx.search.current)}`)
       if ( idx >= 1 ) {        // already in array so remove
         ctx.search.current = [
           ...ctx.search.current.slice( 0, idx ),
@@ -84,15 +80,11 @@ export default {
       return ctx.commit( "REMOVE_DRAWER", name );
     },
     removeFilter (ctx, data ) {
-      // console.log(`rm filter: ${JSON.stringify(data)}`)
       ctx.commit("UPDATE_FILTER_SELECTIONS", data);
     },
     toggleSearchCriteria ( ctx, itm ) {
-      console.dir(itm)
-      const data = JSON.parse(JSON.stringify(itm))
-      // ctx.dispatch( "setSearching", true );
-      ctx.commit( "TOGGLE_CURRENT_SEARCH", data );
-      ctx.commit( "UPDATE_FILTER_SELECTIONS", data.chip );
+      ctx.commit( "TOGGLE_CURRENT_SEARCH", itm );
+      ctx.commit( "UPDATE_FILTER_SELECTIONS", itm );
     },
     async fetchDefaultSearch ( ctx ) {
       // debugger
@@ -108,8 +100,6 @@ export default {
       ctx.commit( "SET_CURRENT_CATEGORY", category );
       
       ctx.commit( "SET_SEARCH", filters );
-      
-      // ctx.commit( "UPDATE_FILTER_SELECTIONS");
 
       const searchEntries = await ctx.rootState.TXBA_UTILS.getSearchEntries(
         category,
@@ -119,7 +109,6 @@ export default {
       // console.log(JSON.stringify(searchEntries, null, 4))
       ctx.commit( "SET_SEARCH_ENTRIES", searchEntries );
     },
-    setSearching: ( ctx, bool ) => ctx.commit( "TOGGLE_SEARCHING", ctx, bool ),
     initStore: ctx => {
       ctx.dispatch("fetchDefaultSearch");
     }
@@ -127,12 +116,7 @@ export default {
   getters: {
     
     default_browser_entries: state => state.default_browser_entries,
-    showCurrentSearches: state => {
-      return (
-        state.searchCategories &&
-        state.searchCategories.length > 0
-      );
-    },
+    isSearching: state => state.search.current.length > 0,
     getAuth: () => {
       return "eyJyZXN1bHRfcGFnZSI6InByb3BsYXllcjc0LXRvbnlcLy0tYWpheC1icm93c2VyLXNlYXJjaC1lbnRyaWVzXC9";
       // .replace(/wZXJmb3JtYW5jZXNcLyJ9/g, '')

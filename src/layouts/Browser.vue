@@ -4,7 +4,7 @@
 
     <!-- (Optional) The Header -->
     <q-header elevated>
-      <current-search>
+      <browser-toolbar @toggle-drawer="toggleDrawer">
         <template #toggleDrawer>
           <q-btn
             flat
@@ -13,11 +13,10 @@
             title="Filters"
             icon="mdi-filter"
             aria-label="Filters"
-            @click="leftDrawerOpen = !leftDrawerOpen"
+            @click="toggleDrawer"
           />
-          
         </template>
-      </current-search>
+      </browser-toolbar>
     </q-header>
 
     <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
@@ -43,16 +42,22 @@ export default {
   name: "BrowserLayout",
   components: {
     DynamicTab: () => import("components/base/DynamicTab"),
-    CurrentSearch: () => import("components/browse/BrowserToolbar")
+    BrowserToolbar: () => import("components/browse/BrowserToolbar")
   },
   data: () => ({
     leftDrawerOpen: false,
     category: null
   }),
+  created() {
+    this.$root.$on("toggle-drawer", this.toggleTruncate);
+  },
   computed: {
     ...mapState(["drawer", "currentCategory"])
   },
   methods: {
+    toggleDrawer() {
+      leftDrawerOpen = !leftDrawerOpen
+    },
     catChange(cat) {
       this.category = cat;
     },

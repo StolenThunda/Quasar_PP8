@@ -1,6 +1,6 @@
 <template>
   <q-page class="column no-wrap justify-start justify-start items-center">
-    <welcome-panel />
+    <welcome-panel @toggle-drawer="$emit('toggle-drawer')" />
     <resume-panel />
     <notification-panel />
   </q-page>
@@ -14,5 +14,6 @@ export default {
     "resume-panel" : () => import("../components/index/Resume"),
     "notification-panel" : () => import("../components/index/Notifications")
   }
+
 }
 </script>

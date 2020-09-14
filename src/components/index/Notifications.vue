@@ -1,6 +1,6 @@
 <template>
-  <div class="q-mt-sm">
-    <q-tabs id="site-updates" v-model="tab" dense>
+  <div class="col">
+    <q-tabs id="site-updates" v-model="tab" >
       <q-tab name="the_word" label="Announcements" />
       <q-tab name="updates" label="Course Updates" />
     </q-tabs>
