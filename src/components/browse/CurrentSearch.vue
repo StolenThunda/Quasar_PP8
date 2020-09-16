@@ -1,14 +1,15 @@
 <template>
-    <div class="q-mt-sm">
-  <q-banner v-if="search.current.length">
+  <div class="q-mt-sm">
+    <q-banner v-show="searching">
       <p>
         Filters:
-        <span class="text-capitalize text-subvalue2 text-justify">
-          {{ selection }}
-        </span>
+        <!-- <span class="text-capitalize text-subvalue2 text-justify"> -->
+        <!-- {{ selection }} -->
+        <!-- </span> -->
       </p>
       <q-chip
-        v-for="chip in search.current"
+        :set="(chips = getChips)"
+        v-for="chip in getFilters()"
         :key="chip.sync"
         removable
         outline
@@ -16,28 +17,26 @@
       >
         {{ chip.text }}
       </q-chip>
-  </q-banner>
-  <q-banner v-else>Showing: ALL</q-banner>
-    </div>
+    </q-banner>
+    <!-- <q-banner v-else-if="search && !currentFilters">Showing: ALL</q-banner> -->
+  </div>
 </template>
 
 <script>
 import { createNamespacedHelpers } from "vuex";
-const { mapActions, mapState } = createNamespacedHelpers("browser");
+const { mapActions,  mapGetters, mapState } = createNamespacedHelpers("browser");
 export default {
   name: "CurrentSearchBanner",
+  // data: () => ({ filters: null }),
   computed: {
-    selection() { return this.search.current.map(a => a.text).join(', ')},
-      // return Object.keys(this.search.status)
-      //   .filter(chip => this.search.status[chip] === true)
-      //   .join(", ") || "default";
-    // },
-    ...mapState(["search"])
+    ...mapState(['searching', 'filters']),
+    // ...mapGetters(['getFilters']),
   },
   methods: {
-    ...mapActions({
-      removeFilter: "removeFilter"
-    })
+    getChips(){
+      Vue.set(vm.filters, 'filters', this.getFilters())
+    },
+    ...mapActions(["removeFilter"])
   }
 };
 </script>

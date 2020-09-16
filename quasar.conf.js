@@ -19,7 +19,7 @@ module.exports = function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
-      
+      'auth0',
       'axios',
     ],
 
@@ -75,9 +75,10 @@ cfg.module.rules.push({
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      host: '10.0.0.81',
-      https: false,
-      port: 8081,
+      // host: '10.0.0.81',
+      host: 'localhost',
+      https: true,
+      port: 3000,
       open: true, // opens browser window automatically
       // vueDevtools: true
     },
@@ -168,7 +169,7 @@ cfg.module.rules.push({
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-capacitor-apps/configuring-capacitor
     capacitor: {
-      hideSplashscreen: true
+      hideSplashscreen: false
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-electron-apps/configuring-electron

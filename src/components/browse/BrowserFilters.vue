@@ -51,9 +51,7 @@
               text-color="white"
               class="glossy ellipsis"
             >
-              <!-- <div class="ellipsis"> -->
               {{ chip.text }}
-              <!-- </div> -->
             </q-chip>
           </q-card-section>
         </q-card>

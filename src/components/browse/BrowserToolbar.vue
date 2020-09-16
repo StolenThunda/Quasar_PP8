@@ -36,7 +36,7 @@ export default {
     tabs: [
       {
         value: "courses",
-        label: "courses",
+        label: "Courses",
         icon: "mdi-bookshelf",
         click: () => {
           console.log("HEY COURSES");
@@ -79,12 +79,10 @@ export default {
   },
   methods: {
     loadCategory(category) {
-      console.log(`Cat: ${category}`);
+      // console.log(`Cat: ${category}`);
       this.setCriteria(category);
       if (!this.filtersAdded) this.filtersAdded = this.addTabs(category);
-
-      // TODO: toggle drawer
-      // this.$root.$emit('toggle-drawer')
+      this.$emit('toggle-drawer', true)
     },
     addTabs(category) {
       this.addToDrawer([

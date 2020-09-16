@@ -1,8 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <!-- Be sure to play with the Layout demo on docs -->
 
-    <!-- (Optional) The Header -->
     <q-header elevated>
       <browser-toolbar @toggle-drawer="toggleDrawer">
         <template #toggleDrawer>
@@ -10,7 +8,7 @@
             flat
             dense
             round
-            title="Filters"
+            title="Toggle Filters"
             icon="mdi-filter"
             aria-label="Filters"
             @click="toggleDrawer"
@@ -19,17 +17,11 @@
       </browser-toolbar>
     </q-header>
 
-    <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
     <q-drawer v-model="leftDrawerOpen" side="left" show-if-above bordered>
-      <!-- QScrollArea is optional -->
-      <!-- <q-scroll-area class="fit q-pa-xs"> -->
         <dynamic-tab @changeCategory="catChange" :tabList="drawer" />
-        <!-- v-if="drawer.length > 0"  -->
-      <!-- </q-scroll-area> -->
     </q-drawer>
 
     <q-page-container>
-      <!-- This is where pages get injected -->
       <router-view :title="currentCategory" />
     </q-page-container>
   </q-layout>
@@ -55,8 +47,8 @@ export default {
     ...mapState(["drawer", "currentCategory"])
   },
   methods: {
-    toggleDrawer() {
-      leftDrawerOpen = !leftDrawerOpen
+    toggleDrawer(val) {
+        this.leftDrawerOpen = (typeof val === 'boolean') ? val :  !this.leftDrawerOpen
     },
     catChange(cat) {
       this.category = cat;

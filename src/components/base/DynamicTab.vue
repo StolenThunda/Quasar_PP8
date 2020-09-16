@@ -55,7 +55,7 @@ export default {
       const firstName = list[0]?.name || 0
       // console.log(`Loading Tab: ${firstName} of ${JSON.stringify(list)}`)
       this.selectedTab = typeof list[0]?.name === 'undefined' ? "" : firstName;
-      console.log(`Selected Sidebar Tab: ${this.selectedTab}`)
+      // console.log(`Selected Sidebar Tab: ${this.selectedTab}`)
     }
   }
 }

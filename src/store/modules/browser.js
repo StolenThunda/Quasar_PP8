@@ -10,7 +10,8 @@ export default {
     default_browser_entries: null,
     search_entries: null,
     search: {
-      current: [],
+      pages: null,
+      current: new Set(),
       criteria: null,
       status: {}
     }
@@ -37,6 +38,10 @@ export default {
     TOGGLE_SEARCHING ( ctx, bool ) {
       ctx.searching = bool;
     },
+    SET_ENTRIES_PAGINATION(ctx, pages) {
+      // console.log('pages', pages)
+      if (pages) ctx.search.pages = pages;
+    },
     SET_DEFAULT_BROWSER_ENTRIES ( ctx, data ) {
       // console.log("SettingDefEntries:", data);
       if ( data ) ctx.default_browser_entries = data;
@@ -50,29 +55,33 @@ export default {
       if ( data.auth ) Vue.set( ctx, "auth", data.auth );
       ctx.search.criteria = data.funnels ? data.funnels : null;
       ctx.search.status = data.status;
-      ctx.search.current = [];
+      ctx.search.current = new Set();
+      ctx.search.pages = [];
     },
     TOGGLE_CURRENT_SEARCH ( ctx, data) {
       // toggle selection status
       ctx.search.status[data.sync] = !ctx.search.status[data.sync];
     },
     UPDATE_FILTER_SELECTIONS(ctx, data) {
-      if (!data){ ctx.search.current = []; return;}
+      if (!data){ ctx.search.current.clear(); return;}
       // update list of current selections
-      const idx = ctx.search.current.findIndex(obj => compObjects(obj, data));
-      if ( idx >= 1 ) {        // already in array so remove
-        ctx.search.current = [
-          ...ctx.search.current.slice( 0, idx ),
-          ...ctx.search.current.slice( idx + 1 )
-        ];
-      } else if (idx == -1) {
-        ctx.search.current.push( data );
-      } else {
-        ctx.search.current.shift();
+      if (ctx.search.current.has(data)) {
+        ctx.search.current.delete(data)
+      }else{
+        ctx.search.current.add(data)
       }
+      ctx.searching = ctx.search.current.size > 0
     }
   },
   actions: {
+    async gotoPage(ctx, url){
+      const searchEntries = await ctx.rootState.TXBA_UTILS.getSearchEntries(ctx.currentCategory, ctx.getters.getAuth,url);
+
+      console.log(JSON.stringify(searchEntries, null, 4))
+      ctx.commit("SET_ENTRIES_PAGINATION", searchEntries.pages);
+
+      return ctx.commit("SET_SEARCH_ENTRIES", searchEntries.filters);
+    },
     addToDrawer ( ctx, content ) {
       return ctx.commit( "ADD_TO_DRAWER", content );
     },
@@ -89,8 +98,9 @@ export default {
     async fetchDefaultSearch ( ctx ) {
       // debugger
       const entries = await ctx.rootState.TXBA_UTILS.getDefaultSearchEntries();
-      // console.log(JSON.stringify(entries, null,2))
-      return ctx.commit( "SET_DEFAULT_BROWSER_ENTRIES", entries );
+      // console.log('ENTRIES',entries)
+      ctx.commit( "SET_ENTRIES_PAGINATION", entries.pages );
+      return ctx.commit( "SET_DEFAULT_BROWSER_ENTRIES", entries.filters );
     },
     async setCriteria ( ctx, category ) {
       const filters = await ctx.rootState.TXBA_UTILS.getSearchFiltersByCategory(
@@ -107,16 +117,18 @@ export default {
       );
 
       // console.log(JSON.stringify(searchEntries, null, 4))
-      ctx.commit( "SET_SEARCH_ENTRIES", searchEntries );
+      ctx.commit("SET_ENTRIES_PAGINATION", searchEntries.pages);
+
+      ctx.commit( "SET_SEARCH_ENTRIES", searchEntries.filters );
     },
     initStore: ctx => {
       ctx.dispatch("fetchDefaultSearch");
     }
   },
   getters: {
-    
+    getFilters: state => Array.from(state.search.current || []),
     default_browser_entries: state => state.default_browser_entries,
-    isSearching: state => state.search.current.length > 0,
+    // isSearching: state => state.searching,
     getAuth: () => {
       return "eyJyZXN1bHRfcGFnZSI6InByb3BsYXllcjc0LXRvbnlcLy0tYWpheC1icm93c2VyLXNlYXJjaC1lbnRyaWVzXC9";
       // .replace(/wZXJmb3JtYW5jZXNcLyJ9/g, '')

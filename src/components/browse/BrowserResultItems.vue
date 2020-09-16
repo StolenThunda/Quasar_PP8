@@ -1,8 +1,7 @@
 <template>
   <div>
-    
-    <span class="text-h6">  <slot name="title"></slot>
-      </span> 
+    <span class="text-h6">  <slot name="title"></slot></span>
+    <slot name="header-pages"></slot>
     <q-list dense bordered>
       <q-card v-for="entry in this.resultList" :key="entry.id">        
         <q-item>
@@ -38,6 +37,7 @@
         </q-item>
         <q-separator/>
       </q-card>
+      <slot name="footer-pages"></slot>
     </q-list>
   </div>
 </template>
