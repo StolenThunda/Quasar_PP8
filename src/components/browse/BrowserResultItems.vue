@@ -1,5 +1,5 @@
 <template>
-  <div class="q-ml-md">
+  <div class="q-ml-md q-pt-xs">
     <span class="text-h6"> <slot name="title"></slot></span>
     <slot name="header-pages"></slot>
     <q-list dense>

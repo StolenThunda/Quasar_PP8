@@ -3,23 +3,31 @@
     <q-toolbar>
       <slot name="toggleDrawer"></slot>
       <q-toolbar-title class="text-capitalize text-subvalue2 text-justify">
-        Browser <span v-if="category"> - {{ category.replaceAll('_',' ') }} </span>
+        Browser
+        <span v-if="category"> - {{ category.replaceAll("_", " ") }} </span>
       </q-toolbar-title>
-      <q-btn   label="Close" color="secondary" icon="close" to="/" />
+      <q-btn label="Close" color="secondary" icon="close" to="/" />
     </q-toolbar>
 
     <q-toolbar inset>
       <!-- <q-scroll-area class="fit"> -->
-      <q-btn-toggle
-        v-model="category"
-        :options="tabs"
-        @input="loadCategory"
-        toggle-color="secondary"
-        push
-        flat
-        stretch
-      >
-      </q-btn-toggle>
+      <div id="browser-wrapper" >
+        <div class="browser-filter-row" id="top-level-filters">
+          <ul class="browser-top-filter-list" id="filter-level-1" v-for="tab in tabs" :key="tab.name">
+            <li class="q-mx-xs">
+              <q-btn
+                push
+                rounded
+                color="black"
+                :label="tab.label"
+                @click="loadCategory(tab.value)"
+                :icon="tab.icon"
+              />
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <!-- </q-scroll-area> -->
     </q-toolbar>
   </div>
@@ -37,10 +45,7 @@ export default {
       {
         value: "courses",
         label: "Courses",
-        icon: "mdi-bookshelf",
-        click: () => {
-          console.log("HEY COURSES");
-        }
+        icon: "mdi-bookshelf"
       },
       {
         value: "free_lesson_friday",
@@ -75,14 +80,14 @@ export default {
     ]
   }),
   computed: {
-    ...mapState(['currentCategory'])
+    ...mapState(["currentCategory"])
   },
   methods: {
     loadCategory(category) {
       // console.log(`Cat: ${category}`);
       this.setCriteria(category);
       if (!this.filtersAdded) this.filtersAdded = this.addTabs(category);
-      this.$emit('toggle-drawer', true)
+      this.$emit("toggle-drawer", true);
     },
     addTabs(category) {
       this.addToDrawer([
@@ -101,7 +106,17 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-.btn-fixed-width
-  width: 200px
+<style scoped>
+.q-toolbar--inset {
+  background-color:rgba(192, 192, 192, 0.39);
+    /* background-color: white !important ; */
+    transition: opacity .1s;
+    /* z-index: 1000; */
+}
+ul.browser-top-filter-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: inline-flex;
+}
 </style>
