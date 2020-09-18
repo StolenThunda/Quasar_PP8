@@ -18,3 +18,9 @@ export default {
   }
 };
 </script>
+
+<style>
+* {
+    font-family: Oswald,"Open Sans","Lucida Grande","Lucida Sans Unicode",Helvetica,Sans-Serif ;
+}
+</style>

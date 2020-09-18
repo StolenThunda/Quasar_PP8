@@ -1,5 +1,5 @@
 <template>
-  <q-card class="q-gutter-xs">
+  <q-card class="q-gutter-xs"  flat>
     <result-panel v-model="search_entries" :resultList="search_entries">
       <template #title>
         <current-search />

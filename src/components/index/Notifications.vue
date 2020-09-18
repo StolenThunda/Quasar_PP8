@@ -1,6 +1,6 @@
 <template>
   <div class="col">
-    <q-tabs id="site-updates" v-model="tab" >
+    <q-tabs id="site-updates" v-model="tab">
       <q-tab name="the_word" label="Announcements" />
       <q-tab name="updates" label="Course Updates" />
     </q-tabs>
@@ -12,19 +12,23 @@
       animated
     >
       <q-tab-panel name="the_word">
-        <notification-item
+        <q-intersection
           v-for="item in notifications.announcements"
           :key="'a_' + item.id"
-          v-bind="item"
-        />
+          transition="scale"
+          class="example-item"
+        >
+          <notification-item v-bind="item" />
+        </q-intersection>
       </q-tab-panel>
 
       <q-tab-panel name="updates" outlined>
-        <notification-item
+        <q-intersection
           v-for="item in notifications.updates"
           :key="'u_' + item.id"
-          v-bind="item"
-        />
+        >
+          <notification-item v-bind="item" />
+        </q-intersection>
       </q-tab-panel>
     </q-tab-panels>
   </div>
