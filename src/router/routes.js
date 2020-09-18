@@ -1,3 +1,4 @@
+import { authGuard } from "../auth/authGuard.js"
 const routes = [
   {
     path: "/",
@@ -7,6 +8,7 @@ const routes = [
   {
     path: "/browser",
     component: () => import("layouts/Browser.vue"),
+    beforeEnter: authGuard,
     children: [
       {
         name: "browser",
@@ -19,6 +21,7 @@ const routes = [
     name: "watch",
     path: "/watch",
     component: () => import("layouts/WatchLayout.vue"),
+    beforeEnter: authGuard,
     children: [{ 
       name: "player",
       path: "/watch/:packageID/:segmentID",
@@ -28,6 +31,12 @@ const routes = [
       path: "/watch/:packageID", 
       component: () => import("pages/Watch"),
     }]
+  },
+  {
+    path: "/profile",
+    component: () => import("layouts/MainLayout.vue"),
+    beforeEnter: authGuard,
+    children: [{ path: "", component: () => import("pages/Profile.vue") }]
   },
   // Always leave this as last one,
   // but you can also remove it

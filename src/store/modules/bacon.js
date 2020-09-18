@@ -45,7 +45,9 @@ export default {
   },
   getters: {
     getBacon: state => state.bacon,
-    getSliceBacon: state =>
-      state.bacon[Math.floor(Math.random() * state.bacon.length)]
+    getSliceBacon(state) {
+      if (state.bacon?.length) return state.bacon[Math.floor(Math.random() * state.bacon.length)]
+      return ""
+    }
   }
 };

@@ -5,14 +5,18 @@
       <slot>
         <q-btn round flat to="/" icon="home" />
         <q-btn round flat @click="toggleInfo" icon="info" />
-        <span
-          class="absolute-center"
+        <q-toolbar-title
           v-if="packageTitle"
+        >
+          <span
+          class="absolute-center"
           v-html="packageTitle"
         ></span>
+        </q-toolbar-title>
         <span class="absolute-center" v-else>No Course Data</span>
-        <tool-list class="absolute-right" />
+        <!-- <tool-list class="absolute-right" /> -->
       </slot>
+      <slot name="auth"></slot>
     </q-toolbar>
     <course-info v-show="visible" @closeInfo="toggleInfo" />
   </div>
@@ -24,7 +28,7 @@ const { mapState } = createNamespacedHelpers("watch");
 export default {
   name: "WatchToolbar",
   components: {
-    ToolList: () => import("components/base/DefaultToolList"),
+    // ToolList: () => import("components/base/DefaultToolList"),
     CourseInfo: () => import("components/watch/CourseInfo")
   },
   data: () => ({

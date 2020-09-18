@@ -4,7 +4,8 @@
       <q-toolbar>
         <drawer-toggle 
           v-if="$auth.isAuthenticated"
-          @toggle-drawer="leftDrawerOpen = !leftDrawerOpen" />
+          @toggle-drawer="leftDrawerOpen = !leftDrawerOpen"
+        />
         <q-toolbar-title class="text-h6 text-bold"
           ><span color="secondary">ProPlayer v8</span>
         </q-toolbar-title>
@@ -18,8 +19,8 @@
           split
           flat
         />
-        <!-- @click.prevent="login" -->
-        <q-btn-dropdown
+        <auth-button></auth-button>
+        <!-- <q-btn-dropdown
           id="qsLoginBtn"
           class=""
           :icon="toggleIcon"
@@ -68,12 +69,17 @@
           <div class="row no-wrap q-pa-md" v-else>
               <div class="column">Log in for Settings</div>
             </div>
-        </q-btn-dropdown>
-        <tool-list v-if="$auth.isAuthenticated" />
+        </q-btn-dropdown> -->
+        <!-- <tool-list v-if="$auth.isAuthenticated" /> -->
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-if="$auth.isAuthenticated" v-model="leftDrawerOpen" show-if-above bordered>
+    <q-drawer
+      v-if="$auth.isAuthenticated"
+      v-model="leftDrawerOpen"
+      show-if-above
+      bordered
+    >
       <dynamic-tab :tabList="sidebarTabs" />
     </q-drawer>
 
@@ -91,38 +97,18 @@ export default {
   components: {
     DynamicTab: () => import("components/base/DynamicTab"),
     DrawerToggle: () => import("components/base/DrawerToggle"),
-    ToolList: () => import("components/base/DefaultToolList")
+    AuthButton: () => import("components/base/AuthButton")
   },
-  data() {
-    return {
-      logo: "https://cdn.texasbluesalley.com/styles/TXBALogo.svg",
+  data: () => ({
       leftDrawerOpen: false
-    };
-  },
+  }),
   computed: {
-    toggleLoginBtn() {
-      return !this.$auth.isAuthenticated && !this.$auth.loading
-        ? "Login"
-        : "Account Settings";
-    },
-    toggleIcon() {
-      return !this.$auth.isAuthenticated && !this.$auth.loading
-        ? "fas fa-sign-in-alt"
-        : "fa fa-user";
-    },
     ...mapState(["sidebarTabs"])
   },
   mounted() {
     this.resetSideBar();
   },
   methods: {
-    login() {
-      if (!this.$auth.isAuthenticated && !this.$auth.loading) this.$auth.loginWithRedirect();
-    },
-    logout() {
-      this.$auth.logout();
-      this.$router.push({ path: "/" });
-    },
     ...mapActions(["resetSideBar"])
   }
 };

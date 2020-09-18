@@ -14,6 +14,9 @@
             @click="leftDrawer = !leftDrawer"
           />
         </template>
+        <template #auth>
+          <auth-button></auth-button>
+        </template>
       </watch-tool-bar>
     </q-header>
 
@@ -44,7 +47,8 @@ export default {
   name: "WatchLayout",
   components: {
     DynamicTab: () => import("components/base/DynamicTab"),
-    WatchToolBar: () => import("components/watch/WatchToolbar")
+    WatchToolBar: () => import("components/watch/WatchToolbar"),
+    AuthButton: () => import("components/base/AuthButton")
   },
   data: () => ({
     leftDrawer: false,
