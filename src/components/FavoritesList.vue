@@ -11,12 +11,14 @@
     >
       <q-list
         v-model="favorites"
-        class="rounded-borders"
-        dense
+        class="q-py-sm  rounded-borders"
         bordered
-        padding
+        dense
       >
-        <q-item v-for="favorite in favorites[item]" :key="favorite.name">
+        <!-- padding -->
+        <q-item 
+          v-for="favorite in favorites[item]" 
+          :key="favorite.name" class="q-mx-none">
           <q-item-section top side>
             <q-btn
               icon="play_circle_filled"
@@ -27,7 +29,7 @@
             />
           </q-item-section>
 
-          <q-item-section>
+          <q-item-section  class="fav-item ellipsis" :title="favorite.title">
             {{ favorite.title }}
           </q-item-section>
 
@@ -67,3 +69,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.fav-item {
+  max-width: 150px;
+}
+</style>

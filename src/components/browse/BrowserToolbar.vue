@@ -35,7 +35,13 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
+import { morph } from 'quasar'
 
+// Morph one DOM element to another:
+const searchMorph = morph({
+  from: '.browser-top-filter-list',
+  to: '.q-tab--active'
+})
 export default {
   name: "BrowserToolBar",
   data: () => ({
@@ -85,6 +91,7 @@ export default {
   methods: {
     loadCategory(category) {
       // console.log(`Cat: ${category}`);
+      searchMorph()
       this.setCriteria(category);
       if (!this.filtersAdded) this.filtersAdded = this.addTabs(category);
       this.$emit("toggle-drawer", true);

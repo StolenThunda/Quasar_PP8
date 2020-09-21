@@ -9,6 +9,7 @@ export default {
     searching: false,
     default_browser_entries: null,
     search_entries: null,
+    liveSearch: [],
     search: {
       pages: null,
       current: new Set(),
@@ -53,10 +54,14 @@ export default {
     SET_SEARCH ( ctx, data ) {
       // console.log( "SettingCriteria:", data );
       if ( data.auth ) Vue.set( ctx, "auth", data.auth );
-      ctx.search.criteria = data.funnels ? data.funnels : null;
-      ctx.search.status = data.status;
-      ctx.search.current = new Set();
-      ctx.search.pages = [];
+      // ctx.search.criteria = ;
+      // ctx.search.status = data.status;
+      // ctx.search.current = new Set();
+      // ctx.search.pages = [];
+      Vue.set(ctx.search, "criteria", data.funnels ? data.funnels : null)
+      Vue.set(ctx.search, 'status', data.status)
+      Vue.set(ctx.search, 'current', new Set())
+      Vue.set(ctx.search, 'pages', [])
     },
     TOGGLE_CURRENT_SEARCH ( ctx, data) {
       // toggle selection status
@@ -65,12 +70,20 @@ export default {
     UPDATE_FILTER_SELECTIONS(ctx, data) {
       if (!data){ ctx.search.current.clear(); return;}
       // update list of current selections
+      
+      console.log("data", data)
       if (ctx.search.current.has(data)) {
+        console.log('found')
         ctx.search.current.delete(data)
       }else{
+        console.log('not found')
         ctx.search.current.add(data)
       }
+      
+      console.log("current", ctx.search.current)
       ctx.searching = ctx.search.current.size > 0
+      ctx.liveSearch = Array.from(ctx.search.current || []);
+
     }
   },
   actions: {
@@ -126,7 +139,7 @@ export default {
     }
   },
   getters: {
-    getFilters: state => Array.from(state.search.current || []),
+    // getFilters: state => Array.from(state.search.current || []),
     default_browser_entries: state => state.default_browser_entries,
     // isSearching: state => state.searching,
     getAuth: () => {

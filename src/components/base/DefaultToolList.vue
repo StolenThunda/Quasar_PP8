@@ -7,7 +7,7 @@
         </q-item>
         <q-separator /> -->
 
-        <q-item v-ripple clickable>
+        <q-item v-ripple clickable :to="{name: 'tuner'}">
           <q-item-section avatar>
             <q-icon name="fa fa-music" size="xs" />
           </q-item-section>

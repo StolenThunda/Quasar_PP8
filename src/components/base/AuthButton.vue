@@ -1,13 +1,11 @@
 <template>
-    <!-- :label="this.toggleLoginBtn" -->
   <q-btn
-    :icon="toggleIcon"
+    v-bind="authBtnProps"
     @click.prevent="login"
-    :round="round"
-    flat
-    dense
+    glossy
+    push
+    ripple
   >
-    <!-- :round="round"  -->
     <q-avatar size="42px" v-if="this.$auth.isAuthenticated">
       <img :src="this.$auth.user.picture" />
     </q-avatar>
@@ -47,8 +45,21 @@ export default {
   components: {
     ToolList: () => import("components/base/DefaultToolList")
   },
-  // data: () => ({ round: false}),
   computed: {
+    authBtnProps(){
+      const props = !this.$auth.isAuthenticated && !this.$auth.loading
+      ? {
+        'icon-right': 'fas fa-sign-in-alt',
+        label: 'Login',
+        
+      }
+      : {
+        round: true
+      }
+      return Object.assign({
+    flat: true,
+    dense: true}, props);
+    },
     round() {
       return this.$auth.isAuthenticated && !this.$auth.loading;
     },

@@ -7,13 +7,13 @@
         <!-- {{ selection }} -->
         <!-- </span> -->
       </p>
-      <q-chip
-        :set="(chips = getChips)"
-        v-for="chip in getFilters()"
-        :key="chip.sync"
+        <!-- v-model="filters.length" -->
+      <q-chip 
+        v-for="chip in liveSearch"
+        :key="chip.sync + componentKey"
         removable
         outline
-        @remove="removeFilter(chip)"
+        @remove="deleteFilter(chip)"
       >
         {{ chip.text }}
       </q-chip>
@@ -23,18 +23,28 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { createNamespacedHelpers } from "vuex";
 const { mapActions,  mapGetters, mapState } = createNamespacedHelpers("browser");
 export default {
   name: "CurrentSearchBanner",
-  // data: () => ({ filters: null }),
+  data: () => ({ filters: null, componentKey: 0 }),
   computed: {
-    ...mapState(['searching', 'filters']),
-    // ...mapGetters(['getFilters']),
+    ...mapState(['searching', 'liveSearch']),
+  },
+  watch: {
+    searching() {
+        this.filters = this.$store.getters['browser/getFilters'];
+        console.log('forcing update')
+        this.forceUpdate()
+    }
   },
   methods: {
-    getChips(){
-      Vue.set(vm.filters, 'filters', this.getFilters())
+    forceUpdate(){
+      this.componentKey += 1;
+    },
+    deleteFilter(data) {``
+      return this.removeFilter(data)
     },
     ...mapActions(["removeFilter"])
   }

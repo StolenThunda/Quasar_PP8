@@ -6,17 +6,26 @@ const routes = [
     children: [{ path: "", component: () => import("pages/Index.vue") }]
   },
   {
-    path: "/browser",
+    path: "/tools",
     component: () => import("layouts/Browser.vue"),
     beforeEnter: authGuard,
     children: [
       {
         name: "browser",
-        path: "",
+        path: "/browser",
         component: () => import("pages/Browser")
+      },
+    {
+        name: "tuner",
+        path: "/tuner",
+        component: () => import("pages/Tools"),
+        meta: { 
+          src: '/dev/tuner'
+        }
       }
     ]
   },
+
   {
     name: "watch",
     path: "/watch",
