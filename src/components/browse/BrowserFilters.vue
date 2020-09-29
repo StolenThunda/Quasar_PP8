@@ -36,7 +36,7 @@
             <q-chip
               v-for="chip in criterion.chips"
               @click="toggle(chip)"
-              :selected.sync="search.status[chip.sync]"
+              :v-model="search.status[chip.sync]"
               :id="chip.sync"
               :key="chip.sync + chip.name"
               :title="chip.text"
@@ -47,9 +47,9 @@
               :data-section-stackable="criterion.sectionStackable"
               :data-section-type="criterion.sectionType"
               clickable
-              color="primary"
+              :color="search.status[chip.sync] ? 'secondary' : 'primary'"
               text-color="white"
-              class="glossy ellipsis"
+              class="glossy ellipsis "
             >
               {{ chip.text }}
             </q-chip>
@@ -86,5 +86,5 @@ export default {
 
 <style lang="sass" scoped>
 .truncate-chip-labels > .q-chip
-  max-width: 50px;
+  max-width: 70px;
 </style>

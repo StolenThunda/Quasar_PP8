@@ -1,7 +1,15 @@
 <template>
-  <section >   
-    <mediaelement :set="cs = currentSetup"
-    v-bind="cs"
+  <section 
+    class="column q-py-lg" 
+    :set="cs = currentSetup"
+    >   
+    <details class="col-2">
+      <summary>currentSetup</summary> 
+      <p><pre>{{ cs }}</pre></p> 
+    </details>
+    <div class="col-10">
+    <media-element     
+      v-bind="cs"
       id="mediaplayer" 
       ref="mediaplayer"
       class="my-play q-ma-lg q-pa-lg-md"
@@ -10,11 +18,9 @@
       :controls="cs.controls" 
       :source="cs.sources[0].src"
       >     
-    </mediaelement>
-    <details>
-      <summary>currentSetup</summary> 
-      <p><pre>{{ cs }}</pre></p> 
-    </details>
+    </media-element>
+
+    </div>
   </section>
 </template>
 
@@ -23,13 +29,9 @@ require('vue-mediaelement/dist/vue-mediaelement.css');
 import { Mediaelement } from 'vue-mediaelement';
 import { mapState } from "vuex";
 export default {
-  data() {
-    return {};
-  },
   components: {
-    'mediaelement' : Mediaelement
+    'media-element' : Mediaelement
   },
-  watch: {},
   // mounted() {
   //   this.options = {
   //     stretching: "responsive",
@@ -58,7 +60,7 @@ export default {
 <style>
 
 .mejs__overlay-button {
-  outline: none !important;
+  display: none !important;
 }
 .mejs__video {
   margin-bottom: 1.5rem;
@@ -74,8 +76,8 @@ iframe {
   display: block !important;
 }
 .my-play {
-  width: 90vw;
-  height: 70vh;
+  /* width: 90vw; */
+  height: 700px;
   text-align: center;
 }
 </style>

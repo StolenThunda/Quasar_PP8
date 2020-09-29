@@ -1,6 +1,11 @@
 <template>
   <div>
-    <q-tabs v-model="selectedTab">
+    <q-tabs 
+      v-model="selectedTab"
+      inline-label
+      shrink
+      stretch
+    >
       <q-tab
         v-for="tab in this.tabList"
         :key="tab.name"
