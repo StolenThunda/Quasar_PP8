@@ -329,7 +329,7 @@ export default class TXBA_Utilities {
   parsePagination(group) {
     const html = group.html();
     if (!html) return [];
-    // console.info("html", html);
+    // console.log("html", html);
     const $ = cheerio.load(html);
     let collection = [];
     group.each((idx, e) => {

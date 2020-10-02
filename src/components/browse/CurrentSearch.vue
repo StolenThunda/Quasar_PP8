@@ -35,8 +35,8 @@ export default {
   watch: {
     searching() {
         this.filters = this.$store.getters['browser/getFilters'];
-        console.log('forcing update')
-        this.forceUpdate()
+        console.log('this.filters', this.filters)
+        // this.forceUpdate()
     }
   },
   methods: {

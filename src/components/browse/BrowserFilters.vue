@@ -36,7 +36,8 @@
             <q-chip
               v-for="chip in criterion.chips"
               @click="toggle(chip)"
-              :selected.sync="search.status[chip.sync]"
+              :v-model="filterStatus[chip.sync]"
+              :selected="filterStatus[chip.sync]"
               :id="chip.sync"
               :key="chip.sync + chip.name"
               :title="chip.text"
@@ -74,11 +75,15 @@ export default {
     this.$root.$on("toggle-truncate", this.toggleTruncate);
   },
   computed: {
-    ...mapState(["search"])
+    ...mapState(['filterStatus', 'search'])
   },
   methods: {
-    toggleTruncate() { this.truncate = !this.truncate;},
-    toggle(chipData) { this.toggleSearchCriteria(chipData);},
+    toggleTruncate() {
+      this.truncate = !this.truncate;
+    },
+    toggle(chipData) {
+      this.toggleSearchCriteria(chipData);
+    },
     ...mapActions(["toggleSearchCriteria"])
   }
 };

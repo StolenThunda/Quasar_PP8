@@ -54,10 +54,10 @@ module.exports = function (/* ctx */) {
       // transpileDependencies: [],
 
       // rtl: false, // https://quasar.dev/options/rtl-support
-      // preloadChunks: true,
-      // showProgress: false,
-      // gzip: true,
-      // analyze: true,
+      preloadChunks: true,
+      showProgress: false,
+      gzip: true,
+      analyze: true,
 
       // Options below are automatically set depending on the env, set them if you want to override
       // extractCSS: false,
@@ -75,8 +75,8 @@ cfg.module.rules.push({
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      host: '10.0.0.81',
-      // host: 'localhost',
+      // host: '10.0.0.81',
+      host: 'localhost',
       https: true,
       port: 3000,
       open: true, // opens browser window automatically
