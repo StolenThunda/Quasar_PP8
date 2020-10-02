@@ -36,7 +36,7 @@
             <q-chip
               v-for="chip in criterion.chips"
               @click="toggle(chip)"
-              :v-model="filterStatus[chip.sync]"
+              :v-show="filterStatus[chip.sync]"
               :selected="filterStatus[chip.sync]"
               :id="chip.sync"
               :key="chip.sync + chip.name"

@@ -34,8 +34,8 @@ export default {
   },
   watch: {
     searching() {
-        this.filters = this.$store.getters['browser/getFilters'];
-        console.log('this.filters', this.filters)
+        // this.filters = this.$store.getters['browser/getFilters'];
+        // console.log('this.filters', this.filters)
         // this.forceUpdate()
     }
   },

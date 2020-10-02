@@ -70,13 +70,9 @@ export default {
     },
     TOGGLE_CURRENT_SEARCH(ctx, data) {
         // toggle selection status`)
-        console.log("current", ctx.filterStatus[data.sync]);
-        const toggled = !ctx.filterStatus[data.sync];
-        Vue.set(ctx.filterStatus, data.sync, toggled);
-        let current = ctx.filterStatus[data.sync];
-        // // console.log("toggled", toggled);
-        // // ctx.filterStatus[data.sync] = toggled;
-        console.log("after", current);
+        // console.log("current", ctx.filterStatus[data.sync]);
+        Vue.set(ctx.filterStatus, data.sync, !ctx.filterStatus[data.sync]);
+        // console.log("after", ctx.filterStatus[data.sync]);
     },
     UPDATE_FILTER_SELECTIONS(ctx, data) {
       return new Promise((resolve, reject) => {
@@ -85,16 +81,16 @@ export default {
           return;
         }
         // update list of current selections
-        console.log("data", data);
+        // console.log("data", data);
         if (ctx.search.current.has(data)) {
-          console.log("found");
+          // console.log("found");
           ctx.search.current.delete(data);
         } else {
-          console.log("not found");
+          // console.log("not found");
           ctx.search.current.add(data);
         }
 
-        console.log("current", ctx.search.current);
+        // console.log("current", ctx.search.current);
         ctx.searching = ctx.search.current.size > 0;
         ctx.liveSearch = Array.from(ctx.search.current || []);
         resolve(true);
@@ -123,14 +119,13 @@ export default {
 
       ctx.filterSectionList.computeSectionFamilies();
     },
-    PROCESS_FILTER_DEPENDENTS(ctx, sectionId) {
-      console.log("processing deps", ctx.filterStatus);
-      return ctx.browserTool.processDependents({
-        strMasterSectionID: sectionId,
-        list: ctx.filterSectionList,
-        status: ctx.filterStatus
-      });
-    }
+    PROCESS_DEPENDENT_FILTERS(ctx, data){
+      console.log(data)
+      var chips = ctx.search.criteria[data.sectionID].chips;
+      var filtered = chips.filter( chip => data.ids.includes(parseInt(chip.value)))
+      Vue.set(ctx.search.criteria[data.sectionID], 'chips', filtered)
+      
+    },
   },
   actions: {
     async gotoPage(ctx, url) {
@@ -157,21 +152,23 @@ export default {
     async toggleSearchCriteria({ dispatch }, itm) {
       return await dispatch('toggleCurrentSearch', itm)
         .then(status => {
+          console.log('after stat')
           if (status) dispatch('updateFilters', itm)
         })
         .then(dispatch('processDependents', itm))
         .catch(console.log);
     },
-    async toggleCurrentSearch({ commit }, itm){
+    async toggleCurrentSearch({ commit , state}, itm){
       try {
         commit("TOGGLE_CURRENT_SEARCH", itm)
-        return Promise.resolve(true)
+        return Promise.resolve(state.filter[itm.sync])
       } catch (error) {
         console.log(error)
         return Promise.reject(false)        
       }
     },
     async updateFilters({ commit }, itm){
+    
       try {
         commit("UPDATE_FILTER_SELECTIONS", itm)
         return Promise.resolve(true)
@@ -180,15 +177,23 @@ export default {
         return Promise.reject(false)        
       }
     },
-    async processDependents({ commit }, itm){
-      try {
-        commit("PROCESS_FILTER_DEPENDENTS", itm.group.sectionId)
-        return Promise.resolve(true)
-      } catch (error) {
-        console.log(error)
-        return Promise.reject(false)        
-      }
+    async processDependents({ dispatch, rootState }, itm){
+      return dispatch('updateFilterSelections', itm.group.sectionId)
+        .then(url => rootState.TXBA_UTILS.getAsyncData(url))
+        .then(data => dispatch('processDependentFilterSection', data))
+        .catch(console.log);
     },
+    updateFilterSelections({state}, sectionId) {
+      console.log("processing deps", state.filterStatus);
+      return state.browserTool.processDependents({
+        strMasterSectionID: sectionId,
+        list: state.filterSectionList,
+        status: state.filterStatus
+      });
+    },
+    processDependentFilterSection({commit}, data){
+      return commit('PROCESS_DEPENDENT_FILTERS', data);
+    }, 
     async fetchDefaultSearch(ctx) {
       // debugger
       const entries = await ctx.rootState.TXBA_UTILS.getDefaultSearchEntries();

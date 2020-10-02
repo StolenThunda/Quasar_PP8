@@ -388,18 +388,19 @@ export function ProPlayerBrowser(strWrapperDiv) {
         depend on. We are ready to construct a url to send to the refiner.
       */
       if (theTagKeys !== "-1" || theCategoryKeys !== "-1") {
-        let theURL = gc_BranchPath + "/--ajax-browser-filter-refiner/";
+        let theURL =  "/--ajax-browser-filter-refiner/";
         theURL += theChildren[i].getSectionID() + "/"; //what is the ID of the section we're updating
         theURL += theChildren[i].getSectionType() + "/"; //what type of items are we retrieving (cats or tags)
         theURL += theChildren[i].getChannelID() + "/"; //what channel are we looking at
         theURL += theChildren[i].getGroupID() + "/"; //what is the group (cat or tag) that we are filtering
         theURL += theCategoryKeys + "/"; //what are the categories we have to match
         theURL += theTagKeys + "/"; //what are the tags we have to match
-        debugger;
-        $.get(theURL, function(data) {
-          let theDependent = JSON.parse(data);
-          thePlayer.browserTool.processDependentFilterSection(theDependent);
-        });
+        // debugger;
+        // $.get(theURL, function(data) {
+        //   let theDependent = JSON.parse(data);
+        //   thePlayer.browserTool.processDependentFilterSection(theDependent);
+        // });
+        return theURL;
       } else {
         // this.restoreFilterSection( theChildren[i].getSectionID() );
       }
@@ -667,7 +668,7 @@ export function BrowserFilterSectionList(browserTool) {
   this.rebuildFilterSectionKeys = function(currentStatus) {
     // currentStatus is the the current state of the browser store
     for (let i = 0; i < this.a_Sections.length; i++) {
-      //TODO: extract sub array of currentstatus
+      // extract sub array of currentstatus to rebuild the section keys
       let sectionStatuses = [];
       let currentSectionId = this.a_Sections[i].getSectionID();
       Object.entries(currentStatus).forEach(([key, value]) => {
@@ -680,11 +681,7 @@ export function BrowserFilterSectionList(browserTool) {
           }
         }
       });
-
-      // let result = Object.keys(currentStatus)
-      //   .filter(v => v.startsWith(currentSectionId));
-
-      this.a_Sections[i].rebuildKeys(sectionStatuses);
+      if (sectionStatuses.length) this.a_Sections[i].rebuildKeys(sectionStatuses);
     }
   };
 }
@@ -789,9 +786,12 @@ export function BrowserFilterSection() {
     console.log("sStat", sectionStatuses);
   
     // let tmpInputList = $(this.sectionDOMID).find('input:checkbox:checked');
-    // for(let i = 0; i < tmpInputList.length; i++)
-    // {
-    //   this.addKey($(tmpInputList[i]).val());
-    // }
+    for(let i = 0; i < sectionStatuses.length; i++)
+    {
+      let status = sectionStatuses[i]
+      let key = Object.keys(status)[0]
+      let val = parseInt(key.match(/\d+$/)[0]);
+      this.addKey(val)        
+    }
   };
 }
