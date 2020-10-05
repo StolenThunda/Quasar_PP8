@@ -13,6 +13,7 @@ export default {
     toggleCount: 0,
     drawer: [],
     currentCategory: "",
+    currentFilterItem: null,
     searching: false,
     default_browser_entries: null,
     search_entries: null,
@@ -23,7 +24,7 @@ export default {
     search: {
       pages: null,
       current: new Set(),
-      criteria: null,
+      criteria: null
     }
   },
   mutations: {
@@ -69,10 +70,10 @@ export default {
       Vue.set(ctx.search, "pages", []);
     },
     TOGGLE_CURRENT_SEARCH(ctx, data) {
-        // toggle selection status`)
-        // console.log("current", ctx.filterStatus[data.sync]);
-        Vue.set(ctx.filterStatus, data.sync, !ctx.filterStatus[data.sync]);
-        // console.log("after", ctx.filterStatus[data.sync]);
+      // toggle selection status`)
+      // console.log("current", ctx.filterStatus[data.sync]);
+      Vue.set(ctx.filterStatus, data.sync, !ctx.filterStatus[data.sync]);
+      // console.log("after", ctx.filterStatus[data.sync]);
     },
     UPDATE_FILTER_SELECTIONS(ctx, data) {
       return new Promise((resolve, reject) => {
@@ -85,16 +86,17 @@ export default {
         if (ctx.search.current.has(data)) {
           // console.log("found");
           ctx.search.current.delete(data);
+          ctx.currentFilterItem = null;
         } else {
           // console.log("not found");
+          ctx.currentFilterItem = data;
           ctx.search.current.add(data);
         }
-
-        // console.log("current", ctx.search.current);
+        console.log("current", ctx.search.current);
         ctx.searching = ctx.search.current.size > 0;
         ctx.liveSearch = Array.from(ctx.search.current || []);
         resolve(true);
-      });
+      }).catch(error => reject(error));
     },
     BUILD_SECTION_DATA(ctx) {
       ctx.filterSectionList.reset();
@@ -119,13 +121,14 @@ export default {
 
       ctx.filterSectionList.computeSectionFamilies();
     },
-    PROCESS_DEPENDENT_FILTERS(ctx, data){
-      console.log(data)
+    PROCESS_DEPENDENT_FILTERS(ctx, data) {
+      console.log(data);
       var chips = ctx.search.criteria[data.sectionID].chips;
-      var filtered = chips.filter( chip => data.ids.includes(parseInt(chip.value)))
-      Vue.set(ctx.search.criteria[data.sectionID], 'chips', filtered)
-      
-    },
+      var filtered = chips.filter(chip =>
+        data.ids.includes(parseInt(chip.value))
+      );
+      Vue.set(ctx.search.criteria[data.sectionID], "chips", filtered);
+    }
   },
   actions: {
     async gotoPage(ctx, url) {
@@ -146,54 +149,79 @@ export default {
     removeDrawer(ctx, name) {
       return ctx.commit("REMOVE_DRAWER", name);
     },
-    removeFilter(ctx, data) {
-      ctx.commit("UPDATE_FILTER_SELECTIONS", data);
+    removeFilter({ dispatch }, data) {
+      dispatch("toggleSearchCriteria", data);
     },
-    async toggleSearchCriteria({ dispatch }, itm) {
-      return await dispatch('toggleCurrentSearch', itm)
-        .then(status => {
-          console.log('after stat')
-          if (status) dispatch('updateFilters', itm)
+    async toggleSearchCriteria({ dispatch, getters, state }, itm) {
+      return await dispatch("toggleCurrentSearch", itm)
+        .then(status => dispatch("updateFilters", itm))
+        .then(() => {
+          console.log("after stat", status);
+          if (!state.searching) {
+            return dispatch("setCriteria", state.currentCategory);
+          } else {
+            dispatch("processDependents", itm);
+          }
+        })        
+        .then(() => dispatch("getFilteredResults"))
+        .catch(console.log);
+    },
+    async toggleCurrentSearch({ commit, state }, itm) {
+      try {
+        commit("TOGGLE_CURRENT_SEARCH", itm);
+        return Promise.resolve(state.filterStatus[itm.sync]);
+      } catch (error) {
+        console.log(error);
+        return Promise.reject(false);
+      }
+    },
+    async updateFilters({ commit }, itm) {
+      try {
+        commit("UPDATE_FILTER_SELECTIONS", itm);
+        return Promise.resolve(true);
+      } catch (error) {
+        console.log(error);
+        return Promise.reject(false);
+      }
+    },
+    async processDependents({ dispatch, rootState }, itm) {
+      return dispatch("updateFilterSelections", itm.group.sectionId)
+        .then(url => {
+          if (url) rootState.TXBA_UTILS.getAsyncData(url);
         })
-        .then(dispatch('processDependents', itm))
-        .catch(console.log);
+        .then(data => {
+          if (data) dispatch("processDependentFilterSection", data);
+        })
+        .catch(error => console.log(error));
     },
-    async toggleCurrentSearch({ commit , state}, itm){
-      try {
-        commit("TOGGLE_CURRENT_SEARCH", itm)
-        return Promise.resolve(state.filter[itm.sync])
-      } catch (error) {
-        console.log(error)
-        return Promise.reject(false)        
-      }
+    async getFilteredResults({ rootState, state, getters, commit }) {
+      const filterData = {};
+      filterData[state.currentFilterItem.name] = state.currentFilterItem.value;
+      filterData["channel"] = state.currentCategory;
+      const formdata = Object.assign({}, getters.getAuthObject, filterData);
+      const entries = await rootState.TXBA_UTILS.postAsyncData(formdata)
+        .then(html => rootState.TXBA_UTILS.parseSearchResults(html.data))
+        // .then(data => {console.log("filter/parsed", data); return data})
+        .then(searchEntries => {
+          console.log("filtered entries", searchEntries);
+          commit("SET_ENTRIES_PAGINATION", searchEntries.pages);
+          commit("SET_SEARCH_ENTRIES", searchEntries.filters);
+        })
+        .catch(error => console.error("ERROR", error));
     },
-    async updateFilters({ commit }, itm){
-    
-      try {
-        commit("UPDATE_FILTER_SELECTIONS", itm)
-        return Promise.resolve(true)
-      } catch (error) {
-        console.log(error)
-        return Promise.reject(false)        
-      }
-    },
-    async processDependents({ dispatch, rootState }, itm){
-      return dispatch('updateFilterSelections', itm.group.sectionId)
-        .then(url => rootState.TXBA_UTILS.getAsyncData(url))
-        .then(data => dispatch('processDependentFilterSection', data))
-        .catch(console.log);
-    },
-    updateFilterSelections({state}, sectionId) {
+    updateFilterSelections({ state }, sectionId) {
       console.log("processing deps", state.filterStatus);
-      return state.browserTool.processDependents({
+      const url = state.browserTool.processDependents({
         strMasterSectionID: sectionId,
         list: state.filterSectionList,
         status: state.filterStatus
       });
+      console.log("processing result", url);
+      return url;
     },
-    processDependentFilterSection({commit}, data){
-      return commit('PROCESS_DEPENDENT_FILTERS', data);
-    }, 
+    processDependentFilterSection({ commit }, data) {
+      return commit("PROCESS_DEPENDENT_FILTERS", data);
+    },
     async fetchDefaultSearch(ctx) {
       // debugger
       const entries = await ctx.rootState.TXBA_UTILS.getDefaultSearchEntries();
@@ -227,7 +255,7 @@ export default {
     }
   },
   getters: {
-    getCurrent: state => Array.from(state.search.current || []),
+    isSearching: state => state.search.current.size > 0,
     getFilters: state =>
       Object.fromEntries(
         Object.entries(state.filterStatus).filter(
@@ -235,6 +263,7 @@ export default {
         )
       ),
     default_browser_entries: state => state.default_browser_entries,
+    getAuthObject: state => state.auth,
     getAuth: () => {
       return "eyJyZXN1bHRfcGFnZSI6InByb3BsYXllcjc0LXRvbnlcLy0tYWpheC1icm93c2VyLXNlYXJjaC1lbnRyaWVzXC9";
       // .replace(/wZXJmb3JtYW5jZXNcLyJ9/g, '')

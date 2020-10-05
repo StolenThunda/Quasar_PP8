@@ -28,6 +28,8 @@ export default class TXBA_Utilities {
       youtube_videos:
         "5b3V0dWJlX3ZpZGVvc1wvIiwiY2hhbm5lbCI6InlvdXR1YmVfdmlkZW9zIn0"
     };
+    // mcmVlX2xlc3Nvbl9mcmlkYXlcLyJ9;
+
     this.favs = {};
   }
 
@@ -43,6 +45,21 @@ export default class TXBA_Utilities {
       console.error(e);
       return e;
     }
+  }
+
+  async postAsyncData(data) {
+    // const url = `${this.baseURL}`;
+    // console.log(`Req Url: ${url}`)
+    return  axios({
+      method: "post",
+      url: "https://texasbluesalley.com/",
+      data: new URLSearchParams(data),
+      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    }).catch(function(response) {
+      //handle error
+      console.log(response);
+      return response;
+    });
   }
   getFavs() {
     return this.getAsyncData(this.favorites_slug, this.parseFavoriteHtml);
@@ -67,12 +84,11 @@ export default class TXBA_Utilities {
   }
 
   async getSearchEntries(category, auth, url) {
-    let slug = (url) ? url : `${this.search_slug}/${category}/${auth}${this.slug_code[category]}`
+    let slug = url
+      ? url
+      : `${this.search_slug}/${category}/${auth}${this.slug_code[category]}`;
     // console.log('search slug', slug)
-    return this.getAsyncData(
-      slug,
-      this.parseSearchResults
-    );
+    return this.getAsyncData(slug, this.parseSearchResults);
   }
   async getSearchFiltersByCategory(code) {
     return this.getAsyncData(`${this.filter_slug}/${code}`, this.parseCriteria);
@@ -338,7 +354,9 @@ export default class TXBA_Utilities {
         url: this.parseURL(lnk.attr("onclick")),
         class: lnk.attr("class"),
         content: lnk.text(),
-        icon: $(e).find("a > i").attr('class')
+        icon: $(e)
+          .find("a > i")
+          .attr("class")
       });
     });
     // console.log("col", collection);
@@ -387,7 +405,7 @@ export default class TXBA_Utilities {
   parseCriteria(html) {
     const $ = cheerio.load(html);
     let hiddenFields = this.parseHiddenData($(".hiddenFields input"));
-    // console.log(hiddenFields)
+    console.log("hiddenFields", hiddenFields);
     let funnelList = this.parseFunnels($(".filter-list"));
     // console.log(funnelList)
 

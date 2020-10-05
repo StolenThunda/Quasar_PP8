@@ -36,7 +36,7 @@
             <q-chip
               v-for="chip in criterion.chips"
               @click="toggle(chip)"
-              :v-show="filterStatus[chip.sync]"
+              :v-model="filterStatus[chip.sync]"
               :selected="filterStatus[chip.sync]"
               :id="chip.sync"
               :key="chip.sync + chip.name"
@@ -50,7 +50,7 @@
               clickable
               color="primary"
               text-color="white"
-              class="glossy ellipsis"
+              :class="'glossy ellipsis' + { 'filtered': filtered }"
             >
               {{ chip.text }}
             </q-chip>
@@ -69,17 +69,23 @@ export default {
   name: "BrowserFilters",
   data: () => ({
     truncate: false,
+    filtered: false,
     text: ""
   }),
   created() {
     this.$root.$on("toggle-truncate", this.toggleTruncate);
+    this.$root.$on("toggle-filtered",this.toggleFiltered);
   },
   computed: {
+      
     ...mapState(['filterStatus', 'search'])
   },
   methods: {
     toggleTruncate() {
       this.truncate = !this.truncate;
+    },
+    toggleFiltered() {
+      this.filtered = !this.filtered;
     },
     toggle(chipData) {
       this.toggleSearchCriteria(chipData);
@@ -92,4 +98,7 @@ export default {
 <style lang="sass" scoped>
 .truncate-chip-labels > .q-chip
   max-width: 50px;
+
+.filtered 
+  display: none
 </style>
