@@ -1,12 +1,12 @@
 <template>
   <div class="q-pa-xs">
     <p>
-      <q-input bottom-slots v-model="text" label="Keyword Search" counter dense>
+      <q-input bottom-slots v-model="searchText" label="Keyword Search" counter dense>
         <template v-slot:prepend>
           <q-btn icon="search" color="primary" glossy dense />
         </template>
         <template v-slot:append>
-          <q-icon name="close" @click="text = ''" class="cursor-pointer" />
+          <q-icon name="close" @click="searchText = ''" class="cursor-pointer" />
         </template>
         <!-- <template v-slot:hint>
           Press [Enter] to search
@@ -48,7 +48,7 @@
               :data-section-stackable="criterion.sectionStackable"
               :data-section-type="criterion.sectionType"
               clickable
-              color="primary"
+              :color="filterStatus[chip.sync] ? 'secondary' : 'primary'"
               text-color="white"
               :class="'glossy ellipsis' + { 'filtered': filtered }"
             >
@@ -70,7 +70,7 @@ export default {
   data: () => ({
     truncate: false,
     filtered: false,
-    text: ""
+    searchText: ""
   }),
   created() {
     this.$root.$on("toggle-truncate", this.toggleTruncate);
@@ -88,6 +88,7 @@ export default {
       this.filtered = !this.filtered;
     },
     toggle(chipData) {
+      chipData = Object.assign(chipData, {searchText: this.searchText})
       this.toggleSearchCriteria(chipData);
     },
     ...mapActions(["toggleSearchCriteria"])

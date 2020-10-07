@@ -405,7 +405,7 @@ export default class TXBA_Utilities {
   parseCriteria(html) {
     const $ = cheerio.load(html);
     let hiddenFields = this.parseHiddenData($(".hiddenFields input"));
-    console.log("hiddenFields", hiddenFields);
+    // console.log("hiddenFields", hiddenFields);
     let funnelList = this.parseFunnels($(".filter-list"));
     // console.log(funnelList)
 

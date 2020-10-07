@@ -16,14 +16,22 @@
         color="secondary"
         unchecked-icon="clear"
       />
+    <q-btn
+    label="Get Filter List"
+    color="secondary"
+    @click="showCurrentFilters"
+    outline
+    />
     </div>
   </div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from "vuex";
+const {  mapGetters, mapState } = createNamespacedHelpers("browser");
 export default {
   data () {
-    return {truncate: false, filtered: false}
+    return {truncate: false, filtered: false, fList: null}
   },
   watch: {
     truncate: function () {
@@ -31,6 +39,21 @@ export default {
     },
     filtered: function () {
       this.$root.$emit('toggle-filtered')
+    }, 
+    filterList: function() {
+      this.fList = this.filterList
+      console.log("watch", this.search.current)
+    }
+  },
+  computed: {
+    ...mapState(['filterSectionList']),
+    // ...mapGetters({filterList: 'getFilterList'})
+  },
+  methods: {
+    showCurrentFilters() {
+      const list = this.filterSectionList;
+      console.log('current filters', list.a_Sections)
+      // alert(JSON.stringify(list,null,2))
     }
   }
 }

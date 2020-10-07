@@ -86,6 +86,7 @@ export default {
     ]
   }),
   computed: {
+    
     ...mapState(["currentCategory"])
   },
   methods: {
