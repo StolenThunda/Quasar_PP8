@@ -5,9 +5,10 @@
       <browser-toolbar @toggle-drawer="toggleDrawer">
         <template #toggleDrawer>
           <q-btn
-            flat
+            fab
             dense
-            round
+            rounded
+            label="Toggle Filters"
             title="Toggle Filters"
             icon="mdi-filter"
             aria-label="Filters"

@@ -1,59 +1,72 @@
 <template>
-  <div class="q-mt-sm">
-    <q-banner v-model="searching">
+  <q-page class="q-mt-sm">
+    <q-page-sticky position="top" v-model="activeFilters" expand>
       <span v-for="(val, key) in activeFilters" :key="key + componentKey">
-        <span v-if="val.length > 1">
-          <q-fab
+        <div v-if="val.length > 1">
+          <q-btn
+            v-morph:btn:mygroup:300.resize="morphGroupModel"
             color="secondary"
-            class="text-capitalize"
-            direction="down"
-            :label="entitle(key)" 
-            label-position="left" @click="morphContent1"
+            class="text-capitalize absolute-bottom-left q-ma-md secondary"
+            rounded
+            :label="entitle(key)"
+            @click="nextMorph"
           >
-          <q-badge color="orange">{{ val.length }}
-           </q-badge>
-            <div :ref="'morphedElement1-' + key" v-bind="props1">
-            <q-chip
-              v-for="chip in val"
-              :key="chip.sync + componentKey"
-              @remove="deleteFilter(chip)"
-              removable
-              outline
+            <q-badge color="orange" floating>{{ val.length }}</q-badge>
+            <q-card
+              
+              :ref="'morphedElement1-' + key"
+              v-bind="props1"
+              v-morph:card1:mygroup:500.resize="morphGroupModel"
+              class="absolute-bottom-left q-ma-md bg-primary text-white"
+      style="width: 300px; border-bottom-left-radius: 2em"
             >
-              {{ chip.text }}
-            </q-chip>
-          </div>
-          </q-fab>
-         
-        </span>
-        <span
-          v-else
-              class="text-capitalize"
-          :set="(chip = val[0])"
-        >
+              <q-chip
+                v-for="chip in val"
+                :key="chip.sync + componentKey"
+                @remove="deleteFilter(chip)"
+                removable
+              >
+                {{ chip.text }}
+              </q-chip>
+            </q-card>
+          </q-btn>
+        </div>
+        <div v-else :set="(chip = val[0])">
           <q-chip color="secondary" removable @remove="deleteFilter(chip)">
             {{ chip.text }}
             <q-badge
-              align="top"
+              class="text-capitalize"
+              align="bottom"
               color="orange"
               transparent
+              floating
               >{{ entitle(key) }}</q-badge
             >
           </q-chip>
-        </span>
+        </div>
       </span>
-    </q-banner>
-  </div>
+    </q-page-sticky>
+    <!-- <q-banner v-else-if="search && !currentFilters">Showing: ALL</q-banner> -->
+  </q-page>
 </template>
 
 <script>
-import { morph, format } from "quasar";
+import { morph } from "quasar";
 import { createNamespacedHelpers } from "vuex";
 import { BrowserFilterSectionList } from "src/middleware/ProPlayerBrowser";
 const { mapActions, mapGetters, mapState } = createNamespacedHelpers("browser");
+const nextMorphStep = {
+  btn: "card1",
+  card1: "btn"
+};
 export default {
   name: "CurrentSearchBanner",
-  data: () => ({ filters: null, componentKey: 0, toggle1: false }),
+  data: () => ({
+    filters: null,
+    componentKey: 0,
+    toggle1: false,
+    morphGroupModel: "btn"
+  }),
   computed: {
     props1() {
       return this.toggle1 === true
@@ -63,7 +76,7 @@ export default {
           }
         : {
             class: "q-ml-xl q-px-xl q-py-lg bg-blue text-white",
-            style: "border-radius:  25px; background-color: rgba(0, 153, 255, 0.85) !important;"
+            style: "border-radius:  25px;"
           };
     },
     ...mapState(["searching", "activeFilters"])
@@ -74,8 +87,11 @@ export default {
     }
   },
   methods: {
+    nextMorph() {
+      this.morphGroupModel = nextMorphStep[this.morphGroupModel];
+    },
     entitle(str) {
-      return format.capitalize(str.replace("-", " "));
+      return str.replace("-", " ");
     },
     morphContent1() {
       const onToggle = () => {

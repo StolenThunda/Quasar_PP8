@@ -40,20 +40,17 @@ export default {
     filtered: function () {
       this.$root.$emit('toggle-filtered')
     }, 
-    filterList: function() {
-      this.fList = this.filterList
-      console.log("watch", this.search.current)
-    }
   },
   computed: {
-    ...mapState(['filterSectionList']),
-    // ...mapGetters({filterList: 'getFilterList'})
+    ...mapState(['activeFilters']),
   },
   methods: {
     showCurrentFilters() {
-      const list = this.filterSectionList;
-      console.log('current filters', list.a_Sections)
-      // alert(JSON.stringify(list,null,2))
+      const list = this.$store.getters["browser/getFilterList"]
+      console.log('active filters', this.activeFilters)
+      console.log('filterList', list)
+      alert(JSON.stringify(list,null,4))
+      // alert(JSON.stringify(this.activeFilters,null,2))
     }
   }
 }
