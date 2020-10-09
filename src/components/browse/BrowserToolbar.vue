@@ -1,24 +1,30 @@
 <template>
   <div>
     <q-toolbar>
-      <slot name="toggleDrawer"></slot>
-      <q-toolbar-title class="text-capitalize text-subvalue2 text-justify">
+      <slot name="toggleDrawer" v-if="activeCategory"></slot>
+      <q-toolbar-title class="text-capitalize text-center text-subvalue2">
         Browser
-        <span v-if="category"> - {{ category.replaceAll("_", " ") }} </span>
+        
+        <q-breadcrumbs-el v-model="activeCategory"> {{ entitleCategory(activeCategory) }}</q-breadcrumbs-el>
       </q-toolbar-title>
       <q-btn label="Close" color="secondary" icon="close" to="/" />
     </q-toolbar>
 
     <q-toolbar inset>
       <!-- <q-scroll-area class="fit"> -->
-      <div id="browser-wrapper" >
+      <div id="browser-wrapper">
         <div class="browser-filter-row" id="top-level-filters">
-          <ul class="browser-top-filter-list" id="filter-level-1" v-for="tab in tabs" :key="tab.name">
+          <ul
+            class="browser-top-filter-list"
+            id="filter-level-1"
+            v-for="tab in tabs"
+            :key="tab.name"
+          >
             <li class="q-mx-xs">
               <q-btn
                 push
                 rounded
-                color="black"
+                :color="activeCategory === tab.value ? 'secondary' : 'black'"
                 :label="tab.label"
                 @click="loadCategory(tab.value)"
                 :icon="tab.icon"
@@ -35,13 +41,13 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import { morph } from 'quasar'
+import { morph, format } from "quasar";
 
 // Morph one DOM element to another:
 const searchMorph = morph({
-  from: '.browser-top-filter-list',
-  to: '.q-tab--active'
-})
+  from: ".browser-top-filter-list",
+  to: ".q-tab--active"
+});
 export default {
   name: "BrowserToolBar",
   data: () => ({
@@ -86,13 +92,16 @@ export default {
     ]
   }),
   computed: {
-    
-    ...mapState(["currentCategory"])
+    ...mapState('browser',["activeCategory"])
   },
   methods: {
+    entitleCategory() { return (this.activeCategory) ? " - " + format.capitalize(
+        this.activeCategory.replaceAll("_", " ")
+      ) : ""
+    },
     loadCategory(category) {
       // console.log(`Cat: ${category}`);
-      searchMorph()
+      searchMorph();
       this.setCriteria(category);
       if (!this.filtersAdded) this.filtersAdded = this.addTabs(category);
       this.$emit("toggle-drawer", true);
@@ -116,10 +125,10 @@ export default {
 
 <style scoped>
 .q-toolbar--inset {
-  background-color:rgba(192, 192, 192, 0.39);
-    /* background-color: white !important ; */
-    transition: opacity .1s;
-    /* z-index: 1000; */
+  background-color: rgba(192, 192, 192, 0.39);
+  /* background-color: white !important ; */
+  transition: opacity 0.1s;
+  /* z-index: 1000; */
 }
 ul.browser-top-filter-list {
   list-style: none;

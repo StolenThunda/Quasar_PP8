@@ -1,5 +1,5 @@
 <template>
-  <div class="q-ml-md q-pt-xs">
+  <div class="q-ml-md q-pt-xs" >
     <span class="text-h6"> <slot name="title"></slot></span>
     <slot name="header-pages"></slot>
     <q-list dense>
@@ -8,13 +8,13 @@
       :key="entry.id"
       transition="slide-right"
     >
-      <q-card flat>
+      <q-card bordered flat>
         <q-item  >
           <q-item-section v-model="entry.avatar" avatar>
             <q-btn
-              class="glossy"
               :color="entry.favColor"
               icon="favorite"
+              title="Toggle Favorite"
               round
               push
             />

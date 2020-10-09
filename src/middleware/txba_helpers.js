@@ -17,7 +17,7 @@ export default class TXBA_Utilities {
     this.load_media_slug = "--ajax-load-media";
     this.load_vimeo_slug = "/--ajax-load-media/vimeo/";
     this.slug_code = {
-      courses:
+      pro_player_packages:
         "wcm9fcGxheWVyX3BhY2thZ2VzXC8iLCJjaGFubmVsIjoicHJvX3BsYXllcl9wYWNrYWdlcyJ9",
       free_lesson_friday:
         "mcmVlX2xlc3Nvbl9mcmlkYXlcLyIsImNoYW5uZWwiOiJmcmVlX2xlc3Nvbl9mcmlkYXkifQ",
@@ -39,6 +39,7 @@ export default class TXBA_Utilities {
       // console.log(`Req Url: ${url}`)
       const response = await axios
         .get(url)
+        .then(response => { console.log(url + " || " + JSON.stringify(response, null, 4).substring(0, 200)); return response})
         .then(async response => await response.data);
       return callback ? callback.call(this, response) : response;
     } catch (e) {
@@ -47,15 +48,17 @@ export default class TXBA_Utilities {
     }
   }
 
-  async postAsyncData(data) {
+  async postAsyncData(params) {
     // const url = `${this.baseURL}`;
     // console.log(`Req Url: ${url}`)
     return  axios({
       method: "post",
-      url: "https://texasbluesalley.com/",
-      data: new URLSearchParams(data),
+      url: 'https://texasbluesalley.com/',
+      data: new URLSearchParams(params),
       headers: { "Content-Type": "application/x-www-form-urlencoded" }
-    }).catch(function(response) {
+    })
+    .then(response => {console.log('response', response); return response})
+    .catch(function(response) {
       //handle error
       console.log(response);
       return response;
@@ -84,10 +87,12 @@ export default class TXBA_Utilities {
   }
 
   async getSearchEntries(category, auth, url) {
+    category = (category === 'courses') ? 'pro_player_packages': category
     let slug = url
       ? url
       : `${this.search_slug}/${category}/${auth}${this.slug_code[category]}`;
-    // console.log('search slug', slug)
+    console.log('search slug', slug)
+    console.log('slug category', category)
     return this.getAsyncData(slug, this.parseSearchResults);
   }
   async getSearchFiltersByCategory(code) {
@@ -364,10 +369,11 @@ export default class TXBA_Utilities {
   }
   parseSearchFilters(group) {
     // console.trace("gfi:group", group)
-    const html = group.html();
-    // console.info("html", html)
-    const $ = cheerio.load(html);
     let collection = [];
+    const html = group.html();
+    if (group.length < 1) { throw("No HTML to parse"); } 
+    console.info("html", html.substring(0, 100))
+    const $ = cheerio.load(html);
     group.each((idx, e) => {
       const pkg = this.parseIdx(
         $(e)
@@ -379,7 +385,7 @@ export default class TXBA_Utilities {
       const itm = {
         id: pkg.packageID,
         type: pkg.type,
-        favColor: !fave ? "grey" : "pink",
+        favColor: !fave ? "grey" : "red",
         avatar: $(e)
           .find("img")
           .attr("src"),

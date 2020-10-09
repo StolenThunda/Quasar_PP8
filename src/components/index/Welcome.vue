@@ -1,13 +1,13 @@
 <template>
-<div>
+<div >
 
   <q-card>
     <q-card-section>
       <center class="text-h6">
         Welcome, <span v-if="user">{{ user }}</span>
         <span v-else> please LOGIN</span>
-      </center>
-      <div>
+      
+      <div >
         <q-btn
           label="Orientation"
           color="accent"
@@ -33,6 +33,7 @@
           :to="{ name: 'browser' }"
         />
       </div>
+      </center>
           </q-card-section>
   </q-card>
 </div>
