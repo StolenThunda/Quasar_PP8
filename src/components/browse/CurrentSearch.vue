@@ -1,53 +1,45 @@
 <template>
-  <q-page-container padding style="padding-top: 66px">
-    <!-- <q-page > -->
-      <q-page-sticky position="top-left" expand>
-        <q-toolbar v-if="searching">
-          Filters:
-          <span v-for="(val, key) in activeFilters" :key="key + componentKey">
-            <span v-if="val.length > 1">
-              <q-btn rounded color="secondary" :label="entitle(key)">
-                <q-badge floating transparent color="orange-9" class="shadow-5">
-                  {{ val.length }}
-                </q-badge>
-                <q-menu
-                  transition-show="rotate"
-                  transition-hide="rotate"
-                  anchor="bottom middle"
-                  self="top middle"
-                  fit
-                >
-                  <q-list style="min-width: 100px">
-                    <q-item v-for="chip in val" :key="chip.sync + componentKey">
-                      <q-chip @remove="deleteFilter(chip)" removable outline>
-                        {{ chip.text }}
-                      </q-chip>
-                    </q-item>
-                  </q-list>
-                </q-menu>
-              </q-btn>
-            </span>
-            <span v-else class="text-capitalize" :set="(chip = val[0])">
-              <q-chip color="secondary" removable @remove="deleteFilter(chip)">
-                {{ chip.text }}
-                <q-badge
-                  align="top"
-                  color="orange-9"
-                  transparent
-                  class="shadow-5"
-                  floating
-                  >{{ entitle(key) }}</q-badge
-                >
-              </q-chip>
-            </span>
-          </span>
-        </q-toolbar>
-        <q-banner v-else
-          ><q-toolbar-title>Showing: All</q-toolbar-title></q-banner
-        >
-      </q-page-sticky>
-    <!-- </q-page> -->
-  </q-page-container>
+  <q-toolbar v-if="searching"  class="flex flex-center text-white">
+    Filters:
+    <span v-for="(val, key) in activeFilters" :key="key + componentKey">
+      <span v-if="val.length > 1">
+        <q-btn rounded color="secondary" :label="entitle(key)">
+          <q-badge floating transparent color="orange-9" class="shadow-5">
+            {{ val.length }}
+          </q-badge>
+          <q-menu
+            transition-show="rotate"
+            transition-hide="rotate"
+            anchor="bottom middle"
+            self="top middle"
+            fit
+          >
+            <q-list style="min-width: 100px">
+              <q-item v-for="chip in val" :key="chip.sync + componentKey">
+                <q-chip @remove="deleteFilter(chip)" removable outline>
+                  {{ chip.text }}
+                </q-chip>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+      </span>
+      <span v-else class="text-capitalize" :set="(chip = val[0])">
+        <q-chip color="secondary" removable @remove="deleteFilter(chip)">
+          {{ chip.text }}
+          <q-badge
+            align="top"
+            color="orange-9"
+            transparent
+            class="shadow-5"
+            floating
+            >{{ entitle(key) }}</q-badge
+          >
+        </q-chip>
+      </span>
+    </span>
+  </q-toolbar>
+  <q-toolbar v-else><q-toolbar-title>Showing: All</q-toolbar-title> </q-toolbar>
 </template>
 
 <script>
@@ -103,7 +95,6 @@ export default {
       this.componentKey += 1;
     },
     deleteFilter(data) {
-      debugger;
       return this.removeFilter(data);
     },
     ...mapActions(["removeFilter"])

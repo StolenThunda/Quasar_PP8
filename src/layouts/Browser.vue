@@ -1,5 +1,6 @@
 <template>
-    <q-layout view="lHh Lpr lff">
+    <!-- <q-layout view="lHh Lpr lff"> -->
+    <q-layout view="hHh Lpr lff">
     <q-header elevated>
       <browser-toolbar @toggle-drawer="toggleDrawer">
         <template #toggleDrawer>
@@ -15,7 +16,7 @@
       </browser-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" show-if-above bordered>
+    <q-drawer v-model="leftDrawerOpen" side="left" bordered>
         <dynamic-tab @changeCategory="catChange" :tabList="drawer" />
     </q-drawer>
 

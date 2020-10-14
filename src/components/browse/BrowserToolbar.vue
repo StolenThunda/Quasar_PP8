@@ -11,7 +11,6 @@
     </q-toolbar>
 
     <q-toolbar inset>
-      <!-- <q-scroll-area class="fit"> -->
       <div id="browser-wrapper">
         <div class="browser-filter-row" id="top-level-filters">
           <ul
@@ -20,7 +19,7 @@
             v-for="tab in tabs"
             :key="tab.name"
           >
-            <li class="q-mx-xs">
+            <li class="q-px-xs">
               <q-btn
                 push
                 rounded
@@ -33,8 +32,6 @@
           </ul>
         </div>
       </div>
-
-      <!-- </q-scroll-area> -->
     </q-toolbar>
   </div>
 </template>

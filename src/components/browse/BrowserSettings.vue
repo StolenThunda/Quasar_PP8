@@ -48,21 +48,25 @@ export default {
       this.$root.$emit("toggle-filtered");
     }
   },
+  created() {
+    this.$root.$on("toggle-truncate", this.toggleTruncate);
+    this.$root.$on("toggle-filtered", this.toggleFiltered);
+  },
   computed: {
     ...mapState(["activeFilters"])
   },
   methods: {
     showCurrentFilters() {
-      const list = this.$store.getters["browser/getFilterList"];
-      console.log("active filters", this.activeFilters);
-      console.log("filterList", list);
-      alert(JSON.stringify(list, null, 4));
+      // const list = this.$store.getters["browser/getFilterList"];
+      // console.log("active filters", this.activeFilters);
+      // console.log("filterList", list);
+      // alert(JSON.stringify(list, null, 4));
       // alert(JSON.stringify(this.activeFilters,null,2))
     },
     serializeForm() {
-      const form = document.querySelector("#filterForm");
-      const formData = serialize(form)
-      alert(formData)
+      alert(serialize(document.querySelector("#filterForm")));
+    //   const formData = serialize(form)
+    //   alert(formData)
     }
   }
 };

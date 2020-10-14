@@ -11,7 +11,6 @@ export const serialize = function(form) {
   // Loop through each field in the form
   for (var i = 0; i < form.elements.length; i++) {
     var field = form.elements[i];
-
     // Don't serialize fields without a name, submits, buttons, file and reset inputs, and disabled fields
     if (
       !field.name ||
@@ -33,13 +32,15 @@ export const serialize = function(form) {
             encodeURIComponent(field.options[n].value)
         );
       }
-    }
+    } else {
 
     // Convert field data to a query string
-    else if (
-      (field.type !== "checkbox" && field.type !== "radio") ||
-      field.checked
-    ) {
+    // else if (
+    //   (field.type !== "checkbox" && field.type !== "radio") ||
+    //   field.checked
+    // ) {
+      if (field.type === 'checkbox' && !field.checked) continue;
+      // console.log(field)
       serialized.push(
         encodeURIComponent(field.name) + "=" + encodeURIComponent(field.value)
       );

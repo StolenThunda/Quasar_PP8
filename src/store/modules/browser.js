@@ -11,12 +11,13 @@ export default {
   namespaced: true,
   state: {
     drawer: [],
+    keywords: "",
     activeCategory: null,
     searching: false,
     default_browser_entries: null,
     search_entries: null,
     activeFilters: {},
-    // browserTool: new ProPlayerBrowser(),
+    browserTool: new ProPlayerBrowser(),
     filterSectionList: new BrowserFilterSectionList(),
     filterStatus: {},
     search: {
@@ -27,7 +28,7 @@ export default {
   },
   mutations: {
     SET_CURRENT_CATEGORY(ctx, category) {
-      console.log('active category', category)
+      // console.log("active category", category);
       Vue.set(ctx, "activeCategory", category);
     },
     ADD_TO_DRAWER(ctx, content) {
@@ -57,14 +58,15 @@ export default {
       if (data) ctx.default_browser_entries = data;
     },
     SET_SEARCH_ENTRIES(ctx, data) {
-      // console.log("SettingEntries:", data);
+      console.log("SettingEntries:", data);
       if (data) ctx.search_entries = data;
     },
     SET_SEARCH(ctx, data) {
       // console.log("SettingCriteria:", data);
       // debugger
       if (data.auth) Vue.set(ctx, "auth", data.auth);
-      Vue.set(ctx, "filterStatus", data.status || {});      
+      Vue.set(ctx, "filterStatus", data.status || {});
+      Vue.set(ctx, "activeFilters", {});
       Vue.set(ctx.search, "criteria", data.funnels ? data.funnels : null);
       Vue.set(ctx.search, "current", new Set());
       Vue.set(ctx.search, "pages", []);
@@ -141,7 +143,7 @@ export default {
     },
     PROCESS_DEPENDENT_FILTERS(ctx, data) {
       console.log("procDeps", data);
-      return
+      return;
       var chips = ctx.search.criteria[data.sectionID].chips;
       if (data.ids.length) {
         var filtered = chips.filter(chip =>
@@ -154,17 +156,14 @@ export default {
     }
   },
   actions: {
-    async gotoPage(ctx, url) {
-      const searchEntries = await ctx.rootState.TXBA_UTILS.getSearchEntries(
-        ctx.activeCategory,
-        ctx.getters.getAuthObject.params,
+    async gotoPage({state, dispatch, rootState, getters}, url) {
+      const searchEntries = await rootState.TXBA_UTILS.getSearchEntries(
+        state.activeCategory,
+        getters.getAuthObject.params,
         url
-      );
-
+      )
+      .then(searchEntries => dispatch("setResultData", searchEntries))
       console.log("search Entries", JSON.stringify(searchEntries, null, 4));
-      ctx.commit("SET_ENTRIES_PAGINATION", searchEntries.pages);
-
-      return ctx.commit("SET_SEARCH_ENTRIES", searchEntries.filters);
     },
     addToDrawer(ctx, content) {
       return ctx.commit("ADD_TO_DRAWER", content);
@@ -180,11 +179,11 @@ export default {
         .then(() => {
           console.log("Searching?:", state.searching);
           if (state.searching) {
-            return dispatch("processDependents", itm).then(() =>
-              dispatch("getFilteredResults", formData)
-            );
+            return dispatch("processDependents", itm)
+              .then(() => dispatch("getFilterParams"))
+              .then(params => dispatch("getFilteredResults", params));
           } else {
-            console.log("reset", state.activeCategory)
+            console.log("reset", state.activeCategory);
             return dispatch("setCriteria", state.activeCategory);
           }
         })
@@ -209,37 +208,54 @@ export default {
     refreshActiveFilters({ commit }) {
       return commit("REFRESH_ACTIVE_FILTERS");
     },
-    async getFilteredResults({ rootState, state, getters, dispatch }, formData) {
+    getFilterParams({ state, getters }) {
+      var q_string = [];
       const reqObj = Object.assign(
         {
-          channel: (state.activeCategory === "courses") ? 'pro_player_packages' : state.activeCategory
+          channel:
+            state.activeCategory === "courses"
+              ? "pro_player_packages"
+              : state.activeCategory
         },
-        getters.getAuthObject,
-        formData
+        getters.getAuthObject
       );
-      console.log("filtered frm", formData);
-      const entries = await rootState.TXBA_UTILS.postAsyncData(reqObj)
-        // .then(data => console.log(data.data))
+      Object.entries(reqObj).forEach(([key, value]) => {
+        q_string.push(
+          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        );
+      });
+      return q_string.join("&") + '&' + getters.getFilterList;
+    },
+    async getFilteredResults({ rootState, dispatch }, queryString) {
+      const entries = await rootState.TXBA_UTILS.postAsyncData(queryString)
+        .then(data => {
+          console.log(
+            "returnData",
+            JSON.stringify(data, null, 4).substring(200, 400)
+          );
+          return data;
+        })
         .then(html => rootState.TXBA_UTILS.parseSearchResults(html.data))
         .then(searchEntries => dispatch("setResultData", searchEntries))
         .catch(error => console.error("ERROR", error));
     },
     setResultData({ commit }, data) {
       // debugger
-      console.log("filtered entries", data);
+      // console.log("filtered entries", data);
       commit("SET_ENTRIES_PAGINATION", data.pages);
       commit("SET_SEARCH_ENTRIES", data.filters);
       return data;
     },
     async processDependents({ dispatch, commit }, itm) {
       commit("BUILD_SECTION_DATA");
-      return await dispatch("generateDependentURL", itm.group.sectionId)
-        .then(url => {
-          console.log("gend url", url);
-          return url;
-        })
-        .then(url => dispatch("getFilterDependents", url))
-        .then(data => dispatch("processDependentFilterSection", data));
+      return await dispatch("generateDependentURL", itm.group.sectionId).then(
+        url => {
+          if (url)
+            return dispatch("getFilterDependents", url).then(data =>
+              dispatch("processDependentFilterSection", data)
+            );
+        }
+      );
     },
     async generateDependentURL({ dispatch, state }, sectionId) {
       console.log("processing deps", state.filterStatus);
@@ -324,11 +340,11 @@ export default {
     async fetchDefaultSearch(ctx) {
       // debugger
       const entries = await ctx.rootState.TXBA_UTILS.getDefaultSearchEntries();
-      // console.log('ENTRIES',entries)
+      // console.log(arguments.callee.name,entries)
       ctx.commit("SET_ENTRIES_PAGINATION", entries.pages);
       return ctx.commit("SET_DEFAULT_BROWSER_ENTRIES", entries.filters);
     },
-    async setCriteria({commit, dispatch, rootState, getters}, category) {
+    async setCriteria({ commit, dispatch, rootState, getters }, category) {
       const filters = await rootState.TXBA_UTILS.getSearchFiltersByCategory(
         category
       );
@@ -338,8 +354,8 @@ export default {
         category,
         getters.getAuthObject.params
       );
-      const results = dispatch('setResultData', searchEntries)
-      console.log('entry results', results)
+      const results = await dispatch("setResultData", searchEntries);
+      console.log("entry results", results);
       commit("BUILD_SECTION_DATA");
     },
     initStore: ctx => {
@@ -358,31 +374,18 @@ export default {
     default_browser_entries: state => state.default_browser_entries,
     getAuthObject: state => state.auth,
     getFilterList: state => {
-      // let filters = new URLSearchParams()
-      let filters = "{"
+      let filters = [];
+      filters.push(`keywords=${encodeURIComponent(state.keywords)}`);
       Object.keys(state.activeFilters).forEach(section => {
         state.activeFilters[section].forEach(itm => {
-          filters += `"${itm.name}":${itm.value},`
-          // let tmp = {}
-          // filters.append(itm.name, itm.value)
-          // // filters.push(`${itm.name} : ${itm.value}`)
-          // if (filters.hasOwnProperty(itm.name)) {
-          //   filters[itm.name].push(parseInt(itm.value));
-          // } else {
-          //   filters[itm.name] = [parseInt(itm.value)];
-          // }
+          filters.push(
+            `${encodeURIComponent(itm.name)}=${encodeURIComponent(itm.value)}`
+          );
         });
       });
-      filters = filters.slice(0, -1) 
-      filters += "}"
-      console.log('formvals', filters)
-      // Object.keys(filters).forEach(key => {
-      //   filters[key] =
-      //     filters[key].length > 1
-      //       ? JSON.stringify(filters[key])
-      //       : filters[key][0];
-      // });
-      return JSON.parse(filters);
-    },
+      filters = filters.join("&");
+      console.log("formvals", filters);
+      return filters;
+    }
   }
 };

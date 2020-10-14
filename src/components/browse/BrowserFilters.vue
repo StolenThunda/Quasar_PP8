@@ -4,9 +4,9 @@
       <p>
         <q-input
           bottom-slots
-          v-model="searchText"
+          v-model="keywords"
           label="Keyword Search"
-          name="searchText"
+          name="keywords"
           counter
           dense
         >
@@ -16,7 +16,7 @@
           <template v-slot:append>
             <q-icon
               name="close"
-              @click="searchText = ''"
+              @click="keywords = null"
               class="cursor-pointer"
             />
           </template>
@@ -44,9 +44,7 @@
               class="q-gutter-xs row"
               style="max-width: 300px"
               :class="{ 'truncate-chip-labels': truncate }"
-             
-             >
-              <!-- @click="toggle()" -->
+            >
               <q-chip
                 v-for="chip in criterion.chips"
                 :key="chip.sync + chip.name"
@@ -68,15 +66,22 @@
               >
                 {{ chip.text }}
               </q-chip>
-              <q-checkbox
-                v-model="filterStatus[chip.sync]"
+              <!-- <q-option-group
+                :options="activeFilters"
+                label="Notifications"
+                type="toggle"
+                v-model="selectedChips"
+              /> -->
+              <!-- <q-toggle
+                v-model="selectedChips"
                 v-for="chip in criterion.chips"
                 :key="chip.name + Math.random()"
                 :name="chip.name"
                 :val="chip.value"
                 dense
-                class="filtered"
-              />
+                class="fitered"
+              /> -->
+              <!-- :val="filterStatus[chip.sync]" -->
             </q-card-section>
           </q-card>
         </q-expansion-item>
@@ -86,7 +91,7 @@
 </template>
 
 <script>
-import { serialize } from "../../plugins/vanillaJS_Utilities.js"
+import { serialize } from "../../plugins/vanillaJS_Utilities.js";
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions } = createNamespacedHelpers("browser");
 
@@ -95,14 +100,10 @@ export default {
   data: () => ({
     truncate: false,
     filtered: false,
-    searchText: ""
+    selectedChips: []
   }),
-  created() {
-    this.$root.$on("toggle-truncate", this.toggleTruncate);
-    this.$root.$on("toggle-filtered", this.toggleFiltered);
-  },
   computed: {
-    ...mapState(["filterStatus", "search"])
+    ...mapState(["filterStatus", "search", "activeFilters", "keywords"])
   },
   methods: {
     toggleTruncate() {
@@ -112,11 +113,7 @@ export default {
       this.filtered = !this.filtered;
     },
     toggle(chipData) {
-      chipData = Object.assign(chipData, { searchText: this.searchText });
-      const form = document.querySelector("#filterForm");
-      const formData = serialize(form)
-      console.log('toggleForm', formData)
-      this.toggleSearchCriteria(chipData, formData);
+      this.toggleSearchCriteria(chipData);
     },
     ...mapActions(["toggleSearchCriteria"])
   }
