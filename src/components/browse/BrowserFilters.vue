@@ -26,24 +26,42 @@
         </q-input>
       </p>
 
-      <q-list bordered class="rounded-borders">
-        <!-- v-model="search.criteria" -->
-        <q-expansion-item
-          v-for="criterion in this.search.criteria"
-          :key="criterion.sectionId"
-          :label="criterion.sectionId"
-          :group="criterion.sectionId"
-          :ref="criterion.sectionId"
-          class="text-capitalize text-body2 section-header"
-          header-style="background-color:#464646"
-          expand-separator
-        >
-          <!-- default-opened -->
-          <q-card>
-            <q-card-section
-              class="q-gutter-xs row"
-              style="max-width: 300px"
-              :class="{ 'truncate-chip-labels': truncate }"
+    <q-list bordered class="rounded-borders">
+      <q-expansion-item
+        v-for="criterion in this.search.criteria"
+        :key="criterion.sectionId"
+        :label="criterion.sectionId"
+        :group="criterion.sectionId"
+        :ref="criterion.sectionId"
+        class="text-capitalize text-body2 section-header"
+        header-style="background-color:#464646"
+        expand-separator
+      >
+        <!-- default-opened -->
+        <q-card>
+          <q-card-section
+            class="q-gutter-xs row"
+            style="max-width: 300px"
+            :class="{ 'truncate-chip-labels': truncate }"
+          >
+            <!-- @click="toggle()" -->
+            <q-chip
+              v-for="chip in criterion.chips"
+              @click="toggle(chip)"
+              :v-model="search.status[chip.sync]"
+              :id="chip.sync"
+              :key="chip.sync + chip.name"
+              :title="chip.text"
+              :data-section-channel-id="criterion.sectionChannelId"
+              :data-section-dependencies="criterion.sectionDependencies"
+              :data-section-group-id="criterion.sectionGroupId"
+              :data-section-id="criterion.sectionId"
+              :data-section-stackable="criterion.sectionStackable"
+              :data-section-type="criterion.sectionType"
+              clickable
+              :color="search.status[chip.sync] ? 'secondary' : 'primary'"
+              text-color="white"
+              class="glossy ellipsis "
             >
               <q-chip
                 v-for="chip in criterion.chips"

@@ -139,4 +139,12 @@ export default {
   width: 100%;
   height: 100%;
 }
+:root .mejs__poster img {
+  display: block !important;
+}
+.my-play {
+  /* width: 90vw; */
+  height: 700px;
+  text-align: center;
+}
 </style>

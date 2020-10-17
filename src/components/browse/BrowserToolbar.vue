@@ -10,29 +10,42 @@
       <q-btn label="Close" color="secondary" icon="close" to="/" />
     </q-toolbar>
 
-    <q-toolbar inset>
-      <div id="browser-wrapper">
-        <div class="browser-filter-row" id="top-level-filters">
-          <ul
-            class="browser-top-filter-list"
-            id="filter-level-1"
-            v-for="tab in tabs"
-            :key="tab.name"
-          >
-            <li class="q-px-xs">
-              <q-btn
-                push
-                rounded
-                :color="activeCategory === tab.value ? 'secondary' : 'black'"
-                :label="tab.label"
-                @click="loadCategory(tab.value)"
-                :icon="tab.icon"
-              />
-            </li>
-          </ul>
+    <!-- <q-toolbar inset> -->
+      <center>
+      
+        <div id="browser-wrapper">
+      <q-scroll-area
+        horizontal
+        style="height: 50px; width: 95vw;"
+        class="bg-grey-14 rounded-borders"
+      >
+          <div class="browser-filter-row row no-wrap q-pa-sm" id="top-level-filters">
+            <ul
+              class="browser-top-filter-list"
+              id="filter-level-1"
+              v-for="tab in tabs"
+              :key="tab.name"
+            >
+              <li class="q-mx-xs">
+                <q-btn
+                  push
+                  rounded
+                  fab-mini
+                  no-wrap
+                  color="black"
+                  :label="tab.label"
+                  size="md"
+                  @click="loadCategory(tab.value)"
+                  :icon="tab.icon"
+                />
+              </li>
+            </ul>
+          </div>
+      </q-scroll-area>
         </div>
-      </div>
-    </q-toolbar>
+          
+      </center>
+    <!-- </q-toolbar> -->
   </div>
 </template>
 

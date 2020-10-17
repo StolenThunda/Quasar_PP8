@@ -74,9 +74,25 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .img {
   height: 140px;
   max-width: 150px;
+}
+</style>
+
+.browser-result-meta .meta-wrapper {
+    white-space: nowrap !important;
+    margin-right: .5em;
+    font-size: 1.2em !important;
+    font-weight: 700 !important;
+    margin-top: .25em !important;
+}
+span.meta-key {
+  color: white !important;  
+}
+span.meta-value  {
+    font-weight: 200 !important;
+  color: #aaa !important;
 }
 </style>
