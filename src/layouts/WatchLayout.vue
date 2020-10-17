@@ -73,7 +73,8 @@ export default {
         name: "Segments",
         componentName: "Segments",
         icon: "mdi-segment",
-        cmp: () => import("components/watch/WatchSidebar")
+        cmp: () => import("components/watch/WatchSidebar"),
+        menu: () => import("components/watch/WatchSettings")
       }
     ]);
   },

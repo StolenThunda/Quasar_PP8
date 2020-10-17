@@ -79,8 +79,6 @@ export default {
   height: 140px;
   max-width: 150px;
 }
-</style>
-
 .browser-result-meta .meta-wrapper {
     white-space: nowrap !important;
     margin-right: .5em;

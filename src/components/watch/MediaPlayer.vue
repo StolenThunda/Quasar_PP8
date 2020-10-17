@@ -19,7 +19,7 @@
       </div>
     </plyr-vue>
 
-    <!-- <video
+    <video
       v-if="this.type == 'audio'"
       id="mediaPlayer"
       ref="mediaPlayer"
@@ -33,7 +33,7 @@
         :src="cdn_url + '/' + id"
         :type="source.type"
       />
-    </video> -->
+    </video>
 
     <player-controls @hook:mounted="setEvents" @player-play="play" @player-pause="pause" />
   </div>

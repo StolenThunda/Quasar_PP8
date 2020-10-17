@@ -20,9 +20,9 @@
               class="cursor-pointer"
             />
           </template>
-          <!-- <template v-slot:hint>
+          <template v-slot:hint>
           Press [Enter] to search
-        </template> -->
+        </template>
         </q-input>
       </p>
 
@@ -44,25 +44,6 @@
             style="max-width: 300px"
             :class="{ 'truncate-chip-labels': truncate }"
           >
-            <!-- @click="toggle()" -->
-            <q-chip
-              v-for="chip in criterion.chips"
-              @click="toggle(chip)"
-              :v-model="search.status[chip.sync]"
-              :id="chip.sync"
-              :key="chip.sync + chip.name"
-              :title="chip.text"
-              :data-section-channel-id="criterion.sectionChannelId"
-              :data-section-dependencies="criterion.sectionDependencies"
-              :data-section-group-id="criterion.sectionGroupId"
-              :data-section-id="criterion.sectionId"
-              :data-section-stackable="criterion.sectionStackable"
-              :data-section-type="criterion.sectionType"
-              clickable
-              :color="search.status[chip.sync] ? 'secondary' : 'primary'"
-              text-color="white"
-              class="glossy ellipsis "
-            >
               <q-chip
                 v-for="chip in criterion.chips"
                 :key="chip.sync + chip.name"
