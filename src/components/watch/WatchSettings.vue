@@ -14,7 +14,7 @@
         <q-img :src="getImage" />
 
         <q-card-section>
-          <pre></pre>
+          <pre>{{ getSetup }}</pre>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -38,11 +38,11 @@ export default {
   },
   
   computed: {
+    getSetup() { return this.$store.state.watch.currentSetup },
     getImage() { 
       const num = Math.floor(Math.random() * 50)
       return `https://picsum.photos/id/${num}/500/300`
     },
-    ...mapState('')
   },
   methods: {
   }

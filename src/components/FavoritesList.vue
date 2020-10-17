@@ -1,10 +1,10 @@
 <template>
   <q-list dense>
     <q-expansion-item
+      group="accordion"
       :label="item"
-      expand-icon-toggle
-      header
-      class="q-pa-md"
+      class="text-capitalize text-body2 section-header"
+      header-style="background-color:#464646; min-width: 250px;"
       style="max-width: 350px"
       v-for="(item, i) in Object.keys(favorites)"
       :key="i"
