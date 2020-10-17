@@ -46,11 +46,11 @@
     </q-list>
     <slot name="footer-pages"></slot>
     <q-page-sticky position="top-right" expand :offset="[18, 10]" v-if="searching">
-      <q-fab label="Current Filters" title="View Current Filters" glossy color="primary" direction="left">
-        <q-fab-action hide-label square>
+      <!-- <q-fab label="Current Filters" title="View Current Filters" glossy color="primary" direction="left">
+        <q-fab-action hide-label square> -->
           <current-search />
-        </q-fab-action>
-      </q-fab>
+        <!-- </q-fab-action>
+      </q-fab> -->
     </q-page-sticky>
   </q-page>
 </template>

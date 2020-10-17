@@ -110,7 +110,7 @@
     data: () => ({ playing: false }),
     watch: {
       playing(value) {
-        debugger
+        // debugger
       if (value) {
         return this.$emit('player-play');
       }

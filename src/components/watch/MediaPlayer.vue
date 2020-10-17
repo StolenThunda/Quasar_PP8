@@ -99,7 +99,7 @@ export default {
   },
   methods: {
     setEvents() {
-      debugger
+      // debugger
       for (let e of CONTROL_EVENTS) {
         this.$on(e.name, e.callback);
       }

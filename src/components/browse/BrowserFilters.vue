@@ -66,22 +66,6 @@
               >
                 {{ chip.text }}
               </q-chip>
-              <!-- <q-option-group
-                :options="activeFilters"
-                label="Notifications"
-                type="toggle"
-                v-model="selectedChips"
-              /> -->
-              <!-- <q-toggle
-                v-model="selectedChips"
-                v-for="chip in criterion.chips"
-                :key="chip.name + Math.random()"
-                :name="chip.name"
-                :val="chip.value"
-                dense
-                class="fitered"
-              /> -->
-              <!-- :val="filterStatus[chip.sync]" -->
             </q-card-section>
           </q-card>
         </q-expansion-item>
@@ -103,7 +87,7 @@ export default {
     selectedChips: []
   }),
   computed: {
-    ...mapState(["filterStatus", "search", "activeFilters", "keywords"])
+    ...mapState(["filterStatus", "search",  "keywords"])
   },
   methods: {
     toggleTruncate() {
