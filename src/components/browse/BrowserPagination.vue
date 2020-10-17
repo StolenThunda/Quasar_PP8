@@ -1,5 +1,5 @@
 <template>
-  <q-banner v-if="search.pages.length">
+  <q-banner v-if="search.pages.length" relative-position>
     <div class="pagination-links">
     <q-btn
       v-for="lnk in search.pages"
@@ -9,8 +9,9 @@
       :label="lnk.content"
       :class="lnk.class"
       @click="goto(lnk.url)"
+      :color="lnk.class.indexOf('active') > -1 ? 'primary' : 'secondary'"
+      push
       size="md"
-      glossy
       outline
     ></q-btn>
     <!-- PAGES: {{ search.pages.length }} -->
@@ -32,23 +33,23 @@ export default {
 
     },
     goto(str){
-      console.log(str)
-      this.gotoPage(str)
+      const url = str.replace("https://texasbluesalley.com/proplayer74-tony/", "")
+      console.log("goto",url)
+      this.gotoPage(url)
     },
     ...mapActions('browser',['gotoPage'])
   }
 }
 </script>
 
-<style lang="sass" scoped>
+<style lang="stylus" scoped>
 .pagination-links button 
   font-size: .5rem;
   display: inline-block;
   margin-right: .25em;
-  background: "secondary"
 
 .pagination-links button.active 
-  background: #777;
-  pointer-events: none;
+  background-color: 'grey' !important;
+  pointer-events: none !important;
 
 </style>

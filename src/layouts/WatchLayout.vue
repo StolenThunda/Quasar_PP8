@@ -20,7 +20,11 @@
       </watch-tool-bar>
     </q-header>
 
-    <q-drawer v-model="leftDrawer" side="left" bordered show-if-above>
+    <q-drawer 
+      v-model="leftDrawer" 
+      :width="300"
+      :breakpoint="500"    
+      show-if-above>
       <!-- QScrollArea is optional -->
       <!-- <q-scroll-area  style="height: 200px; max-width: 300px;"> -->
       <q-scroll-area

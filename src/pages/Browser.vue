@@ -1,9 +1,6 @@
 <template>
-  <q-card class="q-gutter-xs"  flat>
-    <result-panel v-model="search_entries" :resultList="search_entries">
-      <template #title>
-        <current-search />
-      </template>
+  <div>
+    <result-panel v-if="search_entries" :resultList="search_entries">
       <template #header-pages>
         <pagination v-model="search.pages.length" />
       </template>
@@ -13,35 +10,25 @@
     </result-panel>
 
     <result-panel
-      v-if="search_entries === null"
+      v-else
       :resultList="default_browser_entries"
+      title="Latest Additions:"
     >
-      <template #title>Latest Additions:</template>
+      <!-- <template #title></template> -->
     </result-panel>
-  </q-card>
+  </div>
 </template>
 
 <script>
-import { createNamespacedHelpers } from "vuex";
-const { mapState, mapActions } = createNamespacedHelpers("browser");
-
+import { mapState } from "vuex";
 export default {
   name: "Browser",
   components: {
     ResultPanel: () => import("components/browse/BrowserResultItems"),
-    CurrentSearch: () => import("components/browse/CurrentSearch"),
     Pagination: () => import("components/browse/BrowserPagination")
   },
-  mounted() {
-    this.loadDefaults();
-  },
   computed: {
-    ...mapState(["default_browser_entries", "search_entries", "search"])
+    ...mapState('browser', ["default_browser_entries", "search_entries", "search"])
   },
-  methods: {
-    ...mapActions({
-      loadDefaults: "fetchDefaultSearch"
-    })
-  }
 };
 </script>

@@ -1,11 +1,15 @@
 <template>
   <q-expansion-item
     v-if="segments"
-    class="q-ma-none q-pa-none"
-    expand-separator
     :caption="title"
     group="somegroup"
+    dense-toggle
+    default-opened
+    style="min-width: 250px;"
+    class="text-capitalize text-body2 section-header"
+    header-style="background-color:#464646"
   >
+    <!-- expand-separator -->
     <q-list keep-alive bordered dense style="max-width: 600px">
       <q-item
         :id="'seg-' + seg.id"
@@ -18,7 +22,7 @@
         clickable
         @click="playSegment"
         height="20px"
-        
+        active-class="secondary"
       >
         <q-item-section avatar>
           <q-icon :color="seg.color" :name="s.icon" size="xs"/>

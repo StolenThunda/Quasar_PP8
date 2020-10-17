@@ -1,15 +1,14 @@
 <template>
-  <q-layout view="hHh lpR fFf">
-
+    <!-- <q-layout view="lHh Lpr lff"> -->
+    <q-layout view="hHh Lpr lff">
     <q-header elevated>
       <browser-toolbar @toggle-drawer="toggleDrawer">
         <template #toggleDrawer>
           <q-btn
-            flat
-            dense
-            round
-            title="Toggle Filters"
-            icon="mdi-filter"
+            label="Add Filters"
+            title="Add Filters"
+            color="secondary"
+            icon-right="mdi-filter-plus-outline"
             aria-label="Filters"
             @click="toggleDrawer"
           />
@@ -17,7 +16,7 @@
       </browser-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" show-if-above bordered>
+    <q-drawer v-model="leftDrawerOpen" side="left" bordered>
         <dynamic-tab @changeCategory="catChange" :tabList="drawer" />
     </q-drawer>
 

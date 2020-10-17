@@ -1,4 +1,4 @@
-import { authGuard } from "../auth/authGuard.js"
+import { authGuard } from "../auth/authGuard.js";
 const routes = [
   {
     path: "/",
@@ -15,12 +15,12 @@ const routes = [
         path: "/browser",
         component: () => import("pages/Browser")
       },
-    {
+      {
         name: "tuner",
         path: "/tuner",
         component: () => import("pages/Tools"),
-        meta: { 
-          src: '/dev/tuner'
+        meta: {
+          src: "/dev/tuner"
         }
       }
     ]
@@ -31,15 +31,18 @@ const routes = [
     path: "/watch",
     component: () => import("layouts/WatchLayout.vue"),
     beforeEnter: authGuard,
-    children: [{ 
-      name: "player",
-      path: "/watch/:packageID/:segmentID",
-      component: () => import("components/watch/Player")
-    },{
-      name: "package",
-      path: "/watch/:packageID", 
-      component: () => import("pages/Watch"),
-    }]
+    children: [
+      {
+        name: "player",
+        path: "/watch/:packageID/:segmentID",
+        component: () => import("components/watch/PlayerWrapper")
+      },
+      {
+        name: "package",
+        path: "/watch/:packageID",
+        component: () => import("pages/Watch")
+      }
+    ]
   },
   {
     path: "/profile",

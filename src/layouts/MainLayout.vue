@@ -33,7 +33,9 @@
     </q-drawer>
 
     <q-page-container>
+      <transition mode="out-in">
       <router-view @toggle-drawer="leftDrawerOpen = !leftDrawerOpen" />
+      </transition>
     </q-page-container>
   </q-layout>
 </template>
