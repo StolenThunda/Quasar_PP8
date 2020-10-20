@@ -2,7 +2,7 @@
   <q-btn icon="fa fa-cogs" label="Tools">
     <q-menu transition-show="flip-right" transition-hide="flip-left">
       <q-list style="min-width: 100px;" dense>
-        <template v-for="toolSection in tools">
+        <template v-for="toolSection in this.tools">
           <span :key="toolSection.title">
           <q-item>
             <q-item-label class="text-weight-bolder text-capitalize">{{
