@@ -107,7 +107,14 @@ cfg.module.rules.push({
       importStrategy: 'auto',
 
       // Quasar plugins
-      plugins: []
+      plugins: [
+        'Notify'
+      ],
+      // config: {
+      //   notify: {
+
+      //   }
+      // }
     },
 
     // animations: 'all', // --- includes all animations

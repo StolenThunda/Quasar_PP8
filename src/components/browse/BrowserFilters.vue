@@ -2,9 +2,9 @@
   <div class="q-px-xs">
     <form id="filterForm">
       <p>
+          <!-- bottom-slots -->
         <q-input
-          bottom-slots
-          v-model="keywords"
+          v-model="formKeywords"
           label="Keyword Search"
           name="keywords"
           counter
@@ -16,7 +16,7 @@
           <template v-slot:append>
             <q-icon
               name="close"
-              @click="keywords = null"
+              @click="formKeywords = null"
               class="cursor-pointer"
             />
           </template>
@@ -83,7 +83,8 @@ export default {
   data: () => ({
     truncate: false,
     filtered: false,
-    selectedChips: []
+    selectedChips: [],
+    formKeywords: ""
   }),
   computed: {
     ...mapState(["filterStatus", "search",  "keywords"])

@@ -35,7 +35,7 @@
       />
     </video>
 
-    <player-controls @hook:mounted="setEvents" @player-play="play" @player-pause="pause" />
+    <player-controls @hook:mounted="setEvents" />
   </div>
 </template>
 
@@ -100,6 +100,10 @@ export default {
   methods: {
     setEvents() {
       // debugger
+      
+      this.$q.notify({message: "controls mounted"});
+      console.log('controls mounted')
+      
       for (let e of CONTROL_EVENTS) {
         this.$on(e.name, e.callback);
       }

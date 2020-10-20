@@ -1,5 +1,6 @@
 <template>
-  <q-layout view="lHh Lpr lff">
+    <q-layout view="hHh Lpr lff" container style="height: 100vh" class="shadow-2 rounded-borders">
+  <!-- <q-layout view="lHh Lpr lff"> -->
     <!-- Be sure to play with the Layout demo on docs -->
 
     <!-- (Optional) The Header -->
@@ -22,13 +23,13 @@
 
     <q-drawer 
       v-model="leftDrawer" 
+      bordered
       :width="300"
       :breakpoint="500"    
       show-if-above>
       <!-- QScrollArea is optional -->
       <!-- <q-scroll-area  style="height: 200px; max-width: 300px;"> -->
       <q-scroll-area
-        class="fit q-pa-sm"
         :delay="1200"
         :thumb-style="thumbStyle"
         style="height: 90vh; max-width: 300px;"

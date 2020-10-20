@@ -4,13 +4,13 @@ export default {
   state: {
     currentCourse: null,
     currentSegment: null,
-    currentSetup: null,
+    currentSetup: { sources: null},
     currentLoops: null,
     sections: null,
     courseHistory: [], 
     playerOpts: {
       // autoplay: false,
-      controls: true
+      controls: false
       // live: false,
       // aspectRatio: "4:3",
     }
