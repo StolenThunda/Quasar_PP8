@@ -1,14 +1,19 @@
 <template>
   <q-list dense>
     <q-expansion-item
-      :label="item"
-      expand-icon-toggle
-      header
-      class="q-pa-md"
+      group="accordion"
+      class="text-capitalize text-body2 section-header"
+      header-style="background-color:#464646; min-width: 250px;"
       style="max-width: 350px"
       v-for="(item, i) in Object.keys(favorites)"
-      :key="i"
-    >
+      :key="i"  
+      switch-toggle-side  
+    >    
+    <template #header>
+    {{ item }} 
+    <q-space />
+    <q-badge color="orange" floating>{{ favorites[item].length }} </q-badge>
+    </template>
       <q-list
         v-model="favorites"
         class="q-py-sm  rounded-borders"
@@ -27,9 +32,9 @@
               round
               :to="'/watch/' + favorite.id"
             />
+              <!-- :to="getLink(item, favorite.id)" -->
           </q-item-section>
-
-          <q-item-section  class="fav-item ellipsis" :title="favorite.title">
+          <q-item-section  class="fav-item" :title="favorite.title">
             {{ favorite.title }}
           </q-item-section>
 
@@ -59,12 +64,6 @@ export default {
     ...mapState(["favorites"])
   },
   methods: {
-    removeFavorite(id) {
-      //TODO: Code removal of favs
-      // const ret =  this.removeFavorite(id)
-      // console.log(ret);
-      console.log(`Removing ${id}`);
-    },
     ...mapActions(["removeFavorite"])
   }
 };

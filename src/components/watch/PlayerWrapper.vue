@@ -4,10 +4,9 @@
       v-if="currentSetup.sources"
       :set="(s = currentSetup.sources[0])"
     >
-    {{ currentSetup }}
+      <media-player v-if="!(this.currentSetup.type in this.renderers)" v-bind="currentSetup"  :src="s.src" />
       <pdf-renderer v-if="s.type==='pdf'"  :src="s.src" />
       <soundslice-renderer v-if="s.type==='soundslice'" :src="s.src" />
-      <media-player v-if="!(this.currentSetup.type in this.renderers)" v-bind="currentSetup"  :src="s.src" />
   </q-page>
 </template>
 
@@ -23,18 +22,10 @@ export default {
   data: () => ({
     renderers: ['pdf', 'soundslice']
   }),
-  computed: {  
-    // isRenderer() {
-    //   debugger
-    //   return this.currentSetup.type in this.renderers
-    // },
+  computed: {
     ...mapState("watch", ["currentSetup"])
   },
   methods: {
-    //   isRenderer() {
-    //   debugger
-    //   return this.currentSetup.type in this.renderers
-    // },
   }
 };
 </script>

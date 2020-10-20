@@ -45,7 +45,7 @@
       </q-intersection>
     </q-list>
     <slot name="footer-pages"></slot>
-    <q-page-sticky position="top-right" expand :offset="[18, 10]" v-if="searching">
+    <q-page-sticky position="top-right" expand :offset="[18, 10]" v-if="$store.state.browser.searching">
       <!-- <q-fab label="Current Filters" title="View Current Filters" glossy color="primary" direction="left">
         <q-fab-action hide-label square> -->
           <current-search />
@@ -56,7 +56,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
 export default {
   props: {
     resultList: Array,
@@ -66,7 +65,6 @@ export default {
     images() {
       return this.resultList.length > 0;
     },
-    ...mapState('browser', ["searching"])
   },
   components: {
     CurrentSearch: () => import("components/browse/CurrentSearch")

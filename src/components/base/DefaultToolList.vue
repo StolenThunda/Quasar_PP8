@@ -2,71 +2,33 @@
   <q-btn icon="fa fa-cogs" label="Tools">
     <q-menu transition-show="flip-right" transition-hide="flip-left">
       <q-list style="min-width: 100px;" dense>
-        <!-- <q-item>
-          <q-item-label caption>Tools</q-item-label>
-        </q-item>
-        <q-separator /> -->
+        <template v-for="toolSection in this.tools">
+          <span :key="toolSection.title">
+          <q-item>
+            <q-item-label class="text-weight-bolder text-capitalize">{{
+              toolSection.title
+            }}</q-item-label>
+          </q-item>
+          <q-separator />
+          <template v-for="child in toolSection.children">
+            <span :key="child.title">
+            <q-item v-if="child.internal" v-ripple clickable :to="child.internal">
+              <q-item-section avatar>
+                <q-icon :name="child.icon" size="xs" />
+              </q-item-section>
 
-        <q-item v-ripple clickable :to="{name: 'tuner'}">
-          <q-item-section avatar>
-            <q-icon name="fa fa-music" size="xs" />
-          </q-item-section>
-
-          <q-item-section>Guitar Tuner</q-item-section>
-        </q-item>
-
-        <q-item v-ripple clickable>
-          <q-item-section avatar>
-            <q-icon name="fa fa-bug" size="xs" />
-          </q-item-section>
-
-          <q-item-section>Spider Drills</q-item-section>
-        </q-item>
-
-        <q-separator />
-        <q-item>
-          <q-item-label caption>Import</q-item-label>
-        </q-item>
-        <q-separator />
-
-        <q-item v-ripple clickable>
-          <q-item-section avatar>
-            <q-icon name="fa fa-youtube" size="xs" />
-          </q-item-section>
-
-          <q-item-section>Load Youtube Video</q-item-section>
-        </q-item>
-
-        <q-separator />
-        <q-item>
-          <q-item-label caption>Account</q-item-label>
-        </q-item>
-        <q-separator />
-        <q-item v-ripple clickable>
-          <q-item-section avatar>
-            <q-icon name="fa fa-user-circle" size="xs" />
-          </q-item-section>
-          <q-item-section @click="go('account')"
-            >Account Dashboard</q-item-section
-          >
-        </q-item>
-        <q-item v-ripple clickable>
-          <q-item-section avatar>
-            <q-icon name="fa fa-users" size="xs" />
-          </q-item-section>
-          <q-item-section @click="go('forum')">Locals Forums</q-item-section>
-        </q-item>
-        <q-separator />
-        <q-item>
-          <q-item-label caption>Update</q-item-label>
-        </q-item>
-        <q-separator />
-        <q-item v-ripple clickable>
-          <q-item-section avatar>
-            <q-icon name="fa fa-refresh" size="xs" />
-          </q-item-section>
-          <q-item-section @click="refresh">Force Refresh</q-item-section>
-        </q-item>
+              <q-item-section>{{ child.title }}</q-item-section>
+            </q-item>
+            <q-item v-if="child.external" v-ripple clickable>
+              <q-item-section avatar>
+                <q-icon  :name="child.icon" size="xs" />
+              </q-item-section>
+              <q-item-section  @click="go(child.external)">{{ child.title }}</q-item-section>
+            </q-item>
+            </span>
+          </template>
+          </span>
+        </template>
       </q-list>
     </q-menu>
   </q-btn>
@@ -74,16 +36,74 @@
 
 <script>
 export default {
-  // name: 'ComponentName',
-  data() {
-    return {};
-  },
+  name: "ToolList",
+  data: () => ({
+    tools: [
+      {
+        title: "TXBA Exclusives",
+        children: [
+          {
+            title: "Guitar Tuner",
+            icon: "mdi-tune",
+            internal: "/tools/tuner"
+          },
+          {
+            title: "Spider Drills",
+            icon: "mdi-spider-web",
+            internal: 'blah'
+          },
+          {
+            title: "Fretboard Tool",
+            icon: "mdi-guitar-acoustic",
+            internal: '/tools/fretboard'
+          }
+        ]
+      },
+      {
+        title: "Import",
+        children: [
+          {
+            title: "Load Youtube Video",
+            icon: "mdi-youtube",
+            external: " "
+          }
+        ]
+      },
+      {
+        title: "Account",
+        children: [
+          {
+            title: "Account Dashboard",
+            icon: "fa fa-user-circle",
+            external: "/tools/ex/account"
+          },
+          {
+            title: "Locals Forums",
+            icon: "fa fa-users",
+            external: "/tools/ex/forums"
+          }
+        ]
+      },
+      {
+        title: "Update",
+        children: [
+          {
+            title: "Refresh Page",
+            icon: "mdi-refresh",
+            external: "refresh"
+          }
+        ]
+      }
+    ]
+  }),
   methods: {
     refresh() {
       window.location.reload(true);
     },
     go(dest) {
-      window.open(`https://texasbluesalley.com/${dest}`);
+      if (dest !== "refresh")
+        this.$router.push(`https://texasbluesalley.com/${dest}`);
+      this.refresh();
     }
   }
 };
@@ -96,4 +116,8 @@ export default {
     background: #777 !important;
     line-height: 1.25em !important;
     font-size: .8em !important;
+.q-link
+  background-color: #000000 !important
+.q-item
+  background-color: #424242
 </style>

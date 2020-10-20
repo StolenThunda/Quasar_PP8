@@ -17,7 +17,6 @@ export default {
     default_browser_entries: null,
     search_entries: null,
     activeFilters: {},
-    browserTool: new ProPlayerBrowser(),
     filterSectionList: new BrowserFilterSectionList(),
     filterStatus: {},
     search: {
@@ -384,7 +383,7 @@ export default {
         });
       });
       filters = filters.join("&");
-      console.log("formvals", filters);
+      // console.log("formvals", filters);
       return filters;
     }
   }

@@ -1,5 +1,5 @@
 <template >
- <div id="mediaControlsWrapper">
+<div id="mediaControlsWrapper">
         <div id="progressSliderWrapper">
           <div id="current-time">0.00</div>
           <div id="time-left"></div>
@@ -26,7 +26,7 @@
               <button
                 id="playback-beginning"
                 class="transport-button"
-                onClick="thePlayer.theEngine.onButtonPlaybackRestart();"
+                onClick="onButtonPlaybackRestart()"
                 
                 title="Back to the beginning."
               >
@@ -37,7 +37,7 @@
               <button
                 id="playback-rewind"
                 class="transport-button"
-                onClick="thePlayer.theEngine.onButtonPlaybackRewind5();"
+                onClick="onButtonPlaybackRewind5()"
                 
                 title="Rewind 5 Seconds."
               >
@@ -48,7 +48,7 @@
               <button
                 id="playback-forward"
                 class="transport-button"
-                onClick="thePlayer.theEngine.onButtonPlaybackForward5();"
+                onClick="onButtonPlaybackForward5()"
                 
                 title="Forward 5 Seconds."
               >
@@ -59,7 +59,7 @@
               <button
                 id="looping-start"
                 class="transport-button"
-                onClick="thePlayer.theEngine.onButtonSetLoopStart();"
+                onClick="onButtonSetLoopStart();"
                 
                 title="Set loop starting point."
               >
@@ -70,7 +70,7 @@
               <button
                 id="looping-stop"
                 class="transport-button"
-                onClick="thePlayer.theEngine.onButtonSetLoopEnd();"
+                onClick="onButtonSetLoopEnd();"
                 
                 title="Set loop stopping point."
               >
@@ -81,7 +81,7 @@
               <button
                 id="looping-toggle"
                 class="transport-button"
-                onClick="thePlayer.theEngine.onButtonToggleLooping()"
+                onClick="onButtonToggleLooping()"
                 
                 title="Begin/End Looping."
               >
@@ -93,7 +93,7 @@
                 id="controls-toggle"
                 class="transport-button"
                 title="Video Settings."
-                onClick="thePlayer.theEngine.toggleVideoControls();"
+                onClick="toggleVideoControls()"
               >
                 <q-icon name="mdi-cog"></q-icon>
               </button>
@@ -117,14 +117,15 @@
       return this.$emit('player-pause');
     },
     mounted() {
-      this.$q.notify({message: "controls mounted"});
+      // this.$q.notify({message: "controls mounted"});
+      // console.log('controls mounted')
     }
     }
     
   }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 #mediaWrapper {
   position: absolute;
   top: 2.75rem;

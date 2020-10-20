@@ -10,11 +10,15 @@
         outline
       />
        <q-dialog v-model="setup">
-      <q-card class="my-card">
-        <q-img :src="getImage" />
-
+      <q-card class="my-card" :set="(img = getImage)">
+        <q-img :src="img">
+          
+          <div class="absolute-bottom text-subtitle1 text-center">
+        {{ img }}
+          </div>
+        </q-img>
         <q-card-section>
-          <pre></pre>
+          <pre>{{ getSetup }}</pre>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -38,11 +42,11 @@ export default {
   },
   
   computed: {
+    getSetup() { return this.$store.state.watch.currentSetup },
     getImage() { 
       const num = Math.floor(Math.random() * 50)
       return `https://picsum.photos/id/${num}/500/300`
     },
-    ...mapState('')
   },
   methods: {
   }

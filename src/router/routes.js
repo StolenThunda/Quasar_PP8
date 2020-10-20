@@ -11,16 +11,38 @@ const routes = [
     beforeEnter: authGuard,
     children: [
       {
+        name: "external",
+        path: "ex/:dest",
+        beforeEnter() { location.href = `https://texasbluesalley.com/${dest}`;
+}
+      },
+      {
         name: "browser",
-        path: "/browser",
+        path: "browser",
         component: () => import("pages/Browser")
       },
       {
         name: "tuner",
-        path: "/tuner",
+        path: "tuner",
         component: () => import("pages/Tools"),
         meta: {
           src: "/dev/tuner"
+        }
+      },
+      {
+        name: "spider",
+        path: "spider",
+        component: () => import("pages/Tools"),
+        meta: {
+          src: "/dev/spider"
+        }
+      },
+      {
+        name: "fretboard",
+        path: "fretboard",
+        component: () => import("pages/Tools"),
+        meta: {
+          src: "/dev/fretboard"
         }
       }
     ]

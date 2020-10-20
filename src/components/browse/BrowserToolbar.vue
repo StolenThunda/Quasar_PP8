@@ -32,7 +32,7 @@
                   rounded
                   fab-mini
                   no-wrap
-                  color="black"
+                  :color="activeCategory === tab.value ? 'secondary' : 'black'"
                   :label="tab.label"
                   size="md"
                   @click="loadCategory(tab.value)"
