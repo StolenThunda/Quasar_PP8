@@ -1,5 +1,6 @@
 <template>
-  <q-layout view="lHh Lpr lff">
+<q-layout view="hHh Lpr lff" container style="height: 100vh" class="shadow-2 rounded-borders">
+  <!-- <q-layout view="lHh Lpr lff"> -->
     <q-header elevated>
       <q-toolbar>
         <drawer-toggle 
@@ -28,12 +29,16 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
+      :width="350"
+      :breakpoint="500"
     >
       <dynamic-tab :tabList="sidebarTabs" />
     </q-drawer>
 
     <q-page-container>
+      <transition mode="out-in">
       <router-view @toggle-drawer="leftDrawerOpen = !leftDrawerOpen" />
+      </transition>
     </q-page-container>
   </q-layout>
 </template>

@@ -1,4 +1,4 @@
-import { authGuard } from "../auth/authGuard.js"
+import { authGuard } from "../auth/authGuard.js";
 const routes = [
   {
     path: "/",
@@ -11,16 +11,38 @@ const routes = [
     beforeEnter: authGuard,
     children: [
       {
+        name: "external",
+        path: "ex/:dest",
+        beforeEnter() { location.href = `https://texasbluesalley.com/${dest}`;
+}
+      },
+      {
         name: "browser",
-        path: "/browser",
+        path: "browser",
         component: () => import("pages/Browser")
       },
-    {
+      {
         name: "tuner",
-        path: "/tuner",
+        path: "tuner",
         component: () => import("pages/Tools"),
-        meta: { 
-          src: '/dev/tuner'
+        meta: {
+          src: "/dev/tuner"
+        }
+      },
+      {
+        name: "spider",
+        path: "spider",
+        component: () => import("pages/Tools"),
+        meta: {
+          src: "/dev/spider"
+        }
+      },
+      {
+        name: "fretboard",
+        path: "fretboard",
+        component: () => import("pages/Tools"),
+        meta: {
+          src: "/dev/fretboard"
         }
       }
     ]
@@ -31,15 +53,18 @@ const routes = [
     path: "/watch",
     component: () => import("layouts/WatchLayout.vue"),
     beforeEnter: authGuard,
-    children: [{ 
-      name: "player",
-      path: "/watch/:packageID/:segmentID",
-      component: () => import("components/watch/Player")
-    },{
-      name: "package",
-      path: "/watch/:packageID", 
-      component: () => import("pages/Watch"),
-    }]
+    children: [
+      {
+        name: "player",
+        path: "/watch/:packageID/:segmentID",
+        component: () => import("components/watch/PlayerWrapper")
+      },
+      {
+        name: "package",
+        path: "/watch/:packageID",
+        component: () => import("pages/Watch")
+      }
+    ]
   },
   {
     path: "/profile",

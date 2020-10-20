@@ -1,15 +1,15 @@
 <template>
-  <q-layout view="hHh lpR fFf">
-
+  <!-- <q-layout view="lHh Lpr lff"> -->
+  <q-layout view="hHh Lpr lff">
     <q-header elevated>
       <browser-toolbar @toggle-drawer="toggleDrawer">
         <template #toggleDrawer>
           <q-btn
-            flat
-            dense
-            round
+            label="Toggle Filters"
             title="Toggle Filters"
-            icon="mdi-filter"
+            color="secondary"
+            icon="menu"
+            icon-right="mdi-filter-plus-outline"
             aria-label="Filters"
             @click="toggleDrawer"
           />
@@ -17,8 +17,8 @@
       </browser-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" show-if-above bordered>
-        <dynamic-tab @changeCategory="catChange" :tabList="drawer" />
+    <q-drawer v-model="leftDrawerOpen" side="left" bordered>
+      <dynamic-tab @changeCategory="catChange" :tabList="drawer" />
     </q-drawer>
 
     <q-page-container>
@@ -48,7 +48,8 @@ export default {
   },
   methods: {
     toggleDrawer(val) {
-        this.leftDrawerOpen = (typeof val === 'boolean') ? val :  !this.leftDrawerOpen
+      this.leftDrawerOpen =
+        typeof val === "boolean" ? val : !this.leftDrawerOpen;
     },
     catChange(cat) {
       this.category = cat;

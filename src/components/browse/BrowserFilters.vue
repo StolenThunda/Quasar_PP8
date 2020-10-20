@@ -1,18 +1,30 @@
 <template>
-  <div class="q-pa-xs">
-    <p>
-      <q-input bottom-slots v-model="text" label="Keyword Search" counter dense>
-        <template v-slot:prepend>
-          <q-btn icon="search" color="primary" glossy dense />
-        </template>
-        <template v-slot:append>
-          <q-icon name="close" @click="text = ''" class="cursor-pointer" />
-        </template>
-        <!-- <template v-slot:hint>
+  <div class="q-px-xs">
+    <form id="filterForm">
+      <p>
+          <!-- bottom-slots -->
+        <q-input
+          v-model="formKeywords"
+          label="Keyword Search"
+          name="keywords"
+          counter
+          dense
+        >
+          <template v-slot:prepend>
+            <q-btn icon="search" color="primary" glossy dense />
+          </template>
+          <template v-slot:append>
+            <q-icon
+              name="close"
+              @click="formKeywords = null"
+              class="cursor-pointer"
+            />
+          </template>
+          <template v-slot:hint>
           Press [Enter] to search
-        </template> -->
-      </q-input>
-    </p>
+        </template>
+        </q-input>
+      </p>
 
     <q-list bordered class="rounded-borders">
       <q-expansion-item
@@ -32,35 +44,37 @@
             style="max-width: 300px"
             :class="{ 'truncate-chip-labels': truncate }"
           >
-            <!-- @click="toggle()" -->
-            <q-chip
-              v-for="chip in criterion.chips"
-              @click="toggle(chip)"
-              :v-model="search.status[chip.sync]"
-              :id="chip.sync"
-              :key="chip.sync + chip.name"
-              :title="chip.text"
-              :data-section-channel-id="criterion.sectionChannelId"
-              :data-section-dependencies="criterion.sectionDependencies"
-              :data-section-group-id="criterion.sectionGroupId"
-              :data-section-id="criterion.sectionId"
-              :data-section-stackable="criterion.sectionStackable"
-              :data-section-type="criterion.sectionType"
-              clickable
-              :color="search.status[chip.sync] ? 'secondary' : 'primary'"
-              text-color="white"
-              class="glossy ellipsis "
-            >
-              {{ chip.text }}
-            </q-chip>
-          </q-card-section>
-        </q-card>
-      </q-expansion-item>
-    </q-list>
+              <q-chip
+                v-for="chip in criterion.chips"
+                :key="chip.sync + chip.name"
+                @click="toggle(chip)"
+                :v-model="filterStatus[chip.sync]"
+                :selected="filterStatus[chip.sync]"
+                :id="chip.sync"
+                :title="chip.text"
+                :data-section-channel-id="criterion.sectionChannelId"
+                :data-section-dependencies="criterion.sectionDependencies"
+                :data-section-group-id="criterion.sectionGroupId"
+                :data-section-id="criterion.sectionId"
+                :data-section-stackable="criterion.sectionStackable"
+                :data-section-type="criterion.sectionType"
+                clickable
+                :color="filterStatus[chip.sync] ? 'secondary' : 'primary'"
+                text-color="white"
+                :class="'glossy ellipsis' + { filtered: filtered }"
+              >
+                {{ chip.text }}
+              </q-chip>
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+      </q-list>
+    </form>
   </div>
 </template>
 
 <script>
+import { serialize } from "../../plugins/vanillaJS_Utilities.js";
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions } = createNamespacedHelpers("browser");
 
@@ -68,17 +82,23 @@ export default {
   name: "BrowserFilters",
   data: () => ({
     truncate: false,
-    text: ""
+    filtered: false,
+    selectedChips: [],
+    formKeywords: ""
   }),
-  created() {
-    this.$root.$on("toggle-truncate", this.toggleTruncate);
-  },
   computed: {
-    ...mapState(["search"])
+    ...mapState(["filterStatus", "search",  "keywords"])
   },
   methods: {
-    toggleTruncate() { this.truncate = !this.truncate;},
-    toggle(chipData) { this.toggleSearchCriteria(chipData);},
+    toggleTruncate() {
+      this.truncate = !this.truncate;
+    },
+    toggleFiltered() {
+      this.filtered = !this.filtered;
+    },
+    toggle(chipData) {
+      this.toggleSearchCriteria(chipData);
+    },
     ...mapActions(["toggleSearchCriteria"])
   }
 };
@@ -86,5 +106,8 @@ export default {
 
 <style lang="sass" scoped>
 .truncate-chip-labels > .q-chip
-  max-width: 70px;
+  max-width: 50px;
+
+.filtered
+  display: none
 </style>

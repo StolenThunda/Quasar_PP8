@@ -1,10 +1,11 @@
 <template>
   <div>
     <q-toolbar>
-      <slot name="toggleDrawer"></slot>
-      <q-toolbar-title class="text-capitalize text-subvalue2 text-justify">
+      <slot name="toggleDrawer" v-if="activeCategory"></slot>
+      <q-toolbar-title class="text-capitalize text-center text-subvalue2">
         Browser
-        <span v-if="category"> - {{ category.replaceAll("_", " ") }} </span>
+        
+        <q-breadcrumbs-el v-model="activeCategory"> {{ entitleCategory(activeCategory) }}</q-breadcrumbs-el>
       </q-toolbar-title>
       <q-btn label="Close" color="secondary" icon="close" to="/" />
     </q-toolbar>
@@ -31,7 +32,7 @@
                   rounded
                   fab-mini
                   no-wrap
-                  color="black"
+                  :color="activeCategory === tab.value ? 'secondary' : 'black'"
                   :label="tab.label"
                   size="md"
                   @click="loadCategory(tab.value)"
@@ -50,7 +51,7 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import { morph } from "quasar";
+import { morph, format } from "quasar";
 
 // Morph one DOM element to another:
 const searchMorph = morph({
@@ -101,9 +102,13 @@ export default {
     ]
   }),
   computed: {
-    ...mapState(["currentCategory"])
+    ...mapState('browser',["activeCategory"])
   },
   methods: {
+    entitleCategory() { return (this.activeCategory) ? " - " + format.capitalize(
+        this.activeCategory.replaceAll("_", " ")
+      ) : ""
+    },
     loadCategory(category) {
       // console.log(`Cat: ${category}`);
       searchMorph();

@@ -17,7 +17,7 @@ export default class TXBA_Utilities {
     this.load_media_slug = "--ajax-load-media";
     this.load_vimeo_slug = "/--ajax-load-media/vimeo/";
     this.slug_code = {
-      courses:
+      pro_player_packages:
         "wcm9fcGxheWVyX3BhY2thZ2VzXC8iLCJjaGFubmVsIjoicHJvX3BsYXllcl9wYWNrYWdlcyJ9",
       free_lesson_friday:
         "mcmVlX2xlc3Nvbl9mcmlkYXlcLyIsImNoYW5uZWwiOiJmcmVlX2xlc3Nvbl9mcmlkYXkifQ",
@@ -26,8 +26,11 @@ export default class TXBA_Utilities {
       backing_tracks:
         "iYWNraW5nX3RyYWNrc1wvIiwiY2hhbm5lbCI6ImJhY2tpbmdfdHJhY2tzIn0",
       youtube_videos:
-        "5b3V0dWJlX3ZpZGVvc1wvIiwiY2hhbm5lbCI6InlvdXR1YmVfdmlkZW9zIn0"
+        "5b3V0dWJlX3ZpZGVvc1wvIiwiY2hhbm5lbCI6InlvdXR1YmVfdmlkZW9zIn0",
+      refiner: "mcmVlX2xlc3Nvbl9mcmlkYXlcLyJ9"
     };
+    //mcmVlX2xlc3Nvbl9mcmlkYXlcLyIsImNoYW5uZWwiOiJmcmVlX2xlc3Nvbl9mcmlkYXki LCJ0YWdfaWQ6NiI6Ijg2In0;
+
     this.favs = {};
   }
 
@@ -37,12 +40,33 @@ export default class TXBA_Utilities {
       // console.log(`Req Url: ${url}`)
       const response = await axios
         .get(url)
+        // .then(response => { console.log(url + " || " + JSON.stringify(response, null, 4).substring(0, 200)); return response})
         .then(async response => await response.data);
       return callback ? callback.call(this, response) : response;
     } catch (e) {
       console.error(e);
       return e;
     }
+  }
+
+  async postAsyncData(params) {
+    // const url = `${this.baseURL}`;
+    // console.log(`Req Url: ${url}`)
+    return (
+      axios({
+        method: "post",
+        url: "https://texasbluesalley.com/",
+        data: new URLSearchParams(params),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      })
+        .then(response => {console.log('response', response); return response})
+        // .then(response => response.data)
+        .catch(function(response) {
+          //handle error
+          console.log(response);
+          return response;
+        })
+    );
   }
   getFavs() {
     return this.getAsyncData(this.favorites_slug, this.parseFavoriteHtml);
@@ -67,12 +91,20 @@ export default class TXBA_Utilities {
   }
 
   async getSearchEntries(category, auth, url) {
-    let slug = (url) ? url : `${this.search_slug}/${category}/${auth}${this.slug_code[category]}`
+    category = category === "courses" ? "pro_player_packages" : category;
+    let endOfAuthString = "nRyaWVzXC9";
+    let trimPoint =
+      -1 *
+      (auth.length - (auth.indexOf(endOfAuthString) + endOfAuthString.length));
+    // console.log('auth.before', auth)
+    auth = auth.slice(0, trimPoint);
+    // console.log('auth.after', auth)
+    let slug = url
+      ? url
+      : `${this.search_slug}/${category}/${auth}${this.slug_code[category]}`;
     // console.log('search slug', slug)
-    return this.getAsyncData(
-      slug,
-      this.parseSearchResults
-    );
+    // console.log('slug category', category)
+    return this.getAsyncData(slug, this.parseSearchResults);
   }
   async getSearchFiltersByCategory(code) {
     return this.getAsyncData(`${this.filter_slug}/${code}`, this.parseCriteria);
@@ -144,6 +176,7 @@ export default class TXBA_Utilities {
         "webkit-playsinline": true,
         playsinline: true,
         allowfullscreen: true,
+        type: "vimeo",
         sources: [
           {
             type: "vimeo",
@@ -157,9 +190,10 @@ export default class TXBA_Utilities {
         sources: [
           {
             type: "video/youtube",
-            src: `https://www.youtube.com/watch?v=${seg.segmentYouTubeCode}` //&html5=true`,
+            src: seg.segmentYouTubeCode //&html5=true`,
           }
         ],
+        type: "youtube",
         "webkit-playsinline": true,
         playsinline: true,
         preload: "none",
@@ -168,6 +202,7 @@ export default class TXBA_Utilities {
     if (this.objectHaveKeyLike(seg, "MP3"))
       type = {
         controls: true,
+        type: "audio",
         playsinline: true,
         sources: [
           {
@@ -179,13 +214,14 @@ export default class TXBA_Utilities {
       };
     if (this.objectHaveKeyLike(seg, "SoundSlice"))
       type = {
+        type: "soundslice",
         sources: [
           {
             src: seg.segmentSoundSliceCode,
-            type: "soundslicicle"
+            type: "soundslice"
           }
         ],
-        color: "orange"
+        color: "bluet"
       };
     if (this.objectHaveKeyLike(seg, "PDF"))
       type = {
@@ -195,10 +231,12 @@ export default class TXBA_Utilities {
             type: "pdf"
           }
         ],
+        type: "pdf",
         color: "yellow"
       };
     if (this.objectHaveKeyLike(seg, "GPX"))
       type = {
+        type: "pdf",
         sources: [
           {
             type: "gpx",
@@ -318,8 +356,8 @@ export default class TXBA_Utilities {
   }
 
   async parseSearchResults(html) {
+    if (!html) console.trace('searchHTML')
     const $ = cheerio.load(html);
-    // console.log(html)
     return {
       filters: this.parseSearchFilters($("div[id^=browserResultItem]")),
       pages: this.parsePagination($("div[id$=WrapperTop] ul li"))
@@ -329,7 +367,7 @@ export default class TXBA_Utilities {
   parsePagination(group) {
     const html = group.html();
     if (!html) return [];
-    // console.info("html", html);
+    // console.log("html", html);
     const $ = cheerio.load(html);
     let collection = [];
     group.each((idx, e) => {
@@ -338,7 +376,9 @@ export default class TXBA_Utilities {
         url: this.parseURL(lnk.attr("onclick")),
         class: lnk.attr("class"),
         content: lnk.text(),
-        icon: $(e).find("a > i").attr('class')
+        icon: $(e)
+          .find("a > i")
+          .attr("class")
       });
     });
     // console.log("col", collection);
@@ -346,10 +386,13 @@ export default class TXBA_Utilities {
   }
   parseSearchFilters(group) {
     // console.trace("gfi:group", group)
-    const html = group.html();
-    // console.info("html", html)
-    const $ = cheerio.load(html);
     let collection = [];
+    const html = group.html();
+    if (group.length < 1) {
+      throw "No HTML to parse";
+    }
+    // console.info("html", html.substring(0, 100))
+    const $ = cheerio.load(html);
     group.each((idx, e) => {
       const pkg = this.parseIdx(
         $(e)
@@ -361,7 +404,7 @@ export default class TXBA_Utilities {
       const itm = {
         id: pkg.packageID,
         type: pkg.type,
-        favColor: !fave ? "grey" : "pink",
+        favColor: !fave ? "grey" : "red",
         avatar: $(e)
           .find("img")
           .attr("src"),
@@ -387,7 +430,7 @@ export default class TXBA_Utilities {
   parseCriteria(html) {
     const $ = cheerio.load(html);
     let hiddenFields = this.parseHiddenData($(".hiddenFields input"));
-    // console.log(hiddenFields)
+    // console.log("hiddenFields", hiddenFields);
     let funnelList = this.parseFunnels($(".filter-list"));
     // console.log(funnelList)
 
