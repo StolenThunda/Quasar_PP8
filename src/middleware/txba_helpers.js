@@ -37,7 +37,7 @@ export default class TXBA_Utilities {
   async getAsyncData(slug, callback) {
     const url = `${this.baseURL}${slug}`;
     return await axios
-      .get(url)      
+      .get(url)
       // .then(response => {
       //   console.log(
       //     url + " || " + JSON.stringify(response, null, 4).substring(300, 400)
@@ -397,10 +397,13 @@ export default class TXBA_Utilities {
   async parseSearchResults(html) {
     // if (html) console.info("searchHTML", html);
     const $ = cheerio.load(html);
-    const defaultSearch = $('.browser-result-wrapper>h5').length > 0;
-    console.log('defaultSearch', defaultSearch)
+    const defaultSearch = $(".browser-result-wrapper>h5").length > 0;
+    console.log("defaultSearch", defaultSearch);
     return {
-      filters: this.parseSearchFilters($(".browser-result-wrapper"), defaultSearch),
+      filters: this.parseSearchFilters(
+        $(".browser-result-wrapper"),
+        defaultSearch
+      ),
       pages: this.parsePagination($("div[id$=WrapperTop] ul li"))
     };
   }
@@ -436,42 +439,46 @@ export default class TXBA_Utilities {
     // console.info("html", html)
     const $ = cheerio.load(html);
     group.each((idx, e) => {
-      if (defaultSearch && typeof e.attribs.id === 'undefined') {
-        section = $(e).find('h5').text()
+      if (defaultSearch && typeof e.attribs.id === "undefined") {
+        section = $(e)
+          .find("h5")
+          .text();
         collection[section] = [];
-        
       } else {
         const pkg = this.parseIdx(
           $(e)
-          .find(".browser-result-image a")
-          .attr("onclick")
-          );
-          // console.log('pkg', pkg)
+            .find(".browser-result-image a")
+            .attr("onclick")
+        );
+        // console.log('pkg', pkg)
         const itm = {
           id: pkg.packageID,
           type: pkg.type,
+          src: pkg.type === 'entry' ? 'Courses' : pkg.type,
           avatar: $(e)
             .find("img")
             .attr("src"),
           title: $(e)
             .find(".browser-result-title a")
-            .text(),
+            .text()
+            .trim(),
           subtitle: $(e)
             .find(".browser-result-description")
-            .text(),
+            .text()
+            .trim(),
           data: $(e)
             .find(".browser-result-meta")
             .html()
+            .trim()
         };
         // console.log("item",itm);
         if (defaultSearch) {
-           collection[section].push({
-          ...itm
-        });
-        }else{
-          collection.push({...itm})
+          collection[section].push({
+            ...itm
+          });
+        } else {
+          collection.push({ ...itm });
         }
-       
       }
     });
     console.log("col", collection);

@@ -45,10 +45,10 @@ export default {
     FAVORITE(state, objFav) {
       state.favorites.push(objFav)
     },
-    UNFAVORITE(state, id) {
+    UNFAVORITE(state, objFav) {
       // console.log(state.favorites);
-        let filteredFavs = state.favorites.filter(el => el.id !== id);
-        console.log("filtered", filteredFavs);
+        let filteredFavs = state.favorites.filter(el => el.id !== objFav.id);
+        // console.log("filtered", filteredFavs);
         Vue.set(state, 'favorites', filteredFavs);
       return false;
     }
@@ -93,11 +93,22 @@ export default {
         .dispatch("fetchNotificationData")
         .then(data => ctx.commit("SET_NOTIFICATIONS", data));
     },
+    toggleFavorite({commit, getters}, fav) {
+      const isFav = getters.isFavorite(fav)
+      console.log('isFav',isFav, fav)
+      if (isFav) {
+        console.log('unfav', fav)
+        commit('UNFAVORITE', fav)
+      } else {
+        console.log('fav', fav)
+        commit('FAVORITE', fav)
+      }
+    },
     addFavorite({ commit }, fav) {
       commit("FAVORITE", fav);
     },
-    removeFavorite({ commit }, id) {
-      commit("UNFAVORITE", id);
+    removeFavorite({ commit }, fav) {
+      commit("UNFAVORITE", fav.id);
     },
     initStore: ctx => {
       ctx.dispatch("fetchFavorites");
@@ -119,7 +130,7 @@ export default {
       return collector;
     },
     isFavorite: state => favorite => {
-      favorite = JSON.parse(favorite);
+      // favorite = JSON.parse(favorite);
       return state.favorites.filter(fav => fav.id === favorite.id).length > 0;
     },
     getAnnouncements: ctx => ctx.notifications?.announcements || [],

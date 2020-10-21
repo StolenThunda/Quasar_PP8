@@ -1,49 +1,55 @@
 <template>
-  <div :style="showCurrent ?  'padding-top: 66px' : ''">
+  <div :style="showCurrent ? 'padding-top: 66px' : ''">
     <span class="text-h6">{{ title }}</span>
     <slot name="header-pages"></slot>
-    <q-list dense>
+    <q-list >
       <q-intersection
         v-for="entry in this.resultList"
         :key="entry.id"
         transition="slide-right"
       >
-        <q-card bordered flat>
-          <q-item>
-            <q-item-section
+        <q-card class="q-mb-xs" bordered flat>
+          <q-item class="browser-result-wrapper"  >
+            <q-item-section             
               v-model="entry.avatar"
-              :set="
-                (fav = JSON.stringify({
-                  id: entry.id,
-                  title: entry.title.trim()
-                }))
-              "
+              @hover="toggler"
               avatar
             >
+              <!-- :set="
+                (fav = JSON.stringify({
+                  id: entry.id,
+                  title: entry.title.trim(),
+                  src: entry.type
+                }))" -->
               <q-btn
-                :color="isFavorite(fav) ? 'negative' : 'primary'"
+                class="browser-result-fav-wrapper q-ml-lg"
+                :color="isFavorite(entry) ? 'negative' : 'primary'"
                 icon="favorite"
                 title="Toggle Favorite"
                 round
                 push
+               @click="toggleFavorite(entry)"
               />
             </q-item-section>
 
-            <q-item :to="'/watch/' + entry.id" clickable v-ripple>
-              <q-item-section class="browser-result-image" side>
-                <q-avatar size="4rem" square>
-                  <q-img :src="entry.avatar" contain />
-                </q-avatar>
+            <q-item   :to="'/watch/' + entry.id" clickable v-ripple style="width:100%">
+              <q-item-section avatar>
+                <!-- <q-avatar size="10rem" square> -->
+                  <q-img class="browser-result-image img" :src="entry.avatar" contain ratio=""/>
+                <!-- </q-avatar> -->
               </q-item-section>
 
-              <q-item-section class="browser-result-text-wrapper">
+              <q-item-section class="browser-result-text-wrapper" side>
                 <q-item-label
                   text-color="secondary"
                   class="text-weight-bolder text-body2 browser-result-title"
                 >
                   {{ entry.title }}
                 </q-item-label>
-                <q-item-label color="secondary" class="text-thin browser-result-description">
+                <q-item-label
+                  color="secondary"
+                  class="text-thin browser-result-description"
+                >
                   {{ entry.subtitle }}
                 </q-item-label>
                 <div class="browser-result-meta" v-html="entry.data"></div>
@@ -81,64 +87,100 @@ export default {
     }
   },
   computed: {
-    showCurrent() { return this.$store.state.browser.searching && !this.hideCurrent },
+    showCurrent() {
+      return this.$store.state.browser.searching && !this.hideCurrent;
+    },
     ...mapGetters("default", ["isFavorite"])
   },
   components: {
     CurrentSearch: () => import("components/browse/CurrentSearch")
-  }, 
+  },
   methods: {
-    ...mapActions('default', ['toggleFavorite'])
+    toggler(e) { console.log(e.currentTarget)},
+    ...mapActions("default", ["toggleFavorite"])
   }
 };
 </script>
 
 <style lang="scss" scoped>
 .img {
-  height: 140px;
-  max-width: 150px;
+  // height: 240px;
+  // max-width: 250px;
 }
-.browser-result-meta .meta-wrapper {
-  white-space: nowrap !important;
-  margin-right: 0.5em;
-  font-size: 1.2em !important;
-  font-weight: 700 !important;
-  margin-top: 0.25em !important;
-}
-span.meta-key {
-  color: white !important;
-}
-span.meta-value {
-  font-weight: 200 !important;
-  color: #aaa !important;
+.browser-result-wrapper {
+  // position: relative;
+  // width: 100%;
+  // float: left;
+  // padding: 0.5em 0.25em;
+  // border-bottom: 1px solid #444;
 }
 
 
-.browser-result-meta .meta-wrapper
-{
-  white-space: nowrap;
-  margin-right: .5em;
+.browser-result-image {
+  // border: 1px solid #555;
+  // float: left;
+  // margin-left: 2.5rem;
+  width: 6rem;
+  // position: relative;
 }
 
-.browser-result-meta .meta-key
-{
-  text-transform: uppercase;
+.browser-result-image img {
+  width: 100%;
+}
+
+.browser-result-text-wrapper {
+  position: relative;
+  text-align: left;
+  line-height: 1em;
+  left: 0;
+  margin-right: 1rem;
+  margin-left: 6rem;
+}
+
+.browser-result-title {
+  font-size: 1.1rem;
+  font-family: inherit;
+  text-align: left;
+  line-height: 1.1em;
+  margin-top: 0;
   color: white;
-  font-weight: 900;
-  margin-right: .25em;
+  font-weight: 600;
+}
+
+.browser-result-description {
+  font-size: 0.85rem;
+  color: #888;
+  font-weight: 600;
+  line-height: 1.25em;
+  margin: 0.25em 0 0.5em 0;
+}
+
+.browser-result-meta {
+  font-size: 0.85em;
+  color: #bbb;
+}
+
+.browser-result-meta .meta-wrapper {
+  white-space: nowrap;
+  margin-right: 0.5em;
+}
+
+.browser-result-meta .meta-key {
+  text-transform: uppercase;
+//   color: white;
+//   font-weight: 900;
+//   margin-right: 0.25em;
 }
 
 .browser-result-wrapper .meta-wrapper.chapters-meta,
 .browser-result-wrapper .meta-wrapper.loops-meta,
-.browser-result-wrapper .meta-wrapper.user-loops-meta
-{
- 	display: none;
+.browser-result-wrapper .meta-wrapper.user-loops-meta {
+  display: none;
 }
 
 .browser-result-wrapper.has-chapters .meta-wrapper.chapters-meta,
 .browser-result-wrapper.has-loops .meta-wrapper.loops-meta,
-.browser-result-wrapper.has-user-loops .meta-wrapper.user-loops-meta
-{
- 	display: initial;
+.browser-result-wrapper.has-user-loops .meta-wrapper.user-loops-meta {
+  display: initial;
 }
 </style>
