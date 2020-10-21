@@ -6,47 +6,46 @@
       header-style="background-color:#464646; min-width: 250px;"
       style="max-width: 350px"
       v-for="(item, i) in Object.keys(favorites)"
-      :key="i"  
-      switch-toggle-side  
-    >    
-    <template #header>
-    {{ item }} 
-    <q-space />
-    <q-badge color="orange" floating>{{ favorites[item].length }} </q-badge>
-    </template>
+      :key="i"
+      switch-toggle-side
+    >
+      <template #header>
+        {{ item }}
+        <q-space />
+        <q-badge color="accent" floating>{{ favorites[item].length }} </q-badge>
+      </template>
       <q-list
         v-model="favorites"
         class="q-py-sm  rounded-borders"
         bordered
         dense
       >
-        <!-- padding -->
-        <q-item 
-          v-for="favorite in favorites[item]" 
-          :key="favorite.name" class="q-mx-none">
-          <q-item-section top side>
-            <q-btn
-              icon="play_circle_filled"
-              color="secondary"
-              size="xs"
-              round
-              :to="'/watch/' + favorite.id"
-            />
+        <template v-for="favorite in favorites[item]">
+          <q-item :key="favorite.name" class="q-mx-none">
+            <q-item-section avatar>
+              <q-btn
+                icon="play_circle_filled"
+                color="secondary"
+                size="xs"
+                round
+                :to="'/watch/' + favorite.id"
+              />
               <!-- :to="getLink(item, favorite.id)" -->
-          </q-item-section>
-          <q-item-section  class="fav-item" :title="favorite.title">
-            {{ favorite.title }}
-          </q-item-section>
+            </q-item-section>
+            <q-item-section :title="favorite.title">
+              {{ favorite.title }}
+            </q-item-section>
 
-          <q-item-section
-            color="grey"
-            @click="removeFavorite(favorite.id)"
-            top
-            side
-          >
-            <q-btn icon="delete" color="red" size="xs" round />
-          </q-item-section>
-        </q-item>
+            <q-item-section
+              color="grey"
+              @click="removeFavorite(favorite.id)"
+              side
+            >
+              <q-btn icon="delete" color="red" size="xs" round />
+            </q-item-section>
+          </q-item>
+          <q-separator :key="favorite.id" />
+        </template>
       </q-list>
     </q-expansion-item>
   </q-list>

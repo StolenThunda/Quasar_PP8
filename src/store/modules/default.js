@@ -44,9 +44,11 @@ export default {
     DEL_SB_TAB(ctx, name) {
       console.log(`Deleting tab: ${name}`);
     },
+    FAVORITE(state, objFav){
+
+    },
     UNFAVORITE(state, id) {
-      let tmpArr;
-      console.log(state.favorites);
+      // console.log(state.favorites);
       ["Courses", "Imported"].forEach(key => {
         let filteredFavs = state.favorites[key].filter( el => el.id !== id)
         console.log('filtered', filteredFavs)
@@ -95,8 +97,10 @@ export default {
         .dispatch("fetchNotificationData")
         .then(data => ctx.commit("SET_NOTIFICATIONS", data));
     },
-    removeFavorite({ commit }, id) {
-      
+    addFavorite({commit}, fav){
+      commit('FAVORITE', fav)
+    },
+    removeFavorite({ commit }, id) {      
       commit("UNFAVORITE", id);
     },
     initStore: ctx => {
@@ -106,6 +110,13 @@ export default {
     }
   },
   getters: {
+    isFavorite: (state) => (favorite) => {
+      favorite = JSON.parse(favorite)
+      const isImport = state.favorites.Imported.filter( fav => fav.id === favorite.id).length > 0;
+      const isCourse = state.favorites.Courses.filter( fav => fav.id === favorite.id).length > 0;
+      // console.log('results', {imp: isImport, c: isCourse, entry: favorite})
+      return isCourse || isImport
+    },
     getAnnouncements: ctx => ctx.notifications?.announcements || [],
     getUpdates: ctx => ctx.notifications?.updates || [],
     loaded: ctx =>

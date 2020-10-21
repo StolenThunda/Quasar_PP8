@@ -92,7 +92,7 @@ cfg.module.rules.push({
         brand: {
           primary: '#555555',
           secondary: '#0099ff',
-          accent: '#65ac65',
+          accent: '#ef6c00',
           dark: '#1d1d1d',
           positive: '#21BA45',
           negative: '#C10015',

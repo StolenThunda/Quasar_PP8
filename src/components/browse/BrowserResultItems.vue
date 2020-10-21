@@ -10,9 +10,18 @@
       >
         <q-card bordered flat>
           <q-item>
-            <q-item-section v-model="entry.avatar" avatar>
+            <q-item-section
+              v-model="entry.avatar"
+              :set="
+                (fav = JSON.stringify({
+                  id: entry.id,
+                  title: entry.title.trim()
+                }))
+              "
+              avatar
+            >
               <q-btn
-                :color="entry.favColor"
+                :color="isFavorite(fav) ? 'negative' : 'primary'"
                 icon="favorite"
                 title="Toggle Favorite"
                 round
@@ -45,17 +54,23 @@
       </q-intersection>
     </q-list>
     <slot name="footer-pages"></slot>
-    <q-page-sticky position="top-right" expand :offset="[18, 10]" v-if="$store.state.browser.searching">
+    <q-page-sticky
+      position="top-right"
+      expand
+      :offset="[18, 10]"
+      v-if="$store.state.browser.searching"
+    >
       <!-- <q-fab label="Current Filters" title="View Current Filters" glossy color="primary" direction="left">
         <q-fab-action hide-label square> -->
-          <current-search />
-        <!-- </q-fab-action>
+      <current-search />
+      <!-- </q-fab-action>
       </q-fab> -->
     </q-page-sticky>
   </q-page>
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 export default {
   props: {
     resultList: Array,
@@ -65,9 +80,13 @@ export default {
     images() {
       return this.resultList.length > 0;
     },
+    ...mapGetters("default", ["isFavorite"])
   },
   components: {
     CurrentSearch: () => import("components/browse/CurrentSearch")
+  }, 
+  methods: {
+    ...mapActions('default', ['toggleFavorite'])
   }
 };
 </script>
@@ -78,17 +97,17 @@ export default {
   max-width: 150px;
 }
 .browser-result-meta .meta-wrapper {
-    white-space: nowrap !important;
-    margin-right: .5em;
-    font-size: 1.2em !important;
-    font-weight: 700 !important;
-    margin-top: .25em !important;
+  white-space: nowrap !important;
+  margin-right: 0.5em;
+  font-size: 1.2em !important;
+  font-weight: 700 !important;
+  margin-top: 0.25em !important;
 }
 span.meta-key {
-  color: white !important;  
+  color: white !important;
 }
-span.meta-value  {
-    font-weight: 200 !important;
+span.meta-value {
+  font-weight: 200 !important;
   color: #aaa !important;
 }
 </style>

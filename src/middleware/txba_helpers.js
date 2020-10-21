@@ -59,7 +59,10 @@ export default class TXBA_Utilities {
         data: new URLSearchParams(params),
         headers: { "Content-Type": "application/x-www-form-urlencoded" }
       })
-        .then(response => {console.log('response', response); return response})
+        .then(response => {
+          console.log("response", response);
+          return response;
+        })
         // .then(response => response.data)
         .catch(function(response) {
           //handle error
@@ -183,7 +186,7 @@ export default class TXBA_Utilities {
             src: seg.segmentVimeoCode
           }
         ],
-        color: "orange"
+        color: "accent"
       };
     if (this.objectHaveKeyLike(seg, "YouTube"))
       type = {
@@ -274,7 +277,9 @@ export default class TXBA_Utilities {
     // console.log(
     //   favHtml.length > 0 ? "Loading Live Favs" : "Loading Mock Fav Data"
     // );
-    return this.parseFavoriteData(favHtml.length > 0 ? favHtml : this.fakeFavHTML());
+    return this.parseFavoriteData(
+      favHtml.length > 0 ? favHtml : this.fakeFavHTML()
+    );
   }
 
   parseFavoriteData(group) {
@@ -359,7 +364,7 @@ export default class TXBA_Utilities {
   }
 
   async parseSearchResults(html) {
-    if (!html) console.trace('searchHTML')
+    if (!html) console.trace("searchHTML");
     const $ = cheerio.load(html);
     return {
       filters: this.parseSearchFilters($("div[id^=browserResultItem]")),
