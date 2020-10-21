@@ -268,17 +268,20 @@ export default class TXBA_Utilities {
   }
 
   parseFavoriteHtml(html) {
-    const mockHtml = this.fakeFavHTML();
     const $ = cheerio.load(html);
-    const favHtml = $(".accordion-title");
+    // const favHtml = $(".accordion-title");
+    const favHtml = $("#favoritesListAccordion");
     // console.log(
     //   favHtml.length > 0 ? "Loading Live Favs" : "Loading Mock Fav Data"
     // );
-    return this.parseFavoriteData(favHtml.length > 0 ? favHtml : mockHtml);
+    return this.parseFavoriteData(favHtml.length > 0 ? favHtml : this.fakeFavHTML());
   }
 
   parseFavoriteData(group) {
-    const $ = cheerio.load(group.html());
+    const html = group.html();
+    // console.log("Favshtml", group);
+
+    const $ = cheerio.load(html);
     group.each((idx, e) => {
       let title = $(e)
         .text()

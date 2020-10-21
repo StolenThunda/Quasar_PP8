@@ -1,6 +1,9 @@
 <template>
   <div>
-    <result-panel v-if="search_entries" :resultList="search_entries">
+    <result-panel 
+      v-if="search_entries" 
+      :resultList="search_entries"
+    >
       <template #header-pages>
         <pagination v-model="search.pages.length" />
       </template>

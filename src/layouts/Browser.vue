@@ -28,8 +28,7 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from "vuex";
-const { mapState, mapActions } = createNamespacedHelpers("browser");
+import { mapState, mapActions } from "vuex";
 export default {
   name: "BrowserLayout",
   components: {
@@ -41,10 +40,13 @@ export default {
     category: null
   }),
   created() {
-    this.$root.$on("toggle-drawer", this.toggleTruncate);
+   this.$root.$on("toggle-drawer", this.toggleTruncate);
+    this.$root.$on("toggle-favorite", this.toggleFavorite);
+    this.$root.$on("remove-favorite", this.delFav);
+    this.$root.$on("add-favorite", this.addFavorite);
   },
   computed: {
-    ...mapState(["drawer", "currentCategory"])
+    ...mapState("browser", ["drawer", "currentCategory"])
   },
   methods: {
     toggleDrawer(val) {
@@ -57,7 +59,12 @@ export default {
     removeDrawer(name) {
       this.removeDrawer(name);
     },
-    ...mapActions(["removeDrawer"])
+    delFav(data) {
+      console.log('favEmitted', data)
+      this.removeFavorite(data)
+    },
+    ...mapActions("browser", ["removeDrawer"]),
+    ...mapActions("default", ["addFavorite", "removeFavorite", "toggleFavorite"])
   }
 };
 </script>

@@ -44,7 +44,7 @@ export default {
   }),
   props: {
     tabList: Array,
-    default: () => new Array()
+    default: () => []
   },
   mounted() {
     this.getFirst();
