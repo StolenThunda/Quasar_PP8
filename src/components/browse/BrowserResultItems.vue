@@ -1,5 +1,5 @@
 <template>
-  <q-page padding style="padding-top: 66px">
+  <div :style="showCurrent ?  'padding-top: 66px' : ''">
     <span class="text-h6">{{ title }}</span>
     <slot name="header-pages"></slot>
     <q-list dense>
@@ -30,20 +30,20 @@
             </q-item-section>
 
             <q-item :to="'/watch/' + entry.id" clickable v-ripple>
-              <q-item-section side>
+              <q-item-section class="browser-result-image" side>
                 <q-avatar size="4rem" square>
                   <q-img :src="entry.avatar" contain />
                 </q-avatar>
               </q-item-section>
 
-              <q-item-section>
+              <q-item-section class="browser-result-text-wrapper">
                 <q-item-label
                   text-color="secondary"
-                  class="text-weight-bolder text-body2"
+                  class="text-weight-bolder text-body2 browser-result-title"
                 >
                   {{ entry.title }}
                 </q-item-label>
-                <q-item-label color="secondary" class="text-thin ">
+                <q-item-label color="secondary" class="text-thin browser-result-description">
                   {{ entry.subtitle }}
                 </q-item-label>
                 <div class="browser-result-meta" v-html="entry.data"></div>
@@ -58,7 +58,7 @@
       position="top-right"
       expand
       :offset="[18, 10]"
-      v-if="$store.state.browser.searching"
+      v-if="showCurrent"
     >
       <!-- <q-fab label="Current Filters" title="View Current Filters" glossy color="primary" direction="left">
         <q-fab-action hide-label square> -->
@@ -66,7 +66,7 @@
       <!-- </q-fab-action>
       </q-fab> -->
     </q-page-sticky>
-  </q-page>
+  </div>
 </template>
 
 <script>
@@ -74,12 +74,14 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   props: {
     resultList: Array,
-    title: String
+    title: String,
+    hideCurrent: {
+      type: Boolean,
+      default: () => false
+    }
   },
   computed: {
-    images() {
-      return this.resultList.length > 0;
-    },
+    showCurrent() { return this.$store.state.browser.searching && !this.hideCurrent },
     ...mapGetters("default", ["isFavorite"])
   },
   components: {
@@ -109,5 +111,34 @@ span.meta-key {
 span.meta-value {
   font-weight: 200 !important;
   color: #aaa !important;
+}
+
+
+.browser-result-meta .meta-wrapper
+{
+  white-space: nowrap;
+  margin-right: .5em;
+}
+
+.browser-result-meta .meta-key
+{
+  text-transform: uppercase;
+  color: white;
+  font-weight: 900;
+  margin-right: .25em;
+}
+
+.browser-result-wrapper .meta-wrapper.chapters-meta,
+.browser-result-wrapper .meta-wrapper.loops-meta,
+.browser-result-wrapper .meta-wrapper.user-loops-meta
+{
+ 	display: none;
+}
+
+.browser-result-wrapper.has-chapters .meta-wrapper.chapters-meta,
+.browser-result-wrapper.has-loops .meta-wrapper.loops-meta,
+.browser-result-wrapper.has-user-loops .meta-wrapper.user-loops-meta
+{
+ 	display: initial;
 }
 </style>

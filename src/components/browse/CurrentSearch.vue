@@ -39,7 +39,6 @@
       </span>
     </span>
   </q-toolbar>
-  <q-toolbar v-else><q-toolbar-title>Showing: All</q-toolbar-title> </q-toolbar>
 </template>
 
 <script>

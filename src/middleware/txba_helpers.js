@@ -31,45 +31,42 @@ export default class TXBA_Utilities {
     };
     //mcmVlX2xlc3Nvbl9mcmlkYXlcLyIsImNoYW5uZWwiOiJmcmVlX2xlc3Nvbl9mcmlkYXki LCJ0YWdfaWQ6NiI6Ijg2In0;
 
-    this.favs = {};
+    this.favs = [];
   }
 
   async getAsyncData(slug, callback) {
-    try {
-      const url = `${this.baseURL}${slug}`;
-      // console.log(`Req Url: ${url}`)
-      const response = await axios
-        .get(url)
-        // .then(response => { console.log(url + " || " + JSON.stringify(response, null, 4).substring(0, 200)); return response})
-        .then(async response => await response.data);
-      return callback ? callback.call(this, response) : response;
-    } catch (e) {
-      console.error(e);
-      return e;
-    }
+    const url = `${this.baseURL}${slug}`;
+    return await axios
+      .get(url)      
+      // .then(response => {
+      //   console.log(
+      //     url + " || " + JSON.stringify(response, null, 4).substring(300, 400)
+      //   );
+      //   return response;
+      // })
+      .then(async response => await response.data)
+      .then(data => (callback ? callback.call(this, data) : data))
+      .catch(err => {
+        // console.log(err);
+        return err;
+      });
   }
 
   async postAsyncData(params) {
-    // const url = `${this.baseURL}`;
-    // console.log(`Req Url: ${url}`)
-    return (
-      axios({
-        method: "post",
-        url: "https://texasbluesalley.com/",
-        data: new URLSearchParams(params),
-        headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    return axios({
+      method: "post",
+      url: "https://texasbluesalley.com/",
+      data: new URLSearchParams(params),
+      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    })
+      .then(response => {
+        console.log("response", response);
+        return response;
       })
-        .then(response => {
-          console.log("response", response);
-          return response;
-        })
-        // .then(response => response.data)
-        .catch(function(response) {
-          //handle error
-          console.log(response);
-          return response;
-        })
-    );
+      .catch(function(response) {
+        console.log(response);
+        return response;
+      });
   }
   getFavs() {
     return this.getAsyncData(this.favorites_slug, this.parseFavoriteHtml);
@@ -285,14 +282,14 @@ export default class TXBA_Utilities {
   parseFavoriteData(group) {
     const html = group.html();
     // console.log("Favshtml", group);
-
+    const collection = [];
     const $ = cheerio.load(html);
     group.each((idx, e) => {
       let title = $(e)
         .text()
         .split(" ")[0]
         .trim();
-      this.favs[title] = [];
+      // this.favs[title] = [];
       let items = $(e)
         .parent()
         .find(".sidebar-list li");
@@ -304,17 +301,51 @@ export default class TXBA_Utilities {
             .data("id"),
           title: $(val)
             .find(".sidebar-list-item-link")
-            .text()
+            .text(),
+          src: title
           //subtitle: $(e).find(".notification-body p").text(),
         };
         // console.log("item", itm);
-        this.favs[title].push({
+        collection.push({
           ...itm
         });
       });
     });
-    return this.favs;
+    return collection;
   }
+  // parseFavoriteData(group) {
+  //   const html = group.html();
+  //   // console.log("Favshtml", group);
+
+  //   const $ = cheerio.load(html);
+  //   group.each((idx, e) => {
+  //     let title = $(e)
+  //       .text()
+  //       .split(" ")[0]
+  //       .trim();
+  //     this.favs[title] = [];
+  //     let items = $(e)
+  //       .parent()
+  //       .find(".sidebar-list li");
+  //     items.each((index, val) => {
+  //       // console.log("val", $(val).find(".sidebar-list-item-link").text())
+  //       const itm = {
+  //         id: $(val)
+  //           .find("form")
+  //           .data("id"),
+  //         title: $(val)
+  //           .find(".sidebar-list-item-link")
+  //           .text()
+  //         //subtitle: $(e).find(".notification-body p").text(),
+  //       };
+  //       // console.log("item", itm);
+  //       this.favs[title].push({
+  //         ...itm
+  //       });
+  //     });
+  //   });
+  //   return this.favs;
+  // }
 
   parseNotificationHtml(html) {
     const $ = cheerio.load(html);
@@ -364,10 +395,12 @@ export default class TXBA_Utilities {
   }
 
   async parseSearchResults(html) {
-    if (!html) console.trace("searchHTML");
+    // if (html) console.info("searchHTML", html);
     const $ = cheerio.load(html);
+    const defaultSearch = $('.browser-result-wrapper>h5').length > 0;
+    console.log('defaultSearch', defaultSearch)
     return {
-      filters: this.parseSearchFilters($("div[id^=browserResultItem]")),
+      filters: this.parseSearchFilters($(".browser-result-wrapper"), defaultSearch),
       pages: this.parsePagination($("div[id$=WrapperTop] ul li"))
     };
   }
@@ -392,47 +425,56 @@ export default class TXBA_Utilities {
     // console.log("col", collection);
     return collection;
   }
-  parseSearchFilters(group) {
+  parseSearchFilters(group, defaultSearch = false) {
     // console.trace("gfi:group", group)
-    let collection = [];
+    let collection = defaultSearch ? {} : [];
+    let section = "";
     const html = group.html();
     if (group.length < 1) {
       throw "No HTML to parse";
     }
-    // console.info("html", html.substring(0, 100))
+    // console.info("html", html)
     const $ = cheerio.load(html);
     group.each((idx, e) => {
-      const pkg = this.parseIdx(
-        $(e)
+      if (defaultSearch && typeof e.attribs.id === 'undefined') {
+        section = $(e).find('h5').text()
+        collection[section] = [];
+        
+      } else {
+        const pkg = this.parseIdx(
+          $(e)
           .find(".browser-result-image a")
           .attr("onclick")
-      );
-      const fave = this.isFav(pkg.packageID);
-      // console.log("fave", fave);
-      const itm = {
-        id: pkg.packageID,
-        type: pkg.type,
-        favColor: !fave ? "grey" : "red",
-        avatar: $(e)
-          .find("img")
-          .attr("src"),
-        title: $(e)
-          .find(".browser-result-title a")
-          .text(),
-        subtitle: $(e)
-          .find(".browser-result-description")
-          .text(),
-        data: $(e)
-          .find(".browser-result-meta")
-          .html()
-      };
-      // if (itm.favColor == "pink")
-      //  console.log("item",itm);
-      collection.push({
-        ...itm
-      });
+          );
+          // console.log('pkg', pkg)
+        const itm = {
+          id: pkg.packageID,
+          type: pkg.type,
+          avatar: $(e)
+            .find("img")
+            .attr("src"),
+          title: $(e)
+            .find(".browser-result-title a")
+            .text(),
+          subtitle: $(e)
+            .find(".browser-result-description")
+            .text(),
+          data: $(e)
+            .find(".browser-result-meta")
+            .html()
+        };
+        // console.log("item",itm);
+        if (defaultSearch) {
+           collection[section].push({
+          ...itm
+        });
+        }else{
+          collection.push({...itm})
+        }
+       
+      }
     });
-    // console.log("col", collection);
+    console.log("col", collection);
     return collection;
   }
   parseCriteria(html) {

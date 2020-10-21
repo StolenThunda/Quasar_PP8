@@ -3,7 +3,7 @@ export default {
   namespaced: true,
   state: {
     sidebarTabs: [],
-    favorites: { Courses: [], Imported: []},
+    favorites: [],
     notifications: null
   },
   mutations: {
@@ -12,11 +12,9 @@ export default {
       ctx.sidebarTabs = [];
     },
     SET_FAVS(ctx, favs) {
-      // console.log("SettingFAVS:", favs);
-    ['Courses', 'Imported'].forEach( key => {
-      Vue.set(ctx.favorites, key, favs[key]);
-    })
-    // console.log('Set favs', ctx.favorites)
+      // console.log("SettingFAVS:", favs);      
+        Vue.set(ctx, 'favorites', favs);      
+      // console.log('Set favs', ctx.favorites)
     },
     SET_NOTIFICATIONS(ctx, notes) {
       // console.log("SettingNotes:", notes);
@@ -44,16 +42,14 @@ export default {
     DEL_SB_TAB(ctx, name) {
       console.log(`Deleting tab: ${name}`);
     },
-    FAVORITE(state, objFav){
-
+    FAVORITE(state, objFav) {
+      state.favorites.push(objFav)
     },
     UNFAVORITE(state, id) {
       // console.log(state.favorites);
-      ["Courses", "Imported"].forEach(key => {
-        let filteredFavs = state.favorites[key].filter( el => el.id !== id)
-        console.log('filtered', filteredFavs)
-        Vue.set(state.favorites, key, filteredFavs)
-      });
+        let filteredFavs = state.favorites.filter(el => el.id !== id);
+        console.log("filtered", filteredFavs);
+        Vue.set(state, 'favorites', filteredFavs);
       return false;
     }
   },
@@ -97,10 +93,10 @@ export default {
         .dispatch("fetchNotificationData")
         .then(data => ctx.commit("SET_NOTIFICATIONS", data));
     },
-    addFavorite({commit}, fav){
-      commit('FAVORITE', fav)
+    addFavorite({ commit }, fav) {
+      commit("FAVORITE", fav);
     },
-    removeFavorite({ commit }, id) {      
+    removeFavorite({ commit }, id) {
       commit("UNFAVORITE", id);
     },
     initStore: ctx => {
@@ -110,12 +106,21 @@ export default {
     }
   },
   getters: {
-    isFavorite: (state) => (favorite) => {
-      favorite = JSON.parse(favorite)
-      const isImport = state.favorites.Imported.filter( fav => fav.id === favorite.id).length > 0;
-      const isCourse = state.favorites.Courses.filter( fav => fav.id === favorite.id).length > 0;
-      // console.log('results', {imp: isImport, c: isCourse, entry: favorite})
-      return isCourse || isImport
+    getFavsByType: state => {
+      let collector = {}
+      state.favorites.forEach(el => {
+        if (Object.keys(collector).includes(el.src) ){
+          collector[el.src].push(el)
+        }else{
+          collector[el.src] = [ el ]
+        }
+      })
+      // console.log(collector);
+      return collector;
+    },
+    isFavorite: state => favorite => {
+      favorite = JSON.parse(favorite);
+      return state.favorites.filter(fav => fav.id === favorite.id).length > 0;
     },
     getAnnouncements: ctx => ctx.notifications?.announcements || [],
     getUpdates: ctx => ctx.notifications?.updates || [],
