@@ -1,10 +1,10 @@
 <template>
-  <q-toolbar v-if="searching"  class="flex flex-center text-white">
+  <q-toolbar v-if="searching" class="flex flex-center text-white">
     Filters:
     <span v-for="(val, key) in activeFilters" :key="key + componentKey">
       <span v-if="val.length > 1">
         <q-btn rounded color="secondary" :label="entitle(key)">
-          <q-badge floating transparent color="orange-9" class="shadow-5">
+          <q-badge floating transparent color="accent" class="shadow-5">
             {{ val.length }}
           </q-badge>
           <q-menu
@@ -29,7 +29,7 @@
           {{ chip.text }}
           <q-badge
             align="top"
-            color="orange-9"
+            color="accent"
             transparent
             class="shadow-5"
             floating
@@ -39,7 +39,6 @@
       </span>
     </span>
   </q-toolbar>
-  <q-toolbar v-else><q-toolbar-title>Showing: All</q-toolbar-title> </q-toolbar>
 </template>
 
 <script>
@@ -54,7 +53,7 @@ export default {
     props1() {
       return this.toggle1 === true
         ? {
-            class: "q-ml-sm q-pa-md bg-orange text-white rounded-borders",
+            class: "q-ml-sm q-pa-md bg-accent text-white rounded-borders",
             style: "font-size: 24px"
           }
         : {

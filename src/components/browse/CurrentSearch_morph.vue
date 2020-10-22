@@ -11,14 +11,13 @@
             :label="entitle(key)"
             @click="nextMorph"
           >
-            <q-badge color="orange" floating>{{ val.length }}</q-badge>
+            <q-badge color="accent" floating>{{ val.length }}</q-badge>
             <q-card
-              
               :ref="'morphedElement1-' + key"
               v-bind="props1"
               v-morph:card1:mygroup:500.resize="morphGroupModel"
               class="absolute-bottom-left q-ma-md bg-primary text-white"
-      style="width: 300px; border-bottom-left-radius: 2em"
+              style="width: 300px; border-bottom-left-radius: 2em"
             >
               <q-chip
                 v-for="chip in val"
@@ -37,7 +36,7 @@
             <q-badge
               class="text-capitalize"
               align="bottom"
-              color="orange"
+              color="accent"
               transparent
               floating
               >{{ entitle(key) }}</q-badge
@@ -71,7 +70,7 @@ export default {
     props1() {
       return this.toggle1 === true
         ? {
-            class: "q-ml-sm q-pa-md bg-orange text-white rounded-borders",
+            class: "q-ml-sm q-pa-md bg-accent text-white rounded-borders",
             style: "font-size: 24px"
           }
         : {

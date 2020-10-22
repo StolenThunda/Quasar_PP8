@@ -339,7 +339,7 @@ export default {
     async fetchDefaultSearch(ctx) {
       // debugger
       const entries = await ctx.rootState.TXBA_UTILS.getDefaultSearchEntries();
-      // console.log(arguments.callee.name,entries)
+      // console.log('entries',entries)
       ctx.commit("SET_ENTRIES_PAGINATION", entries.pages);
       return ctx.commit("SET_DEFAULT_BROWSER_ENTRIES", entries.filters);
     },
@@ -357,8 +357,8 @@ export default {
       console.log("entry results", results);
       commit("BUILD_SECTION_DATA");
     },
-    initStore: ctx => {
-      ctx.dispatch("fetchDefaultSearch");
+    initStore: ({dispatch}) => {
+      return dispatch("fetchDefaultSearch");
     }
   },
   getters: {
