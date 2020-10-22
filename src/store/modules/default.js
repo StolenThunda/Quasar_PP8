@@ -108,7 +108,7 @@ export default {
       commit("FAVORITE", fav);
     },
     removeFavorite({ commit }, fav) {
-      commit("UNFAVORITE", fav.id);
+      commit("UNFAVORITE", fav);
     },
     initStore: ctx => {
       ctx.dispatch("fetchFavorites");

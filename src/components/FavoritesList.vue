@@ -34,7 +34,7 @@
 
               <q-item-section
                 color="grey"
-                @click="removeFavorite(favorite.id)"
+                @click="removeFavorite(favorite)"
                 side
               >
                 <q-btn icon="delete" color="red" size="xs" round />
