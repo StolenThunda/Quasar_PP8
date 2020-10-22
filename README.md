@@ -35,4 +35,4 @@ See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
 [ ] Add KeyboardEvents
 
 ### Watch Section
-[ ] Add KeyboardEvents
+[ ] Add KeyboardEvents# PP8_SPA
