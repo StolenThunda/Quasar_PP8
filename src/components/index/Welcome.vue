@@ -43,7 +43,7 @@ export default {
   props: {
     user: {
       type: String,
-      default: "Antonio"
+      default: "Antonio Moses"
     }
   }
 };
