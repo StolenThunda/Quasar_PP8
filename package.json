@@ -20,6 +20,7 @@
     "core-js": "^3.6.5",
     "plyr": "^3.6.2",
     "quasar": "^1.13.2",
+    "vue-panzoom": "^1.1.2",
     "vue-plyr": "^6.0.4"
   },
   "devDependencies": {

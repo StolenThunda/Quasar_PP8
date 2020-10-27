@@ -1,4 +1,5 @@
 import Vue from "vue";
+import { ProPlayerLoopsManager } from "../../middleware/ProPlayerLoopsManager";
 export default {
   namespaced: true,
   state: {
@@ -9,11 +10,9 @@ export default {
     sections: null,
     courseHistory: [], 
     playerOpts: {
-      // autoplay: false,
       controls: false
-      // live: false,
-      // aspectRatio: "4:3",
-    }
+    },
+    loopManager: new ProPlayerLoopsManager
   },
   mutations: {
     SET_PACKAGE_DATA(ctx, data) {
@@ -55,7 +54,7 @@ export default {
       ctx.commit("SET_CURRENT_SEGMENT", response);
     },
     setCurrentSegmentSetup(ctx, setup) {
-      console.log(JSON.stringify(setup));
+      console.log(setup);
       if (setup) ctx.commit("SET_CURRENT_SEGMENT_SETUP", JSON.parse(setup));
     }
   },

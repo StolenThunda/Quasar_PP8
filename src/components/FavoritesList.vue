@@ -16,31 +16,31 @@
         </template>
 
         <q-list class="q-py-sm  rounded-borders" bordered dense>
-          <template v-for="favorite in favs[item]">
-            <q-item :key="favorite.name" class="q-mx-none">
+          <template v-for="fav in favs[item]">
+            <q-item :key="fav.name" class="q-mx-none">
+            <!-- <pre>{{fav}}</pre> -->
               <q-item-section avatar>
                 <q-btn
                   icon="play_circle_filled"
                   color="secondary"
                   size="xs"
                   round
-                  :to="'/watch/' + favorite.id"
+                  :to="(fav.src !== 'Imported') ? '/watch/' + fav.id : `/watch/${fav.id}/${fav.id}`"
                 />
-                <!-- :to="getLink(item, favorite.id)" -->
               </q-item-section>
-              <q-item-section :title="favorite.title">
-                {{ favorite.title }}
+              <q-item-section :title="fav.title">
+                {{ fav.title }}
               </q-item-section>
 
               <q-item-section
                 color="grey"
-                @click="removeFavorite(favorite)"
+                @click="removeFavorite(fav)"
                 side
               >
                 <q-btn icon="delete" color="red" size="xs" round />
               </q-item-section>
             </q-item>
-            <q-separator :key="favorite.id" />
+            <q-separator :key="fav.id" />
           </template>
         </q-list>
       </q-expansion-item>

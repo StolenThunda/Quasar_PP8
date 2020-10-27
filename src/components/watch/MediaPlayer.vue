@@ -1,6 +1,11 @@
 <template>
   <div class="player">
-    <plyr-vue v-if="divPlayer" ref="mediaPlayer">
+    <!-- <pan-zoom selector> -->
+    <plyr-vue
+      :class="{ flipped: this.flipped }"
+      v-if="divPlayer"
+      ref="mediaPlayer"
+    >
       <div class="plyr__video-embed videoWrapper" id="mediaPlayer">
         <iframe
           v-if="type === 'youtube'"
@@ -18,50 +23,40 @@
         />
       </div>
     </plyr-vue>
+    <!-- </pan-zoom> -->
 
-    <video
-      v-if="this.type == 'audio'"
-      id="mediaPlayer"
-      ref="mediaPlayer"
-      :playsinline="playsinline"
-      :controls="controls"
-      :data-poster="poster"
-    >
-      <source
-        v-for="source in sources"
-        :key="source.src"
-        :src="cdn_url + '/' + id"
-        :type="source.type"
-      />
-    </video>
-
-    <player-controls @hook:mounted="setEvents" />
+    <!-- <pan-zoom> -->
+    <plyr-vue v-if="!divPlayer" ref="mediaPlayer">
+      <video
+        v-if="this.type == 'audio'"
+        id="mediaPlayer"
+        ref="mediaPlayer"
+        :playsinline="playsinline"
+        :controls="controls"
+        :data-poster="poster"
+      >
+        <source
+          v-for="source in sources"
+          :key="source.src"
+          :src="cdn_url + '/' + id"
+          :type="source.type"
+        />
+      </video>
+    </plyr-vue>
+    <!-- </pan-zoom> -->
+    <player-controls />
   </div>
 </template>
 
 <script>
 import Vue from "vue";
 import VuePlyr from "vue-plyr";
+// import panZoom from "vue-panzoom";
 Vue.use(VuePlyr);
-// Vue.component('plyr-vue', VuePlyr)
-const CONTROL_EVENTS = [
-  {
-    name: "player-play",
-    callback: () => {
-      console.log("playing");
-      this.$refs.mediaPlayer.play();
-    }
-  },
-  {
-    name: "player-pause",
-    callback: () => {
-      console.log("pause");
-      this.$refs.mediaPlayer.pause();
-    }
-  }
-];
+// Vue.use(panZoom);
+
 export default {
-  name: "PlyermediaPlayer",
+  name: "PlyerMediaPlayer",
   props: {
     controls: Boolean,
     poster: String,
@@ -77,16 +72,16 @@ export default {
     preload: [String, Boolean],
     cdn_url: String
   },
-  // data: () => ({ player: null }),
+  data: () => ({
+    flipped: false
+  }),
+  created() {
+    this.$root.$on("flip-player", function() { this.flipped = !this.flipped});
+  },
   components: {
     "plyr-vue": VuePlyr,
+    // "pan-zoom": panZoom,
     "player-controls": () => import("components/watch/PlayerControls")
-  },
-  mounted() {
-    // this.player = new Plyr("#mediaPlayer");
-  },
-  computed: {
-    
   },
   computed: {
     vimeoPlayer() {
@@ -97,33 +92,13 @@ export default {
       return `https://www.youtube.com/embed/${this.sources[0].src}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1`;
     }
   },
+
   methods: {
-    setEvents() {
-      // debugger
-      
-      this.$q.notify({message: "controls mounted"});
-      console.log('controls mounted')
-      
-      for (let e of CONTROL_EVENTS) {
-        this.$on(e.name, e.callback);
-      }
-    },
-    player() {
-      return this.$refs.mediaPlayer.player;
-    },
     divPlayer() {
       const isDivPlayer = this.titletype in ["youtube", "vimeo"];
       console.log("isDivPlay", isDivPlayer);
       return isDivPlayer;
-    },
-    // play() {
-    //   console.log("playing");
-    //   this.player().play();
-    // },
-    // pause() {
-    //   console.log("pause");
-    //   this.player().play();
-    // }
+    }
   }
 };
 </script>
@@ -143,12 +118,8 @@ export default {
   width: 100%;
   height: 100%;
 }
-:root .mejs__poster img {
-  display: block !important;
-}
-.my-play {
-  /* width: 90vw; */
-  height: 700px;
-  text-align: center;
+.flipped {
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
 }
 </style>

@@ -1,9 +1,6 @@
 <template>
-    <q-layout view="hHh Lpr lff" container style="height: 100vh" class="shadow-2 rounded-borders">
-  <!-- <q-layout view="lHh Lpr lff"> -->
-    <!-- Be sure to play with the Layout demo on docs -->
+    <q-layout view="hHh lpR lFf" container style="height: 100vh" class="shadow-2 rounded-borders">
 
-    <!-- (Optional) The Header -->
     <q-header reveal elevated>
       <watch-tool-bar>
         <template #toggle>
@@ -22,26 +19,25 @@
     </q-header>
 
     <q-drawer 
-      v-model="leftDrawer" 
-      bordered
       :width="300"
       :breakpoint="500"    
-      show-if-above>
-      <!-- QScrollArea is optional -->
-      <!-- <q-scroll-area  style="height: 200px; max-width: 300px;"> -->
+      v-model="leftDrawer" 
+      show-if-above
+      overlay
+      elevated
+      >
       <q-scroll-area
         :delay="1200"
         :thumb-style="thumbStyle"
-        style="height: 90vh; max-width: 300px;"
+        class="fit"
       >
-        <!-- :bar-style="barStyle" -->
-        <!-- Content here -->
+        <!-- style="height: 90vh; max-width: 300px;" -->
         <dynamic-tab :tabList="this.tabs" />
       </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
-      <router-view :key="$route.fullPath" />
+      <router-view :key="$route.fullPath" class="q-ma-md"/>
     </q-page-container>
   </q-layout>
 </template>
