@@ -9,13 +9,17 @@
       </template>
     </result-panel>
 
-    <result-panel
-      v-else
-      :resultList="default_browser_entries"
-      title="Latest Additions:"
-    >
-      <!-- <template #title></template> -->
-    </result-panel>
+    <q-card v-if="!search_entries" class="q-ma-none q-pa-none" bordered>
+      <q-card-section
+        v-for="(k, i) in Object.keys(default_browser_entries)"
+        :key="i"
+      >
+        <result-panel
+          :resultList="default_browser_entries[k]"
+          :title="k + ':'"
+          :hideCurrent="true"
+      /></q-card-section>
+    </q-card>
   </div>
 </template>
 
@@ -28,7 +32,11 @@ export default {
     Pagination: () => import("components/browse/BrowserPagination")
   },
   computed: {
-    ...mapState('browser', ["default_browser_entries", "search_entries", "search"])
-  },
+    ...mapState("browser", [
+      "default_browser_entries",
+      "search_entries",
+      "search"
+    ])
+  }
 };
 </script>

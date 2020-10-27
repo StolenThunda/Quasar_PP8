@@ -3,7 +3,7 @@ export default {
   namespaced: true,
   state: {
     sidebarTabs: [],
-    favorites: { Courses: [], Imported: []},
+    favorites: [],
     notifications: null
   },
   mutations: {
@@ -12,11 +12,9 @@ export default {
       ctx.sidebarTabs = [];
     },
     SET_FAVS(ctx, favs) {
-      // console.log("SettingFAVS:", favs);
-    ['Courses', 'Imported'].forEach( key => {
-      Vue.set(ctx.favorites, key, favs[key]);
-    })
-    // console.log('Set favs', ctx.favorites)
+      // console.log("SettingFAVS:", favs);      
+        Vue.set(ctx, 'favorites', favs);      
+      // console.log('Set favs', ctx.favorites)
     },
     SET_NOTIFICATIONS(ctx, notes) {
       // console.log("SettingNotes:", notes);
@@ -44,14 +42,14 @@ export default {
     DEL_SB_TAB(ctx, name) {
       console.log(`Deleting tab: ${name}`);
     },
-    UNFAVORITE(state, id) {
-      let tmpArr;
-      console.log(state.favorites);
-      ["Courses", "Imported"].forEach(key => {
-        let filteredFavs = state.favorites[key].filter( el => el.id !== id)
-        console.log('filtered', filteredFavs)
-        Vue.set(state.favorites, key, filteredFavs)
-      });
+    FAVORITE(state, objFav) {
+      state.favorites.push(objFav)
+    },
+    UNFAVORITE(state, objFav) {
+      // console.log(state.favorites);
+        let filteredFavs = state.favorites.filter(el => el.id !== objFav.id);
+        // console.log("filtered", filteredFavs);
+        Vue.set(state, 'favorites', filteredFavs);
       return false;
     }
   },
@@ -95,9 +93,22 @@ export default {
         .dispatch("fetchNotificationData")
         .then(data => ctx.commit("SET_NOTIFICATIONS", data));
     },
-    removeFavorite({ commit }, id) {
-      
-      commit("UNFAVORITE", id);
+    toggleFavorite({commit, getters}, fav) {
+      const isFav = getters.isFavorite(fav)
+      console.log('isFav',isFav, fav)
+      if (isFav) {
+        console.log('unfav', fav)
+        commit('UNFAVORITE', fav)
+      } else {
+        console.log('fav', fav)
+        commit('FAVORITE', fav)
+      }
+    },
+    addFavorite({ commit }, fav) {
+      commit("FAVORITE", fav);
+    },
+    removeFavorite({ commit }, fav) {
+      commit("UNFAVORITE", fav);
     },
     initStore: ctx => {
       ctx.dispatch("fetchFavorites");
@@ -106,6 +117,22 @@ export default {
     }
   },
   getters: {
+    getFavsByType: state => {
+      let collector = {}
+      state.favorites.forEach(el => {
+        if (Object.keys(collector).includes(el.src) ){
+          collector[el.src].push(el)
+        }else{
+          collector[el.src] = [ el ]
+        }
+      })
+      // console.log(collector);
+      return collector;
+    },
+    isFavorite: state => favorite => {
+      // favorite = JSON.parse(favorite);
+      return state.favorites.filter(fav => fav.id === favorite.id).length > 0;
+    },
     getAnnouncements: ctx => ctx.notifications?.announcements || [],
     getUpdates: ctx => ctx.notifications?.updates || [],
     loaded: ctx =>
