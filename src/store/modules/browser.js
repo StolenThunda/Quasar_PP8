@@ -1,6 +1,5 @@
 import Vue from "vue";
 import {
-  ProPlayerBrowser,
   BrowserFilterSection,
   BrowserFilterSectionList
 } from "../../middleware/ProPlayerBrowser";
