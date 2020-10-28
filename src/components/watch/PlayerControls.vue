@@ -124,10 +124,17 @@
                     />
                   </q-item-section>
                 </q-item>
+<<<<<<< HEAD
                 <q-item  tag="label" v-ripple>
                   <!-- TODO: ENABLE ZOOM -->
                   <q-item-section avatar>
                     <q-checkbox color="secondary" v-model="videoZoomEnabled" />
+=======
+                <q-item clickable>
+                  <!-- TODO: ENABLE ZOOM -->
+                  <q-item-section avatar>
+                    <q-checkbox v-model="videoZoomEnabled" />
+>>>>>>> 6cdf9321c93375b4d88ac3be5f46e96e2c9232da
                   </q-item-section>
                   <q-item-section>
                     <q-item-label>Video Zoom</q-item-label>
@@ -171,7 +178,10 @@
                 <q-item>
                   <q-item-section avatar>
                     <q-checkbox
+<<<<<<< HEAD
                     color="secondary"
+=======
+>>>>>>> 6cdf9321c93375b4d88ac3be5f46e96e2c9232da
                       v-model="lefty"
                       @click="this.lefty = !this.lefty"
                     />
@@ -205,7 +215,11 @@ export default {
   }),
   watch: {
     lefty() {
+<<<<<<< HEAD
       this.$root.$emit('flip-player')
+=======
+      this.$root.$emit("flip-player");
+>>>>>>> 6cdf9321c93375b4d88ac3be5f46e96e2c9232da
     },
     playing(value) {
       // this.$q.notify({message: 'Toggling Play/Pause Media'})
