@@ -96,6 +96,7 @@ export default {
       return `https://www.youtube.com/embed/${this.sources[0].src}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1`;
     }
   },
+
   methods: {
     flipPlayer() { this.flipped = !this.flipped}, 
     divPlayer() {

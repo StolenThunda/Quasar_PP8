@@ -26,8 +26,12 @@ export default {
     "media-player": () => import("components/watch/MediaPlayer"),
   },
   data: () => ({
+    flipped: false,
     renderers: ['pdf', 'soundslice']
   }),
+  created(){
+    this.$root.$on('flip-player', this.flipper)
+  },
   computed: {
     ...mapState("watch", ["currentSetup"])
   },
