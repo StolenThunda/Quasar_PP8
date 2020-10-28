@@ -98,6 +98,7 @@ export default {
   },
 
   methods: {
+
     flipPlayer() { this.flipped = !this.flipped}, 
     divPlayer() {
       const isDivPlayer = this.titletype in ["youtube", "vimeo"];
