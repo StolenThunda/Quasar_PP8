@@ -205,7 +205,7 @@ export default {
   }),
   watch: {
     lefty() {
-      this.$root.$emit("flip-player");
+      this.$root.$emit('flip-player')
     },
     playing(value) {
       // this.$q.notify({message: 'Toggling Play/Pause Media'})
@@ -241,10 +241,6 @@ export default {
     // }
   },
   methods: {
-    flipper(e) {
-      if (e.target.checked) console.log(e.target.value);
-      this.lefty = !this.lefty;
-    },
     restartPlayback() {
       // this.$q.notify({message: 'Restarting Media'})
       this.player.currentTime = 0;

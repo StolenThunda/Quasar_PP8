@@ -1,6 +1,7 @@
 <template>
       <!-- <pan-zoom selector="#mediaPlayerWrapper"> -->
-    <div style="height:100%;width:100%"
+    <div 
+    
       id="mediaPlayerWrapper"
       v-if="currentSetup.sources"
       :set="(s = currentSetup.sources[0])"
@@ -25,7 +26,6 @@ export default {
     "media-player": () => import("components/watch/MediaPlayer"),
   },
   data: () => ({
-    flipped: false,
     renderers: ['pdf', 'soundslice']
   }),
   computed: {

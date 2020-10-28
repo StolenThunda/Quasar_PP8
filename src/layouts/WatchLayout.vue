@@ -32,12 +32,12 @@
         class="fit"
       >
         <!-- style="height: 90vh; max-width: 300px;" -->
-        <dynamic-tab :tabList="this.tabs" />
+        <dynamic-tab :tabList="this.tabs" class="q-item"/>
       </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
-      <router-view :key="$route.fullPath" class="q-ma-md"/>
+      <router-view :key="$route.fullPath" class="q-ma-md q-pa-md"/>
     </q-page-container>
   </q-layout>
 </template>
@@ -97,3 +97,7 @@ export default {
   }
 };
 </script>
+<style lang="sass" scoped>
+.menu-list .q-item
+  border-radius: 0 32px 32px 0
+</style>

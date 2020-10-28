@@ -1,12 +1,16 @@
 <template>
-  <div class="player">
+  <div>
     <!-- <pan-zoom selector> -->
+      <!-- :class="{ flipped: this.flipped }" -->
     <plyr-vue
-      :class="{ flipped: this.flipped }"
       v-if="divPlayer"
       ref="mediaPlayer"
     >
-      <div class="plyr__video-embed videoWrapper" id="mediaPlayer">
+        <!-- class="plyr__video-embed videoWrapper"  -->
+      <div  
+        :class="{ flipped: this.flipped }"  
+        id="mediaPlayer"
+        >
         <iframe
           v-if="type === 'youtube'"
           :src="youtubePlayer"
@@ -70,13 +74,13 @@ export default {
     playsinline: Boolean,
     "webkit-playsinline": Boolean,
     preload: [String, Boolean],
-    cdn_url: String
+    cdn_url: String,
   },
   data: () => ({
     flipped: false
   }),
   created() {
-    this.$root.$on("flip-player", function() { this.flipped = !this.flipped});
+    this.$root.$on("flip-player", this.flipPlayer);
   },
   components: {
     "plyr-vue": VuePlyr,
@@ -92,8 +96,8 @@ export default {
       return `https://www.youtube.com/embed/${this.sources[0].src}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1`;
     }
   },
-
   methods: {
+    flipPlayer() { this.flipped = !this.flipped}, 
     divPlayer() {
       const isDivPlayer = this.titletype in ["youtube", "vimeo"];
       console.log("isDivPlay", isDivPlayer);
