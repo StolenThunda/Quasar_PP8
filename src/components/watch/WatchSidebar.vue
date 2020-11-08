@@ -13,23 +13,13 @@ export default {
   name: "PlayerSideBarTabs",
   data: () => ({
     tab: true,
-    sections: null
+    // sections: null
   }),
-  mounted() {
-    this.fetchSections();
-  },
   computed: {
     ...mapState(["playSections"])
   },
   components: {
     segments: () => import("components/watch/Segments")
   },
-
-  methods: {
-    fetchSections() {
-      this.sections = this.getPlaySections();
-    },
-    ...mapGetters(["getPlaySections"])
-  }
 };
 </script>

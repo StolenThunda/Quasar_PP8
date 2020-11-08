@@ -2,19 +2,15 @@
   <div :style="showCurrent ? 'padding-top: 66px' : ''">
     <span class="text-h6">{{ title }}</span>
     <slot name="header-pages"></slot>
-    <q-list >
+    <q-list>
       <q-intersection
         v-for="entry in this.resultList"
         :key="entry.id"
         transition="slide-right"
       >
         <q-card class="q-mb-xs" bordered flat>
-          <q-item class="browser-result-wrapper"  >
-            <q-item-section             
-              v-model="entry.avatar"
-              @hover="toggler"
-              avatar
-            >
+          <q-item class="browser-result-wrapper">
+            <q-item-section v-model="entry.avatar" @hover="toggler" avatar>
               <!-- :set="
                 (fav = JSON.stringify({
                   id: entry.id,
@@ -28,15 +24,26 @@
                 title="Toggle Favorite"
                 round
                 push
-               @click="toggleFavorite(entry)"
+                @click="toggleFavorite(entry)"
               />
             </q-item-section>
 
-            <q-item   :to="'/watch/' + entry.id" clickable v-ripple style="width:100%">
+            <q-item
+              :to="'/watch/' + entry.id"
+              clickable
+              v-ripple
+              style="width:100%"
+            >
               <q-item-section avatar>
-                <!-- <q-avatar size="10rem" square> -->
-                  <q-img class="browser-result-image img" :src="entry.avatar" contain ratio=""/>
-                <!-- </q-avatar> -->
+                <q-img
+                  class="browser-result-image img"
+                  :src="entry.avatar"
+                  contain
+                >
+                  <template v-slot:loading>
+                    <q-spinner-bars color="white" />
+                  </template>
+                </q-img>
               </q-item-section>
 
               <q-item-section class="browser-result-text-wrapper" side>
@@ -96,7 +103,9 @@ export default {
     CurrentSearch: () => import("components/browse/CurrentSearch")
   },
   methods: {
-    toggler(e) { console.log(e.currentTarget)},
+    toggler(e) {
+      console.log(e.currentTarget);
+    },
     ...mapActions("default", ["toggleFavorite"])
   }
 };
@@ -114,7 +123,6 @@ export default {
   // padding: 0.5em 0.25em;
   // border-bottom: 1px solid #444;
 }
-
 
 .browser-result-image {
   // border: 1px solid #555;
@@ -167,9 +175,9 @@ export default {
 
 .browser-result-meta .meta-key {
   text-transform: uppercase;
-//   color: white;
-//   font-weight: 900;
-//   margin-right: 0.25em;
+  //   color: white;
+  //   font-weight: 900;
+  //   margin-right: 0.25em;
 }
 
 .browser-result-wrapper .meta-wrapper.chapters-meta,

@@ -18,25 +18,21 @@
         <q-list class="q-py-sm  rounded-borders" bordered dense>
           <template v-for="fav in favs[item]">
             <q-item :key="fav.name" class="q-mx-none">
-            <!-- <pre>{{fav}}</pre> -->
+              <!-- <pre>{{fav}}</pre> -->
               <q-item-section avatar>
                 <q-btn
                   icon="play_circle_filled"
                   color="secondary"
                   size="xs"
                   round
-                  :to="(fav.src !== 'Imported') ? '/watch/' + fav.id : `/watch/${fav.id}/${fav.id}`"
+                  @click="link(fav)"
                 />
               </q-item-section>
               <q-item-section :title="fav.title">
                 {{ fav.title }}
               </q-item-section>
 
-              <q-item-section
-                color="grey"
-                @click="removeFavorite(fav)"
-                side
-              >
+              <q-item-section color="grey" @click="removeFavorite(fav)" side>
                 <q-btn icon="delete" color="red" size="xs" round />
               </q-item-section>
             </q-item>
@@ -60,17 +56,26 @@ export default {
   },
   watch: {
     favorites() {
-      this.setFavs()
+      this.setFavs();
     }
   },
   computed: {
     ...mapState("default", ["favorites"])
   },
   methods: {
+    link(fav) {
+      this.playSegment(fav.id).then(id => {
+        const route =
+          fav.src !== "Imported" ? `/watch/${id}` : `/watch/${id}/${id}`;
+        console.log("link_route", route);
+        this.$router.push({ path: `${route}` });
+      });
+    },
     setFavs() {
       this.favs = this.$store.getters["default/getFavsByType"];
     },
-    ...mapActions("default", ["removeFavorite"])
+    ...mapActions("default", ["removeFavorite"]),
+    ...mapActions("watch", ["playSegment"])
   }
 };
 </script>

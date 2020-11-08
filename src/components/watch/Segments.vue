@@ -5,27 +5,28 @@
     group="somegroup"
     dense-toggle
     default-opened
-    style="min-width: 250px;"
+    style="min-width: 225px;"
     class="text-capitalize text-body2 section-header"
     header-style="background-color:#464646"
   >
     <!-- expand-separator -->
-    <q-list keep-alive bordered dense style="max-width: 600px">
+    <q-list keep-alive bordered dense>
+      <!-- :data-setup="JSON.stringify(seg)"
+        :data-to="seg.to" -->
       <q-item
-        :id="'seg-' + seg.id"
         v-for="seg in segments"
         :key="seg.id"
-        :set="(s = getSegInfo(seg))"
-        :data-setup="JSON.stringify(seg)"
-        :data-to="seg.to"
+        :set="(s = getSegIco(seg))"
+        :id="seg.id"
         ripple
         clickable
-        @click="playSegment"
+        @click="link(seg.id)"
         height="20px"
         active-class="secondary"
       >
+        <!-- @click="$router.push({path:`/watch/${$route.params.packageID}/${playSegment(seg.id)}`})" -->
         <q-item-section avatar>
-          <q-icon :color="seg.color" :name="s.icon" size="xs"/>
+          <q-icon :color="seg.color" :name="s.icon" size="xs" />
         </q-item-section>
 
         <q-item-section>
@@ -37,75 +38,71 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from "vuex";
-const { mapActions } = createNamespacedHelpers("watch");
+import { mapActions } from "vuex";
 export default {
-  name: "SegmentTabContent",
+  name: "Segments",
   props: {
     title: String,
     segments: Array
   },
-  mounted() {
-    this.packageID = this.$route.params.packageID;
-  },
   computed: {
-    packID() { return  this.packageID }
+    packID() {
+      return this.$route.params.packageID;
+    }
   },
   methods: {
-    playSegment(e) {
-      if (e.target.dataset) {
-        const data = e.currentTarget.dataset;
-        this.setCurrentSegmentSetup(data.setup);
-        this.$router.push({ path: `/watch/${this.packageID}/${data.to}` });
-      }else{
-        console.error(`${e.currentTarget} has no ID`)
-      }
+    link(id) {
+      this.playSegment(id).then(id => {
+        const route = `/watch/${this.packID}/${id}`;
+        console.log("link_route", route);
+        this.$router.push({path: `${route}`});
+      });
     },
-    getSegInfo(seg) {
+    getSegIco(seg) {
       var ico = {};
       // console.log("seginfo", seg);
       // const type = seg.sources ? seg.sources[0].type : "";
       switch (seg.sources[0].type) {
         case "audio":
           ico = {
-            icon: "fa fa-volume-up"
+            icon: "mdi-volume-high"
           };
           break;
         case "vimeo":
           ico = {
-            icon: "fa fa-video"
+            icon: "mdi-video-vintage"
           };
           break;
         case "youtube":
           ico = {
-            icon: "fa fa-youtube"
+            icon: "mdi-youtube"
           };
           break;
         case "pdf":
           ico = {
-            icon: "far fa-file-pdf"
+            icon: "mdi-file-pdf"
           };
           break;
         case "soundslice":
           ico = {
-            icon: "mdi-guitar-pick"
+            icon: "mdi-file-music"
           };
           break;
         case "gpx":
           ico = {
-            icon: "mdi-guitar-pick"
+            icon: "mdi-folder-music"
           };
           break;
         default:
           ico = {
-            icon: "fa fa-video"
+            icon: "mdi-video"
           };
           break;
       }
       // console.log("SEGINFO", seg, ico);
       return ico;
     },
-    ...mapActions(["setCurrentSegmentSetup"])
+    ...mapActions("watch", ["playSegment"])
   }
-}
+};
 </script>
