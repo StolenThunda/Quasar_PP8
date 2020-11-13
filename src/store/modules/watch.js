@@ -69,11 +69,13 @@ export default {
       ctx.commit("SET_CURRENT_SEGMENT", response);
     },
     playSegment(ctx, segmentId) {
-      const segmentData = ctx.state.playSections[0].segments.filter(
-        itm => itm.id === segmentId
-      )[0];
-      console.log("seg-data", segmentData);
-      if (segmentData)  ctx.commit("SET_CURRENT_SEGMENT_SETUP", segmentData);
+      if (ctx.state.playSections) {
+        const segmentData = ctx.state.playSections[0].segments.filter(
+          itm => itm.id === segmentId
+        )[0];
+        console.log("seg-data", segmentData);
+        if (segmentData)  ctx.commit("SET_CURRENT_SEGMENT_SETUP", segmentData);
+      }
       return  segmentId
     }
   },

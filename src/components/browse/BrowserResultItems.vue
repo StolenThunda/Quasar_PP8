@@ -2,42 +2,32 @@
   <div :style="showCurrent ? 'padding-top: 66px' : ''">
     <span class="text-h6">{{ title }}</span>
     <slot name="header-pages"></slot>
-    <q-list>
+    <q-list v-model="resultList">
       <q-intersection
-        v-for="entry in this.resultList"
+        v-for="entry in resultList"
         :key="entry.id"
         transition="slide-right"
       >
         <q-card class="q-mb-xs" bordered flat>
           <q-item class="browser-result-wrapper">
             <q-item-section v-model="entry.avatar" @hover="toggler" avatar>
-              <!-- :set="
-                (fav = JSON.stringify({
-                  id: entry.id,
-                  title: entry.title.trim(),
-                  src: entry.type
-                }))" -->
               <q-btn
                 class="browser-result-fav-wrapper q-ml-lg"
                 :color="isFavorite(entry) ? 'negative' : 'primary'"
                 icon="favorite"
                 title="Toggle Favorite"
+                @click="toggleFavorite(entry)"
                 round
                 push
-                @click="toggleFavorite(entry)"
               />
             </q-item-section>
-
-            <q-item
-              :to="'/watch/' + entry.id"
-              clickable
-              v-ripple
-              style="width:100%"
-            >
+            <q-item :to="lnk(entry)" clickable v-ripple style="width:100%">
+              <!-- {{ entry }} -->
               <q-item-section avatar>
                 <q-img
                   class="browser-result-image img"
                   :src="entry.avatar"
+                  width="150px"
                   contain
                 >
                   <template v-slot:loading>
@@ -45,8 +35,7 @@
                   </template>
                 </q-img>
               </q-item-section>
-
-              <q-item-section class="browser-result-text-wrapper" side>
+              <q-item-section class="browser-result-text-wrapper">
                 <q-item-label
                   text-color="secondary"
                   class="text-weight-bolder text-body2 browser-result-title"
@@ -97,28 +86,35 @@ export default {
     showCurrent() {
       return this.$store.state.browser.searching && !this.hideCurrent;
     },
+
     ...mapGetters("default", ["isFavorite"])
   },
   components: {
     CurrentSearch: () => import("components/browse/CurrentSearch")
   },
   methods: {
+    lnk(entry) {
+      console.log("isYT", entry.avatar);
+      const isYoutubeVid = entry.avatar.indexOf("youtube") >= 0;
+      const lnk = isYoutubeVid
+        ? `/watch/${entry.id}/${entry.id}`
+        : `/watch/${entry.id}`;
+      console.log("lnk", lnk);
+      return lnk;
+    },
     toggler(e) {
       console.log(e.currentTarget);
     },
-    ...mapActions("default", ["toggleFavorite"])
+    ...mapActions("default", ["toggleFavorite"]),
+    ...mapActions("watch", ["playSegment"])
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.img {
-  // height: 240px;
-  // max-width: 250px;
-}
 .browser-result-wrapper {
-  // position: relative;
-  // width: 100%;
+  position: relative;
+  width: 100%;
   // float: left;
   // padding: 0.5em 0.25em;
   // border-bottom: 1px solid #444;
@@ -126,9 +122,9 @@ export default {
 
 .browser-result-image {
   // border: 1px solid #555;
-  // float: left;
-  // margin-left: 2.5rem;
-  width: 6rem;
+  float: left;
+  margin-left: 2.5rem;
+  // width: 6rem;
   // position: relative;
 }
 
@@ -142,7 +138,7 @@ export default {
   line-height: 1em;
   left: 0;
   margin-right: 1rem;
-  margin-left: 6rem;
+  margin-left: 4rem;
 }
 
 .browser-result-title {
@@ -175,9 +171,9 @@ export default {
 
 .browser-result-meta .meta-key {
   text-transform: uppercase;
-  //   color: white;
-  //   font-weight: 900;
-  //   margin-right: 0.25em;
+  color: white;
+  font-weight: 900;
+  margin-right: 0.25em;
 }
 
 .browser-result-wrapper .meta-wrapper.chapters-meta,

@@ -14,17 +14,16 @@
           <q-space />
           <q-badge color="accent" floating>{{ favs[item].length }} </q-badge>
         </template>
-
-        <q-list class="q-py-sm  rounded-borders" bordered dense>
+        <q-list class="q-py-sm rounded-borders" bordered dense>
           <template v-for="fav in favs[item]">
-            <q-item :key="fav.name" class="q-mx-none">
+            <q-item :key="fav.name" class="q-mx-none ">
               <!-- <pre>{{fav}}</pre> -->
               <q-item-section avatar>
                 <q-btn
                   icon="play_circle_filled"
                   color="secondary"
                   size="xs"
-                  round
+                  round 
                   @click="link(fav)"
                 />
               </q-item-section>
