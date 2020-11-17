@@ -37,7 +37,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view :key="$route.fullPath" class="q-ma-md q-pa-md"/>
+      <router-view :key="$route.fullPath" />
     </q-page-container>
   </q-layout>
 </template>

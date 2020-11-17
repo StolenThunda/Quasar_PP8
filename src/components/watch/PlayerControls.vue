@@ -1,13 +1,14 @@
 <template>
   <div id="mediaControlsWrapper">
-    <div id="progressSliderWrapper">
+    <slot name="slider" />
+    <!-- <div id="progressSliderWrapper">
       <div id="current-time">0.00</div>
       <div id="time-left"></div>
       <div id="progressSlider">
         <div id="loop-region" style="display: none"></div>
         <div id="chapters-wrapper"></div>
       </div>
-    </div>
+    </div> -->
 
     <div id="transportButtonsWrapper">
       <ul id="transportButtonsList">
@@ -190,6 +191,7 @@
 </template>
 
 <script>
+import MediaProgressSlider from './MediaProgressSlider.vue';
 export default {
   name: "PlayerControls",
   data: () => ({

@@ -1,20 +1,24 @@
 <template>
   <div id="progressSliderWrapper">
-    <!-- <h1>HELLO</h1> -->
-    <p>Current: {{ progress }}</p>
-    <p>Duration: {{ remaining }}</p>
-    <div id="current-time">{{ HHMMSSTime }}</div>
-    <div id="time-left">{{ timeLeft}}</div>
+    <div class="q-pb-md">
+      <div id="
+      -time">{{ elapsedTime }}</div>
+      <div id="time-left">{{ timeLeft }}</div>
+    </div>
+    <!-- <p>Current: {{ Math.round(progress) }}</p> -->
+    <!-- <p>Duration: {{ remaining }}</p> -->
+
     <div id="progressSlider">
       <q-slider
         v-model="progress"
         :min="0"
         :max="remaining"
-        :label-value="HHMMSSTime"
+        :label-value="elapsedTime"
         label
         color="secondary"
         @change="sliderChanged"
-        @pan="sliderSliding"
+        dense
+      @pan="sliderSliding"
       />
       <div id="loop-region" style="display: none"></div>
       <div id="chapters-wrapper"></div>
@@ -29,30 +33,22 @@ export default {
   data: () => ({
     progress: 0.0
   }),
-  mounted() { this.progress = this.ctime },
+  mounted() {
+    this.progress = this.ctime;
+  },
   computed: {
-    HHMMSSTime() {
-      return this.secondsToMinutes(this.ctime)
-    },
-    timeLeft() {
-      const timeLeft = this.secondsToMinutes(this.duration - this.ctime);
-      // this.remaining = timeLeft;
-      console.log("tL", timeLeft);
-      return timeLeft;
-    }
+    elapsedTime() { return this.secondsToMinutes(this.progress)},
+    timeLeft() { return this.secondsToMinutes(this.remaining - this.progress)}, 
   },
   watch: {
     ctime: function(val) {
-      console.log('ctime changed', val)
-      this.progress = this.ctime
+      console.log("slider ctime changed", val);
+      this.progress = val;
     }
   },
   methods: {
-    init() {
-      this.timeLeft(0);
-    },
     secondsToMinutes(sec) {
-      sec = Number(sec);
+      sec = Math.round(Number(sec));
       var hours = Math.floor(sec / 3600);
       hours >= 1 ? (sec = sec - hours * 3600) : (hours = "00");
       var min = Math.floor(sec / 60);
@@ -67,12 +63,11 @@ export default {
       return strTime;
     },
     sliderChanged(e) {
-      console.log("sliderChanged", e);
-      this.progress = e;
-      this.$root.$emit("progress-val", e  );
+      this.$root.$emit("slider-change", e);
     },
     sliderSliding(e) {
-      console.log("sliderSliding", e);
+      if (e === "start") this.$root.$emit("pause");
+      console.log("sliderSliding", this.progress);
     }
   }
 };
