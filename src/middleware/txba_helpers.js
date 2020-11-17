@@ -398,7 +398,7 @@ export default class TXBA_Utilities {
     // if (html) console.info("searchHTML", html);
     const $ = cheerio.load(html);
     const defaultSearch = $(".browser-result-wrapper>h5").length > 0;
-    console.log("defaultSearch", defaultSearch);
+    // console.log("defaultSearch", defaultSearch);
     return {
       filters: this.parseSearchFilters(
         $(".browser-result-wrapper"),
@@ -481,7 +481,7 @@ export default class TXBA_Utilities {
         }
       }
     });
-    console.log("col", collection);
+    // console.log("col", collection);
     return collection;
   }
   parseCriteria(html) {

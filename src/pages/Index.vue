@@ -1,7 +1,7 @@
 <template>
   <q-page class="column no-wrap justify-start justify-start">
     <div v-if="$auth.isAuthenticated">
-      <welcome-panel @toggle-drawer="$emit('toggle-drawer')" />
+      <welcome-panel @toggle-drawer="$emit('toggle-drawer')" :user="$auth.user.name" />
       <resume-panel />
       <notification-panel />
     </div>

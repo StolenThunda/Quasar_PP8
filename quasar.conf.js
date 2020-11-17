@@ -108,7 +108,7 @@ cfg.module.rules.push({
 
       // Quasar plugins
       plugins: [
-        'Notify'
+        'Notify',
       ],
       // config: {
       //   notify: {

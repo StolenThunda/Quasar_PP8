@@ -1,8 +1,11 @@
 <template>
-  <div class="player">
-    <plyr-vue v-if="divPlayer" ref="mediaPlayer">
-      <div class="plyr__video-embed videoWrapper" id="mediaPlayer">
+  <div>
+    <!-- <pan-zoom selector> -->
+    <plyr-vue v-if="divPlayer" ref="mediaPlayer" v-on="$attrs">
+      <!-- class="plyr__video-embed videoWrapper"  -->
+      <div class="videoWrapper" id="mediaPlayer">
         <iframe
+          :class="{ flipped: this.flipped }"
           v-if="type === 'youtube'"
           :src="youtubePlayer"
           allowfullscreen
@@ -18,50 +21,45 @@
         />
       </div>
     </plyr-vue>
+    <!-- </pan-zoom> -->
 
-    <video
-      v-if="this.type == 'audio'"
-      id="mediaPlayer"
-      ref="mediaPlayer"
-      :playsinline="playsinline"
-      :controls="controls"
-      :data-poster="poster"
-    >
-      <source
-        v-for="source in sources"
-        :key="source.src"
-        :src="cdn_url + '/' + id"
-        :type="source.type"
-      />
-    </video>
-
-    <player-controls @hook:mounted="setEvents" />
+    <!-- <pan-zoom> -->
+    <plyr-vue v-if="!divPlayer" ref="mediaPlayer">
+      <video
+        v-if="this.type == 'audio'"
+        id="mediaPlayer"
+        ref="mediaPlayer"
+        :playsinline="playsinline"
+        :controls="controls"
+        :data-poster="poster"
+      >
+        <source
+          v-for="source in sources"
+          :key="source.src"
+          :src="cdn_url + '/' + id"
+          :type="source.type"
+        />
+      </video>
+    </plyr-vue>
+    <!-- </pan-zoom> -->
+    <player-controls>
+      <template #slider>
+        <media-progress-slider :remaining="duration" :ctime="ctime" />
+      </template>
+    </player-controls>
   </div>
 </template>
 
 <script>
 import Vue from "vue";
 import VuePlyr from "vue-plyr";
+// import panZoom from "vue-panzoom";
 Vue.use(VuePlyr);
-// Vue.component('plyr-vue', VuePlyr)
-const CONTROL_EVENTS = [
-  {
-    name: "player-play",
-    callback: () => {
-      console.log("playing");
-      this.$refs.mediaPlayer.play();
-    }
-  },
-  {
-    name: "player-pause",
-    callback: () => {
-      console.log("pause");
-      this.$refs.mediaPlayer.pause();
-    }
-  }
-];
+// Vue.use(panZoom);
+
 export default {
-  name: "PlyermediaPlayer",
+  name: "PlyerMediaPlayer",
+  inheritAttrs: false,
   props: {
     controls: Boolean,
     poster: String,
@@ -77,18 +75,47 @@ export default {
     preload: [String, Boolean],
     cdn_url: String
   },
-  // data: () => ({ player: null }),
-  components: {
-    "plyr-vue": VuePlyr,
-    "player-controls": () => import("components/watch/PlayerControls")
+  data: () => ({
+    duration: 1000,
+    ctime: 0,
+    // isPlaying:  this.player?.playing || false,
+    flipped: false
+  }),
+  created() {
+    this.$root.$on("flip-player", this.flipPlayer);
+    this.$root.$on("slider-change", this.seekTo);
+    this.$root.$on("pause", this.pausePlayer);
   },
   mounted() {
-    // this.player = new Plyr("#mediaPlayer");
+    this.$nextTick(() => {
+      this.player.on("ready", e => {
+        this.duration = e.detail.plyr.duration;
+        console.log("dur", this.duration);
+      });
+      this.player.on("timeupdate", this.timeUpdated);
+      // this.player.on("progress", e => {
+      //   console.log("pro", e);
+      // });
+      this.player.on("loadeddata", e => {
+        console.log("loaded");
+      });
+    });
+  },
+  // watch: {
+  //   ctime() {
+
+  //   }
+  // },
+  components: {
+    "plyr-vue": VuePlyr,
+    "media-progress-slider": () =>
+      import("components/watch/MediaProgressSlider"),
+    "player-controls": () => import("components/watch/PlayerControls")
   },
   computed: {
-    
-  },
-  computed: {
+    player() {
+      return this.$refs.mediaPlayer.player;
+    },
     vimeoPlayer() {
       return `https://player.vimeo.com/video/${this.sources[0].src}?loop=false&amp;byline=false&amp;portrait=false&amp;title=false&amp;speed=true&amp;transparent=0&amp;gesture=media`;
     },
@@ -97,33 +124,39 @@ export default {
       return `https://www.youtube.com/embed/${this.sources[0].src}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1`;
     }
   },
+
   methods: {
-    setEvents() {
-      // debugger
-      
-      this.$q.notify({message: "controls mounted"});
-      console.log('controls mounted')
-      
-      for (let e of CONTROL_EVENTS) {
-        this.$on(e.name, e.callback);
-      }
+    timeUpdated: function(e) {
+      console.log("timeupdated");
+      this.duration = this.player.duration;
+      this.ctime = this.player.currentTime;
     },
-    player() {
-      return this.$refs.mediaPlayer.player;
+    flipPlayer() {
+      this.flipped = !this.flipped;
     },
     divPlayer() {
       const isDivPlayer = this.titletype in ["youtube", "vimeo"];
       console.log("isDivPlay", isDivPlayer);
       return isDivPlayer;
     },
-    // play() {
-    //   console.log("playing");
-    //   this.player().play();
+    // sliderEvt(e) {
+    //  this.seekTo(e)
     // },
-    // pause() {
-    //   console.log("pause");
-    //   this.player().play();
-    // }
+    // async sliderEvt(e) {
+    //   await this.$nextTick(() => {
+    //     // console.log("currenttime", this.player.currentTime);
+    //     // console.log("slideevt", e);
+    //     this.seekTo(e, this.player);
+    //     console.log("slide time", this.player.currentTime);
+    //   });
+    // },
+    seekTo(time) {
+      this.player.currentTime = time;
+      this.ctime = time;
+    },
+    pausePlayer() {
+      this.player.pause();
+    }
   }
 };
 </script>
@@ -131,9 +164,8 @@ export default {
 @import "https://cdn.plyr.io/3.6.2/plyr.css";
 .videoWrapper {
   position: relative;
-  padding-bottom: 36.25%;
   height: 0;
-  padding-bottom: calc(var(--aspect-ratio, 0.3625) * 100%);
+  /* padding-bottom: calc(var(--aspect-ratio, 0.455) * 100%); */
 }
 
 .videoWrapper iframe {
@@ -143,12 +175,8 @@ export default {
   width: 100%;
   height: 100%;
 }
-:root .mejs__poster img {
-  display: block !important;
-}
-.my-play {
-  /* width: 90vw; */
-  height: 700px;
-  text-align: center;
+.flipped {
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
 }
 </style>

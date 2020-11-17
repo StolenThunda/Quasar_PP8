@@ -8,7 +8,7 @@
           <div class="text-body2" v-html="s.overview"></div>
         </div>
         <template v-slot:loading>
-          <q-spinner-gears color="white" />
+          <q-spinner-bars color="white" />
         </template>
       </q-img>
     </q-card>

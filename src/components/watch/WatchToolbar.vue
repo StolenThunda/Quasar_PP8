@@ -9,6 +9,24 @@
           <span class="absolute-center" v-html="packageTitle"></span>
         </q-toolbar-title>
         <span class="absolute-center" v-else>No Course Data</span>
+        <!-- <span> -->
+        <q-fab
+          v-if="courseHistory.length"
+          :label="'History: ' + courseHistory.length"
+          vertical-actions-align="right"
+          color="secondary"
+          icon="keyboard_arrow_down"
+          direction="down"
+        >
+          <q-fab-action
+            v-for="course in courseHistory"
+            :key="course.id"
+            color="primary"
+            :label="course.packageTitle"
+            :to="`/watch/${course.packageID}`"
+          />
+          <!-- color="primary" -->
+        </q-fab>
         <q-btn size="25px" to="/browser" icon="mdi-magnify" flat />
       </slot>
       <slot name="auth"></slot>
@@ -30,9 +48,12 @@ export default {
     visible: false
   }),
   computed: {
-    ...mapState(["packageTitle"])
+    ...mapState(["packageTitle", "courseHistory"])
   },
   methods: {
+    showInfo(c) {
+      console.log("course", c);
+    },
     toggleInfo() {
       this.visible = !this.visible;
     },
@@ -40,7 +61,7 @@ export default {
       this.$root.$emit("showTab", "favorites");
       this.$root.$emit("toggleSidebar");
     },
-    goto: lnk => this.$route.push(lnk)
+    goto: lnk => this.$router.push(lnk)
   }
 };
 </script>
