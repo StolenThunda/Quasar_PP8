@@ -17,7 +17,7 @@ export default {
   mutations: {
     SET_PACKAGE_DATA(ctx, data) {
       if (!data) return;
-      console.log("SettingCourse:", data);
+      // console.log("SettingCourse:", data);
       // debugger
       if (ctx.currentCourse !== null) {
         if (ctx.courseHistory.length > 4) ctx.courseHistory.shift();
@@ -54,7 +54,7 @@ export default {
     async fetchPackageData(ctx, ID) {
       return await ctx.rootState.TXBA_UTILS.getPackage(ID)
         .then(packageData => {
-          console.log("courseData", packageData);
+          // console.log("courseData", packageData);
           return packageData;
         })
         .then(packageData => {
@@ -65,7 +65,7 @@ export default {
     fetchSegment: (ctx, ID) => ctx.dispatch("fetchSegmentData", ID),
     async fetchSegmentData(ctx, ID) {
       const response = await ctx.rootState.TXBA_UTILS.getSegment(ID);
-      console.log("segData", response);
+      // console.log("segData", response);
       ctx.commit("SET_CURRENT_SEGMENT", response);
     },
     playSegment(ctx, segmentId) {
@@ -73,7 +73,7 @@ export default {
         const segmentData = ctx.state.playSections[0].segments.filter(
           itm => itm.id === segmentId
         )[0];
-        console.log("seg-data", segmentData);
+        // console.log("seg-data", segmentData);
         if (segmentData)  ctx.commit("SET_CURRENT_SEGMENT_SETUP", segmentData);
       }
       return  segmentId
