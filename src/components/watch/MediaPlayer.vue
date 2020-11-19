@@ -1,11 +1,10 @@
 <template>
   <div>
     <!-- <pan-zoom selector> -->
-    <plyr-vue v-if="divPlayer" ref="mediaPlayer" v-on="$attrs">
+    <plyr-vue v-if="divPlayer" ref="mediaPlayer" v-on="$attrs" :class="{'flipped': playerSettings.flipped }">
       <!-- class="plyr__video-embed videoWrapper"  -->
-      <div class="videoWrapper" id="mediaPlayer">
+      <div class="videoWrapper" id="mediaPlayer" >
         <iframe
-          :class="{ flipped: this.flipped }"
           v-if="type === 'youtube'"
           :src="youtubePlayer"
           allowfullscreen
@@ -60,10 +59,9 @@
 import Vue from "vue";
 import VuePlyr from "vue-plyr";
 import { utilities } from "../../mixins/utilities";
-// import panZoom from "vue-panzoom";
+import { mapState, mapActions } from "vuex";
 Vue.use(VuePlyr);
 // Vue.use(panZoom);
-const STM = val => utilities.secondsToMinutes(val);
 export default {
   name: "PlyerMediaPlayer",
   inheritAttrs: false,
@@ -83,17 +81,25 @@ export default {
     preload: [String, Boolean],
     cdn_url: String
   },
+  provide() {
+    return {
+      speed: () => this.player.speed,
+      volume: () => this.player.volume,
+      // flipped: () => this.flipped,
+      zoom: () => this.zoom
+    };
+  },
   data: () => ({
     duration: 1000,
     ctime: 0,
     loopStart: null,
     loopStop: null,
-    flipped: false,
+    // flipped: false,
+    zoom: null,
     playing: false,
     loopActive: false
   }),
   created() {
-    this.$root.$on("flip-player", this.flipPlayer);
     this.$root.$on("slider-change", this.seekTo);
     this.$root.$on("togglePlay", this.togglePlay);
     this.$root.$on("restart", this.restart);
@@ -127,6 +133,8 @@ export default {
     }
   },
   computed: {
+    
+    ...mapState('watch', ['playerSettings']),
     player() {
       return this.$refs.mediaPlayer.player;
     },
@@ -147,6 +155,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions('watch',['flipPlayer']),
     timeUpdated: function(e) {
       this.duration = this.player.duration;
       this.ctime = this.player.currentTime;
@@ -162,9 +171,6 @@ export default {
           });
         }
       }
-    },
-    flipPlayer() {
-      this.flipped = !this.flipped;
     },
     divPlayer() {
       const isDivPlayer = this.titletype in ["youtube", "vimeo"];
@@ -199,29 +205,39 @@ export default {
       if (this.loopStop <= current) this.loopStop = null;
       this.showMessage(
         Object.assign({}, this.cfgLoopIcon, {
-          type: 'positive',
+          type: "positive",
           message: "Loop Start Set",
           caption: this.secondsToMinutes(this.loopStart)
         })
       );
     },
     setloopStop() {
-      if (!this.player) return;
+      if (this.player.currentTime === 'NaN') return;
       const current = this.player.currentTime;
+      console.log('curr', this.secondsToMinutes(current))
       if (typeof this.loopStart === "number") {
         if (this.loopStart !== current) {
-          this.loopStop = this.player.currentTime;
-          this.showMessage(
-            Object.assign({}, this.cfgLoopIcon, {
-              type: 'positive',
-              message: "Loop End Set",
-              caption: this.secondsToMinutes(this.loopStop)
-            })
-          );
+          if (this.loopStart < current) {
+            this.loopStop = current;
+            this.showMessage(
+              Object.assign({}, this.cfgLoopIcon, {
+                type: "positive",
+                message: "Loop End Set",
+                caption: this.secondsToMinutes(this.loopStop)
+              })
+            );
+          } else {
+            this.showMessage(
+              Object.assign({}, this.cfgLoopInfo, {
+                type: "negative",
+                message: "Loop end must be greater the loop start!"
+              })
+            );
+          }
         } else {
           this.showMessage(
             Object.assign({}, this.cfgLoopInfo, {
-              type: 'negative',
+              type: "negative",
               message: "Loop Start and End cannot be equal"
             })
           );
@@ -229,7 +245,7 @@ export default {
       } else {
         this.showMessage(
           Object.assign({}, this.cfgLoopWarning, {
-            type: 'info',
+            type: "info",
             message: "Must set loop start first"
           })
         );
@@ -241,7 +257,7 @@ export default {
       this.loopActive = !this.loopActive;
       this.player.togglePlay(this.loopActive);
       this.showMessage({
-        type: 'info',
+        type: "info",
         caption: this.loopActive
           ? `Start: ${this.secondsToMinutes(
               this.loopStart

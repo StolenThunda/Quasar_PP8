@@ -10,6 +10,7 @@
   "settings": {
     "vetur.validation.template": false,
     "vetur.format.enable": false,
-    "vetur.experimental.templateInterpolationService": true
+    "vetur.experimental.templateInterpolationService": true,
+    "npm-scripts.showStartNotification": false
   }
 }

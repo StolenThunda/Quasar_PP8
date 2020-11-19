@@ -9,12 +9,22 @@ export default {
     currentLoops: null,
     sections: null,
     courseHistory: [],
+    playerSettings: {
+      speed: null, 
+      volume: null, 
+      zoom: null, 
+      flipped: false},
     playerOpts: {
       controls: false
     },
     loopManager: new ProPlayerLoopsManager()
   },
   mutations: {
+    FLIP_PLAYER(ctx){
+      console.log('b4', ctx.playerSettings.flipped)
+      ctx.playerSettings.flipped = !ctx.playerSettings.flipped
+      console.log('aft', ctx.playerSettings.flipped)
+    },
     SET_PACKAGE_DATA(ctx, data) {
       if (!data) return;
       // console.log("SettingCourse:", data);
@@ -38,6 +48,7 @@ export default {
     }
   },
   actions: {
+    flipPlayer({commit}, bool){ commit('FLIP_PLAYER') },
     async fetchUserLoopData(ctx, ID) {
       return await ctx.rootState.TXBA_UTILS.getUserLoopData(ID)
         .then(loopData => {

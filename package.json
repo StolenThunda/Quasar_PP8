@@ -6,7 +6,7 @@
   "author": "Tony Moses <tonym415@gmail.com>",
   "private": true,
   "scripts": {
-    "build_deploy": "quasar build && ./deploy.sh",
+    "build_deploy": "quasar build && ../deployProjects.sh",
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0"
   },
