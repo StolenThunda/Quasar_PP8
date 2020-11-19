@@ -13,15 +13,13 @@
     <div id="transportButtonsWrapper">
       <ul id="transportButtonsList">
         <li>
-          <button
-            @click="playing = !playing"
+          <q-btn
             id="playback-play"
             class="transport-button"
             title="Toggle Playback."
-          >
-            <i v-show="!playing" class="fa fa-play" disabled></i>
-            <i v-show="playing" class="fa fa-pause" disabled></i>
-          </button>
+            :icon="isPlaying ? 'mdi-pause' : 'mdi-play'"
+            @click="togglePlay"
+          />
         </li>
         <li class="">
           <button
@@ -34,64 +32,59 @@
           </button>
         </li>
         <li class="">
-          <button
+          <q-btn
             id="playback-rewind"
             class="transport-button"
-            @click="seek"
+            @click="seek('back')"
             title="Rewind 5 Seconds."
-          >
-            <i class="fa fa-backward"></i> <sup>5</sup>
-          </button>
+            icon-right="fa fa-backward"
+            :label="5"
+          />
         </li>
         <li class="">
-          <button
+          <q-btn
             id="playback-forward"
             class="transport-button"
             @click="seek('forward')"
             title="Forward 5 Seconds."
+            icon="fa fa-forward"
+            :label="5"
           >
-            <i class="fa fa-forward"></i> <sup>5</sup>
-          </button>
+          </q-btn>
         </li>
         <li class="">
-          <button
+          <q-btn
             id="looping-start"
             class="transport-button"
-            @click="loopA = player.currentTime"
-          >
-            <q-btn
-              title="Set loop starting point."
-              size="md"
-              :color="loopA ? 'green' : 'white'"
-              label="[ A"
-              flat
-            />
-          </button>
+            @click="setLoop('loopStart')"
+            title="Set loop starting point."
+            :color="typeof loopStart === 'number' ? 'green' : 'white'"
+            label="[ A"
+            flat
+          />
         </li>
         <li class="">
-          <button
+          <q-btn
             id="looping-stop"
             class="transport-button"
-            @click="loopB = player.currentTime"
-          >
-            <q-btn
-              title="Set loop stopping point."
-              size="md"
-              :color="loopB ? 'green' : 'white'"
-              label="B ]"
-              flat
-            />
-          </button>
+            @click="setLoop('loopStop')"
+            title="Set loop stopping point."
+            :color="typeof loopStop === 'number' ? 'green' : 'white'"
+            label="B ]"
+            flat
+          />
         </li>
         <li class="">
-          <button
+          <q-btn
             id="looping-toggle"
-            class="transport-button "
-            @click="isLooping = !isLooping"
             title="Begin/End Looping."
+            class="transport-button"
+            :color="!isLoopDefined ? 'grey' : 'green'"
+            :disable="!isLoopDefined"
+            @click="toggleLooping"
           >
-            <q-icon name="mdi-sync" size="sm"></q-icon>
-          </button>
+            <q-icon name="mdi-autorenew" :class="{ rotate: looping }"></q-icon>
+          </q-btn>
         </li>
         <li>
           <button
@@ -100,7 +93,9 @@
             title="Video Settings."
           >
             <q-icon name="mdi-cog"></q-icon>
-            <q-menu
+            <!-- #region Player settings -->
+
+            <!-- <q-menu
               class="q-ma-lg"
               anchor="top left"
               self="bottom left"
@@ -125,15 +120,15 @@
                     />
                   </q-item-section>
                 </q-item>
-                <q-item  tag="label" v-ripple>
-                  <!-- TODO: ENABLE ZOOM -->
+                <q-item tag="label" v-ripple>
+                 
                   <q-item-section avatar>
                     <q-checkbox color="secondary" v-model="videoZoomEnabled" />
                   </q-item-section>
                   <q-item-section>
                     <q-item-label>Video Zoom</q-item-label>
                   </q-item-section>
-                </q-item>                      
+                </q-item>
                 <q-item v-show="videoZoomEnabled">
                   <q-item-section>
                     <q-slider
@@ -168,11 +163,10 @@
                 </q-item>
                 <q-item-label>Options</q-item-label>
                 <q-separator />
-                <!-- <hr />  -->
                 <q-item>
                   <q-item-section avatar>
                     <q-checkbox
-                    color="secondary"
+                      color="secondary"
                       v-model="lefty"
                       @click="this.lefty = !this.lefty"
                     />
@@ -182,7 +176,8 @@
                   </q-item-section>
                 </q-item>
               </q-list>
-            </q-menu>
+            </q-menu> -->
+            <!-- #endregion -->
           </button>
         </li>
       </ul>
@@ -191,98 +186,52 @@
 </template>
 
 <script>
-import MediaProgressSlider from './MediaProgressSlider.vue';
+import MediaProgressSlider from "./MediaProgressSlider.vue";
 export default {
   name: "PlayerControls",
-  data: () => ({
-    speed: 0.5,
-    volume: 0.5,
-    zoom: 1,
-    lefty: false,
-    playing: false,
-    loopA: null,
-    loopB: null,
-    isLooping: false,
-    videoZoomEnabled: false
-  }),
-  watch: {
-    lefty() {
-      this.$root.$emit("flip-player");
-    },
-    playing(value) {
-      // this.$q.notify({message: 'Toggling Play/Pause Media'})
-      this.player.togglePlay(value);
-    },
-    isLooping(loopState) {
-      console.log("starting loop");
-      if (this.isLoopDefined) {
-        if (loopState) {
-          this.isLooping = false;
-        } else {
-          if (!this.player.playing) this.playing = true;
-          if (this.loopA < this.loopB && this.isLoopDefined)
-            this.player.currentTime = this.loopA;
-        }
-      }
-    }
-  },
-  computed: {
-    isLoopDefined() {
-      return (
-        typeof this.loopA !== "undefined" && typeof this.loopB !== "undefined"
-      );
-    },
-    player() {
-      return this.$parent.$refs.mediaPlayer.player;
-    }
-    // volume() {
-    //   return this.player.volume;
-    // },
-    // speed() {
-    //   return this.player.speed;
-    // }
-  },
+  props: ["isPlaying", "loopStart", "loopStop", "currentTime", "isLoopDefined"],
+  data: () => ({ looping: false }),
   methods: {
+    togglePlay(val) {
+      this.$root.$emit("togglePlay", val);
+    },
+    setLoop(loop) {
+      // console.log('setloop', loop)
+      this.$root.$emit(loop, loop);
+    },
     restartPlayback() {
-      // this.$q.notify({message: 'Restarting Media'})
-      this.player.currentTime = 0;
-      this.player.pause();
+      this.$root.$emit("restart", 0);
     },
     seek(dir) {
-      let cTime = this.player.currentTime;
-      console.log("b4", this.player.currentTime);
+      // console.log("seek", dir);
       if (dir === "forward") {
-        this.player.forward(cTime + 5);
+        this.$root.$emit("seek5", this.currentTime + 5);
       } else {
-        this.player.rewind(cTime - 5);
+        this.$root.$emit("seek-5", this.currentTime - 5);
       }
-      console.log("after", this.player.currentTime);
     },
     toggleLooping() {
-      this.isLooping = !this.isLooping;
-      if (this.player.playing) {
-        this.player.pause();
-      } else if (this.loopA && this.loopB) {
-        this.player.currentTime = loopA;
-        while (this.player.playing) {
-          if (this.player.currentime >= loopB) this.player.currentTime = loopA;
-        }
-      }
-    },
-    speedChange() {
-      this.player.speed = this.speed;
-    },
-    volumeChange() {
-      this.player.volume = this.volume;
-    },
-    zoomChange() {
-      this.player.zoom = this.zoom;
+      this.looping = !this.looping;
+      this.$root.$emit("toggleLooping");
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.rotate {
+  display: inline-block;
+  animation: rotation 2s infinite linear;
+}
+
+@keyframes rotation {
+  50% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
 #mediaWrapper {
   position: absolute;
   top: 2.75rem;

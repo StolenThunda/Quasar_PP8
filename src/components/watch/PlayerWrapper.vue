@@ -38,7 +38,7 @@ export default {
   },
   watch: {
     currentSetup() {
-      console.info("setup changed");
+      // console.info("setup changed");
       this.forceRerender();
     }
   },
