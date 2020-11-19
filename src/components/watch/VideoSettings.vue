@@ -53,11 +53,12 @@
         </q-item>-->
         <q-item>
           <q-item-section avatar>
+            <q-item-label>Speed</q-item-label>
             <q-icon name="mdi-play-speed" color="secondary" title="Speed" />
           </q-item-section>
           <q-item-section>
             <q-slider
-              v-model="speed"
+              v-model="playerSettings.speed"
               :min="0.5"
               :max="1.5"
               :step="0.25"
@@ -69,9 +70,9 @@
         </q-item>
         <q-item-label>Options</q-item-label>
         <q-separator /> 
-        <q-item>
+        <q-item  class="q-py-md" >
           <q-item-section avatar>
-            <q-checkbox color="secondary" v-model="flipped"  />
+            <q-checkbox color="secondary" v-model="playerSettings.flipped"  />
           </q-item-section>
           <q-item-section>
             <q-item-label>Lefty View</q-item-label>
@@ -89,14 +90,17 @@ export default {
   inject: ["volume", "zoom", "speed"],
   computed: {
     ...mapState('watch', ['playerSettings']),
-    flipped: {
-      get() {
-        return this.playerSettings.flipped
-      },
-      set(val){
-        this.flipPlayer(val)
-      }
-    }
+  //   flipped: {
+  //     get() {
+  //       return this.playerSettings.flipped
+  //     },
+  //     set(val){
+  //       this.flipPlayer(val)
+  //     }
+  //   },
+  //   speed: {
+  //     get()
+  //   }
   }, 
   data: () => ({
     videoZoomEnabled: false

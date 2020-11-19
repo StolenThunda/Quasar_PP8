@@ -108,6 +108,7 @@ export default {
     this.$root.$on("loopStart", this.setloopStart);
     this.$root.$on("loopStop", this.setloopStop);
     this.$root.$on("toggleLooping", this.toggleLooping);
+    this.$root.$on("speed", this.speedChange);
     this.$root.$on("clearLoop", () => {
       this.loopStop = this.loopStart = null;
     });
@@ -116,6 +117,7 @@ export default {
     // this.$nextTick(() => {
     this.player.on("ready", e => {
       this.duration = e.detail.plyr.duration;
+      this.loadDefaultSettings()
     });
     this.player.on("timeupdate", this.timeUpdated);
     this.player.on("playing play pause", this.stateChange);
@@ -132,8 +134,7 @@ export default {
       this.playing = e;
     }
   },
-  computed: {
-    
+  computed: {    
     ...mapState('watch', ['playerSettings']),
     player() {
       return this.$refs.mediaPlayer.player;
@@ -155,7 +156,15 @@ export default {
     }
   },
   methods: {
-    ...mapActions('watch',['flipPlayer']),
+    ...mapActions('watch',['flipPlayer', 'loadPlayerSettings']),
+    loadDefaultSettings(){
+      const settings = {
+        speed: this.player.speed,
+        volume: this.player.volume,
+      }
+      this.loadPlayerSettings(settings)
+    },
+    speedChange(val) { this.player.speed = val},
     timeUpdated: function(e) {
       this.duration = this.player.duration;
       this.ctime = this.player.currentTime;
