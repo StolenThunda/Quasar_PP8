@@ -22,14 +22,14 @@
           />
         </li>
         <li class="">
-          <button
+          <q-btn
             id="playback-beginning"
             class="transport-button"
             @click="restartPlayback"
+            icon='mdi-skip-backward'
             title="Back to the beginning."
-          >
-            <i class="fa fa-fast-backward"></i>
-          </button>
+            :disable="this.currentTime === 0"
+          />
         </li>
         <li class="">
           <q-btn
@@ -37,9 +37,9 @@
             class="transport-button"
             @click="seek('back')"
             title="Rewind 5 Seconds."
-            icon-right="fa fa-backward"
-            :label="5"
-          />
+            icon-right="mdi-rewind-5"
+            >
+          </q-btn>
         </li>
         <li class="">
           <q-btn
@@ -47,9 +47,8 @@
             class="transport-button"
             @click="seek('forward')"
             title="Forward 5 Seconds."
-            icon="fa fa-forward"
-            :label="5"
-          >
+            icon="mdi-fast-forward-5"
+           >
           </q-btn>
         </li>
         <li class="">
@@ -59,9 +58,10 @@
             @click="setLoop('loopStart')"
             title="Set loop starting point."
             :color="typeof loopStart === 'number' ? 'green' : 'white'"
-            label="[ A"
+            icon="mdi-arrow-collapse-left"
             flat
-          />
+          ><span class="text-weight-bold text-body1 q-px-xs">A</span></q-btn>
+            <!-- icon="mdi-format-horizontal-align-left" -->
         </li>
         <li class="">
           <q-btn
@@ -70,9 +70,10 @@
             @click="setLoop('loopStop')"
             title="Set loop stopping point."
             :color="typeof loopStop === 'number' ? 'green' : 'white'"
-            label="B ]"
+            :disable="stopDisabled"
+            icon-right="mdi-arrow-collapse-right"
             flat
-          />
+          ><span class="text-weight-bold text-body1 q-px-xs">B</span></q-btn>
         </li>
         <li class="">
           <q-btn
@@ -87,12 +88,13 @@
           </q-btn>
         </li>
         <li>
-          <button
+          <q-btn
             id="controls-toggle"
             class="transport-button"
             title="Video Settings."
-          >
-            <q-icon name="mdi-cog"></q-icon>
+              >
+            <q-icon name="mdi-cog" :class="{ rotate: looping }"></q-icon>
+         
             <!-- #region Player settings -->
 
             <!-- <q-menu
@@ -178,7 +180,7 @@
               </q-list>
             </q-menu> -->
             <!-- #endregion -->
-          </button>
+          </q-btn>
         </li>
       </ul>
     </div>
@@ -191,6 +193,11 @@ export default {
   name: "PlayerControls",
   props: ["isPlaying", "loopStart", "loopStop", "currentTime", "isLoopDefined"],
   data: () => ({ looping: false }),
+  computed:{
+    stopDisabled(){
+      return !(typeof this.loopStart === 'number')
+    }
+  },
   methods: {
     togglePlay(val) {
       this.$root.$emit("togglePlay", val);
@@ -286,14 +293,14 @@ ul#transportButtonsList li {
 }
 .transport-button {
   width: 100%;
-  line-height: 2.5em;
+  // line-height: 2.5em;
   background: none;
   border: none;
-  font-size: 1rem;
+  // font-size: 1rem;
   -webkit-font-smoothing: antialiased;
   color: white;
   text-align: center;
-  font-weight: 600;
+  // font-weight: 600;
   background: rgb(86, 86, 86);
   background: -moz-linear-gradient(
     top,

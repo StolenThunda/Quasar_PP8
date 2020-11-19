@@ -21,14 +21,12 @@ export const utilities = {
       sec.toString().length == 1 ? (sec = "0" + sec) : void 0;
 
       return hours + ":" + min + ":" + sec;
-      console.log("strTime", strTime);
-      return strTime;
     },
     showMessage(objOptions) {
       const defaults = {
         message: "",
-         timeout: 800,
-        position: 'top',
+        timeout: 800,
+        position: "top",
         icon: "mdi-information-outline",
         classes: "glossy",
         actions: [
