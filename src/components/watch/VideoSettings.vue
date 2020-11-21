@@ -13,24 +13,90 @@
       transition-hide="flip-left"
       fit
     >
-      <q-list class="q-pa-md" dense>
-        <!--  <q-item>
-          <q-item-section avatar>
-            <q-icon color="secondary" name="volume_up" title="Volume" />
-          </q-item-section>
-         <q-item-section>
-            <q-slider
-            
-              :min="0"
-              :max="1"
-              :step="0.1"
-              label
-              color="secondary"
-              @change="volumeChange"
-            />
-          </q-item-section>
-        </q-item>
-        <q-item tag="label" v-ripple>
+      <q-list class="q-pa-md ">
+        <q-item-label class="text-secondary">Options</q-item-label>
+        <q-separator />
+           <section v-show="knobs">
+          <q-item>
+            <q-item-section>
+              <q-badge
+                color="secondary"
+                :label="'Volume: ' + playerSettings.volume + '%'"
+              />
+              <q-knob
+                show-value
+                class="text-white q-ma-md"
+                v-model="playerSettings.volume"
+                size="65px"
+                :angle="270"
+                :thickness="0.15"
+                color="accent"
+                track-color="transparent"
+                center-color="secondary"
+              >
+                <q-icon name="volume_up" class="q-mr-xs" />
+                {{ playerSettings.volume }}%
+              </q-knob>
+            </q-item-section>
+          </q-item>
+          <!-- <q-item>
+            <q-item-section>
+              <q-badge
+                color="secondary"
+                :label="'Playback Speed: ' + playerSettings.speed + '%'"
+              />
+              <q-knob
+                show-value
+                class="text-white q-ma-md"
+                v-model="playerSettings.speed"
+                size="50px"
+                :thickness="0.2"
+                color="accent"
+                track-color="transparent"
+                center-color="secondary"
+              >
+                <q-icon name="mdi-play-speed" />
+              </q-knob>
+            </q-item-section>
+          </q-item> -->
+        </section>
+        <section v-show="!knobs">
+          <q-item>
+            <q-item-section avatar>
+              <q-badge color="secondary">
+                <q-icon color="primary" name="volume_up" title="Volume" />
+                Volume: {{ playerSettings.volume }}%
+              </q-badge>
+              <q-slider
+                v-model="playerSettings.volume"
+                :min="0"
+                :max="100"
+                :step="10"
+                color="secondary"
+                @change="volumeChange"
+              />
+            </q-item-section>
+          </q-item>
+        </section>
+          <q-item>
+            <q-item-section avatar>
+              <q-badge color="secondary">
+                <q-icon name="mdi-play-speed" color="secondary" title="Speed" />
+                Speed: {{ playerSettings.speed }}%
+              </q-badge>
+              <q-slider
+                v-model="playerSettings.speed"
+                :min="50"
+                :max="150"
+                :step="25"
+                color="secondary"
+                @change="speedChange"
+              />
+            </q-item-section>
+          </q-item>
+     
+        <section>
+          <!--  <q-item tag="label" v-ripple>
           <q-item-section avatar>
             <q-checkbox color="secondary" v-model="videoZoomEnabled" />
           </q-item-section>
@@ -51,33 +117,24 @@
             />
           </q-item-section>
         </q-item>-->
-        <q-item>
-          <q-item-section avatar>
-            <q-item-label>Speed</q-item-label>
-            <q-icon name="mdi-play-speed" color="secondary" title="Speed" />
-          </q-item-section>
-          <q-item-section>
-            <q-slider
-              v-model="playerSettings.speed"
-              :min="0.5"
-              :max="1.5"
-              :step="0.25"
-              label
-              color="secondary"
-              @change="speedChange"
-            />
-          </q-item-section>
-        </q-item>
-        <q-item-label>Options</q-item-label>
-        <q-separator /> 
-        <q-item  class="q-py-md" >
-          <q-item-section avatar>
-            <q-checkbox color="secondary" v-model="playerSettings.flipped"  />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Lefty View</q-item-label>
-          </q-item-section>
-        </q-item>
+
+          <q-item class="q-py-md">
+            <q-item-section avatar>
+              <q-checkbox color="secondary" v-model="playerSettings.flipped" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label  class="text-secondary">Lefty View</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item class="q-py-md">
+            <q-item-section avatar>
+              <q-checkbox color="secondary" v-model="knobs" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label class="text-secondary">Knob Layout</q-item-label>
+            </q-item-section>
+          </q-item>
+        </section>
       </q-list>
     </q-menu>
   </q-btn>
@@ -87,35 +144,28 @@
 import { mapState, mapActions } from "vuex";
 export default {
   name: "VideoSettings",
-  inject: ["volume", "zoom", "speed"],
   computed: {
-    ...mapState('watch', ['playerSettings']),
-  //   flipped: {
-  //     get() {
-  //       return this.playerSettings.flipped
-  //     },
-  //     set(val){
-  //       this.flipPlayer(val)
-  //     }
-  //   },
-  //   speed: {
-  //     get()
-  //   }
-  }, 
+    ...mapState("watch", ["playerSettings"]),
+    convertToPercent(val) {
+      return `${val * 100}% `;
+    }
+  },
   data: () => ({
-    videoZoomEnabled: false
+    videoZoomEnabled: false,
+    knobs: false
   }),
   methods: {
     speedChange(v) {
       this.$root.$emit("speed", v);
     },
     volumeChange(v) {
+      debugger;
       this.$root.$emit("volume", v);
     },
     zoomChange(v) {
       this.$root.$emit("zoom", v);
     },
-    ...mapActions('watch', ['flipPlayer'])
+    ...mapActions("watch", ["flipPlayer"])
   }
 };
 </script>

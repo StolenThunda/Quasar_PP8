@@ -1,7 +1,13 @@
 <template>
   <div>
     <!-- <pan-zoom selector> -->
-    <plyr-vue v-if="divPlayer" ref="mediaPlayer" v-on="$attrs" :class="{'flipped': playerSettings.flipped }">
+    <plyr-vue 
+      v-if="divPlayer" 
+      ref="mediaPlayer" 
+      v-on="$attrs" 
+      :class="{'flipped': playerSettings.flipped }"
+      data-plyr-config='{ "debug": true }'
+      >
       <!-- class="plyr__video-embed videoWrapper"  -->
       <div class="videoWrapper" id="mediaPlayer" >
         <iframe
@@ -81,14 +87,6 @@ export default {
     preload: [String, Boolean],
     cdn_url: String
   },
-  provide() {
-    return {
-      speed: () => this.player.speed,
-      volume: () => this.player.volume,
-      // flipped: () => this.flipped,
-      zoom: () => this.zoom
-    };
-  },
   data: () => ({
     duration: 1000,
     ctime: 0,
@@ -109,6 +107,7 @@ export default {
     this.$root.$on("loopStop", this.setloopStop);
     this.$root.$on("toggleLooping", this.toggleLooping);
     this.$root.$on("speed", this.speedChange);
+    this.$root.$on("volume", this.volumeChange);
     this.$root.$on("clearLoop", () => {
       this.loopStop = this.loopStart = null;
     });
@@ -159,12 +158,13 @@ export default {
     ...mapActions('watch',['flipPlayer', 'loadPlayerSettings']),
     loadDefaultSettings(){
       const settings = {
-        speed: this.player.speed,
-        volume: this.player.volume,
+        speed: this.player.speed * 100,
+        volume: this.player.volume * 100,
       }
       this.loadPlayerSettings(settings)
     },
-    speedChange(val) { this.player.speed = val},
+    volumeChange(val) { this.player.volume = val / 100},
+    speedChange(val) { this.player.speed = val / 100},
     timeUpdated: function(e) {
       this.duration = this.player.duration;
       this.ctime = this.player.currentTime;
