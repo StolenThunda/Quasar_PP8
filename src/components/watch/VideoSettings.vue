@@ -96,7 +96,7 @@
         </q-item>
 
         <section>
-          <q-item tag="label" v-ripple>
+          <!-- <q-item tag="label" v-ripple>
             <q-item-section avatar>
               <q-checkbox
                 color="secondary"
@@ -106,8 +106,7 @@
             </q-item-section>
             <q-item-section>
               <q-item-label>Pan/Zoom</q-item-label>
-            <!-- </q-item-section>
-            <q-item-section> -->
+            
               <q-btn
                 v-show="playerSettings.zoomEnabled"
                 color="secondary"
@@ -116,7 +115,7 @@
               >
               </q-btn>
             </q-item-section>
-          </q-item>
+          </q-item> -->
           <!--<q-item v-show="playerSettings.zoomEnabled">
           <q-item-section>
             <q-slider
@@ -132,15 +131,16 @@
         </q-item> -->
 
           <q-item class="q-py-md">
-            <q-item-section avatar>
-              <q-checkbox
-                color="secondary"
-                v-model="playerSettings.flipped"
-                @input="flipPlayer"
-              />
-            </q-item-section>
             <q-item-section>
               <q-item-label class="text-secondary">Lefty View</q-item-label>
+            </q-item-section>
+            <q-item-section>
+              <q-toggle
+                icon="mdi-hand-left"
+                color="secondary"
+                v-model="playerSettings.flipped"
+                unchecked-icon="clear"
+              />
             </q-item-section>
           </q-item>
           <!-- <q-item class="q-py-md">
@@ -180,6 +180,9 @@ export default {
     zoomChange(v) {
       this.$root.$emit("zoom", v);
     },
+    toggleFlip(v) {
+
+    }, 
     ...mapActions("watch", ["flipPlayer"])
   }
 };

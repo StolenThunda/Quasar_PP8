@@ -5,10 +5,8 @@
     v-if="currentSetup.sources"
     :set="(s = currentSetup.sources[0])"
   >
-    {{ s.type }}
-    <template 
-      v-if="renderers.includes(s.type)"
-      >
+    <!-- {{ s.type }} -->
+    <template v-if="renderers.includes(s.type)">
       <pdf-renderer v-if="s.type === 'pdf'" :src="s.src" />
       <soundslice-renderer v-if="s.type === 'soundslice'" :src="s.src" />
     </template>

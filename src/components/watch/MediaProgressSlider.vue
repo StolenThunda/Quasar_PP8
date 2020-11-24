@@ -1,10 +1,10 @@
 <template>
-  <div id="progressSliderWrapper"  class="q-pt-md ">
-    <div class="fit row  items-center q-pb-xs">
-      <div id="current-time" class="offset-3">{{ elapsedTime }}</div>
-      <div id="time-left" class="offset-9">{{ timeLeft }}</div>
+  <div id="progressSliderWrapper"  class="fit col col-8 offset-4 q-pt-xs q-px-lg q-mx-xs">
+    <div class="fit row  items-center  offset-3 col-9 q-pt-md ">
+      <div id="current-time" class="offset-3 text-weight-bolder text-h6">{{ elapsedTime }}</div>
+      <div id="time-left" class="offset-9 text-weight-bolder text-h6 q-pr-xl">{{ timeLeft }}</div>
     </div>
-    <div id="progressSlider">
+    <div id="progressSlider" class="offset-3 col-9 q-pb-xs q-pt-sm">
       <q-slider
         v-model="progress"
         :min="0"

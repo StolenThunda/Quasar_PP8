@@ -1,21 +1,18 @@
 <template>
-  <div class="container absolute-full">
+  <div class="">
   
       <plyr-vue 
         name="plyr"
         v-if="divPlayer"
         ref="mediaPlayer"
         v-on="$attrs"
-        :class="{ flipped: playerSettings.flipped }"
-       
-        data-plyr-config='{ "debug": true, 
-        "controls": false }'
+        data-plyr-config='{ "debug": true, "controls": false }'
       >  
       <!-- <panZoom
       :options="pzOptions"
       @init="pzInit"
     > -->
-        <div class="videoWrapper" id="mediaPlayer">
+        <div class="videoWrapper" id="mediaPlayer" :class="{ flipped: playerSettings.flipped }">
           <iframe
             v-if="type === 'youtube'"
             :src="youtubePlayer"
@@ -126,12 +123,11 @@ export default {
       this.loopStop = this.loopStart = null;
     });
   },
-  mounted() {
-
+  mounted() { 
     this.player.on("ready", e => {
       this.duration = e.detail.plyr.duration;
       this.loadDefaultSettings();
-      e.detail.plyr.toggleControls(false)
+      this.player.toggleControls(false)
     });
     this.player.on("timeupdate", this.timeUpdated);
     this.player.on("playing play pause", this.stateChange);
@@ -325,8 +321,8 @@ export default {
   }
 };
 </script>
-<style scoped>
-/* @import "https://cdn.plyr.io/3.6.2/plyr.css"; */
+<style>
+@import "https://cdn.plyr.io/3.6.2/plyr.css";
 
 .container {
   position: relative;
@@ -355,7 +351,7 @@ export default {
   -webkit-transform: rotateY(180deg);
   transform: rotateY(180deg);
 }
-.plyr--stopped .plyr__controls {
+.plyr__controls {
   opacity: 0;
   pointer-events: none;
   display: none;
