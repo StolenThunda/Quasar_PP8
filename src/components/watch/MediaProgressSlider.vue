@@ -1,8 +1,8 @@
 <template>
   <div id="progressSliderWrapper"  class="q-pt-md ">
     <div class="fit row  items-center q-pb-xs">
-      <div id="current-time" class="offset-1">{{ elapsedTime }}</div>
-      <div id="time-left" class="offset-11">{{ timeLeft }}</div>
+      <div id="current-time" class="offset-3">{{ elapsedTime }}</div>
+      <div id="time-left" class="offset-9">{{ timeLeft }}</div>
     </div>
     <div id="progressSlider">
       <q-slider
@@ -42,21 +42,6 @@ export default {
     ctime: function(val) { this.progress = val },
   },
   methods: {
-    // secondsToMinutes(sec) {
-    //   sec = Math.round(Number(sec));
-    //   var hours = Math.floor(sec / 3600);
-    //   hours >= 1 ? (sec = sec - hours * 3600) : (hours = "00");
-    //   var min = Math.floor(sec / 60);
-    //   min >= 1 ? (sec = sec - min * 60) : (min = "00");
-    //   sec < 1 ? (sec = "00") : void 0;
-
-    //   min.toString().length == 1 ? (min = "0" + min) : void 0;
-    //   sec.toString().length == 1 ? (sec = "0" + sec) : void 0;
-
-    //   return hours + ":" + min + ":" + sec;
-    //   console.log("strTime", strTime);
-    //   return strTime;
-    // },
     sliderChanged(e) {
       this.$root.$emit("slider-change", e);
     },
@@ -70,13 +55,13 @@ export default {
 
 <style lang="scss" scoped>
 #current-time {
-  position: absolute;
-  float: left;
-  margin-left: 1em;
+  position: absolute !important;
+  float: left !important;
+  margin-left: 1em !important;
 }
 #time-left {
-  position: absolute;
-  float: right;
-  margin-right: 1em;
+  position: absolute !important;
+  float: right !important;
+  margin-right: 1em !important;
 }
 </style>

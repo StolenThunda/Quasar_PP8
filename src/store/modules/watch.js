@@ -12,7 +12,8 @@ export default {
     playerSettings: {
       speed: null,
       volume: null,
-      zoom: null,
+      zoomEnabled: false,
+      zoom: 1,
       flipped: false
     },
     playerOpts: {
@@ -35,8 +36,6 @@ export default {
     },
     SET_PACKAGE_DATA(ctx, data) {
       if (!data) return;
-      // console.log("SettingCourse:", data);
-      // debugger
       if (ctx.currentCourse !== null) {
         if (ctx.courseHistory.length > 4) ctx.courseHistory.shift();
         ctx.courseHistory.push(ctx.currentCourse);

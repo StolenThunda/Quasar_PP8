@@ -24,6 +24,7 @@ export const utilities = {
     },
     showMessage(objOptions) {
       const defaults = {
+        group: false,
         message: "",
         timeout: 800,
         position: "top",

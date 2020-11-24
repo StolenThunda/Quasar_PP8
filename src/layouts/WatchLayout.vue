@@ -1,5 +1,5 @@
 <template>
-    <q-layout view="hHh lpR lFf" container style="height: 100vh" class="shadow-2 rounded-borders">
+    <q-layout view="lHh LpR lFf" container style="height: 100vh" class="shadow-2 rounded-borders">
 
     <q-header reveal elevated>
       <watch-tool-bar>
@@ -17,13 +17,12 @@
         </template>
       </watch-tool-bar>
     </q-header>
+      <!-- :width="300"
+      :breakpoint="500"     -->
 
     <q-drawer 
-      :width="300"
-      :breakpoint="500"    
       v-model="leftDrawer" 
       show-if-above
-      overlay
       elevated
       >
       <q-scroll-area

@@ -1,5 +1,5 @@
 <template>
-  <div id="mediaControlsWrapper">
+  <div id="mediaControlsWrapper" >
     <slot name="slider" />
     <!-- <div id="progressSliderWrapper">
       <div id="current-time">0.00</div>
@@ -171,7 +171,7 @@ export default {
   margin: 0;
 }
 #mediaControlsWrapper {
-  position: absolute;
+  // position: absolute;
   bottom: 0;
   height: auto;
   width: 100%;

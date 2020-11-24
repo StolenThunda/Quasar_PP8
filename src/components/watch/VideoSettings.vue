@@ -16,7 +16,7 @@
       <q-list class="q-pa-md ">
         <q-item-label class="text-secondary">Options</q-item-label>
         <q-separator />
-           <section v-show="knobs">
+        <section v-show="knobs">
           <q-item>
             <q-item-section>
               <q-badge
@@ -62,11 +62,11 @@
         </section>
         <section v-show="!knobs">
           <q-item>
-            <q-item-section avatar>
-              <q-badge color="secondary">
-                <q-icon color="primary" name="volume_up" title="Volume" />
-                Volume: {{ playerSettings.volume }}%
-              </q-badge>
+            <q-item-section avatar class="text-secondary flex flex-center">
+                Volume:
+                <q-icon color="secondary" name="volume_up" title="Volume" />
+            </q-item-section>
+            <q-item-section class="col-5">
               <q-slider
                 v-model="playerSettings.volume"
                 :min="0"
@@ -74,40 +74,53 @@
                 :step="10"
                 color="secondary"
                 @change="volumeChange"
-              />
+              /> {{ playerSettings.volume }}%
             </q-item-section>
           </q-item>
         </section>
-          <q-item>
-            <q-item-section avatar>
-              <q-badge color="secondary">
-                <q-icon name="mdi-play-speed" color="secondary" title="Speed" />
-                Speed: {{ playerSettings.speed }}%
-              </q-badge>
-              <q-slider
-                v-model="playerSettings.speed"
-                :min="50"
-                :max="150"
-                :step="25"
-                color="secondary"
-                @change="speedChange"
-              />
-            </q-item-section>
-          </q-item>
-     
-        <section>
-          <!--  <q-item tag="label" v-ripple>
-          <q-item-section avatar>
-            <q-checkbox color="secondary" v-model="videoZoomEnabled" />
+        <q-item>
+          <q-item-section avatar class="text-secondary flex flex-center"> 
+              Speed: 
+              <q-icon name="mdi-play-speed" color="secondary" title="Speed" />
           </q-item-section>
-          <q-item-section>
-            <q-item-label>Video Zoom</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item v-show="videoZoomEnabled">
           <q-item-section>
             <q-slider
-              v-model="zoom"
+              v-model="playerSettings.speed"
+              :min="50"
+              :max="150"
+              :step="25"
+              color="secondary"
+              @change="speedChange"
+            />{{ playerSettings.speed }}%
+          </q-item-section>
+        </q-item>
+
+        <section>
+          <q-item tag="label" v-ripple>
+            <q-item-section avatar>
+              <q-checkbox
+                color="secondary"
+                v-model="playerSettings.zoomEnabled"
+                @input="zoomChange"
+              />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Pan/Zoom</q-item-label>
+            <!-- </q-item-section>
+            <q-item-section> -->
+              <q-btn
+                v-show="playerSettings.zoomEnabled"
+                color="secondary"
+                label="Reset"
+                @click="resetZoom"
+              >
+              </q-btn>
+            </q-item-section>
+          </q-item>
+          <!--<q-item v-show="playerSettings.zoomEnabled">
+          <q-item-section>
+            <q-slider
+              v-model="playerSettings.zoom"
               :min="1"
               :max="4"
               :step="0.005"
@@ -116,24 +129,28 @@
               @change="zoomChange"
             />
           </q-item-section>
-        </q-item>-->
+        </q-item> -->
 
           <q-item class="q-py-md">
             <q-item-section avatar>
-              <q-checkbox color="secondary" v-model="playerSettings.flipped" />
+              <q-checkbox
+                color="secondary"
+                v-model="playerSettings.flipped"
+                @input="flipPlayer"
+              />
             </q-item-section>
             <q-item-section>
-              <q-item-label  class="text-secondary">Lefty View</q-item-label>
+              <q-item-label class="text-secondary">Lefty View</q-item-label>
             </q-item-section>
           </q-item>
-          <q-item class="q-py-md">
+          <!-- <q-item class="q-py-md">
             <q-item-section avatar>
               <q-checkbox color="secondary" v-model="knobs" />
             </q-item-section>
             <q-item-section>
               <q-item-label class="text-secondary">Knob Layout</q-item-label>
             </q-item-section>
-          </q-item>
+          </q-item> -->
         </section>
       </q-list>
     </q-menu>
@@ -144,23 +161,21 @@
 import { mapState, mapActions } from "vuex";
 export default {
   name: "VideoSettings",
-  computed: {
-    ...mapState("watch", ["playerSettings"]),
-    convertToPercent(val) {
-      return `${val * 100}% `;
-    }
-  },
   data: () => ({
-    videoZoomEnabled: false,
     knobs: false
   }),
+  computed: {
+    ...mapState("watch", ["playerSettings"])
+  },
   methods: {
     speedChange(v) {
       this.$root.$emit("speed", v);
     },
     volumeChange(v) {
-      debugger;
       this.$root.$emit("volume", v);
+    },
+    resetZoom(v) {
+      this.$root.$emit("resetZoom", v);
     },
     zoomChange(v) {
       this.$root.$emit("zoom", v);

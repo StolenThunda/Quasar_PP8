@@ -1,17 +1,23 @@
 <template>
+    <!-- style="height: 80vh" -->
   <div
     id="mediaPlayerWrapper"
     v-if="currentSetup.sources"
     :set="(s = currentSetup.sources[0])"
   >
+    {{ s.type }}
+    <template 
+      v-if="renderers.includes(s.type)"
+      >
+      <pdf-renderer v-if="s.type === 'pdf'" :src="s.src" />
+      <soundslice-renderer v-if="s.type === 'soundslice'" :src="s.src" />
+    </template>
     <media-player
-      v-if="!(this.currentSetup.type in this.renderers)"
+      v-else
       v-bind="currentSetup"
       :key="'mediaPlayer-' + componentKey"
       :src="s.src"
     />
-    <pdf-renderer v-if="s.type === 'pdf'" :src="s.src" />
-    <soundslice-renderer v-if="s.type === 'soundslice'" :src="s.src" />
   </div>
 </template>
 
@@ -27,7 +33,6 @@ export default {
   },
   data: () => ({
     componentKey: 0,
-    flipped: false,
     renderers: ["pdf", "soundslice"]
   }),
   created() {
@@ -43,6 +48,10 @@ export default {
     }
   },
   methods: {
+    isRenderer(type) {
+      console.log("type", type);
+      return this.renderers.includes(type);
+    },
     forceRerender() {
       this.componentKey += 1;
     }
