@@ -1,8 +1,8 @@
 <template>
   <div id="progressSliderWrapper"  class="fit col col-8 offset-4 q-pt-xs q-px-lg q-mx-xs">
-    <div class="fit row  items-center  offset-3 col-9 q-pt-md ">
-      <div id="current-time" class="offset-3 text-weight-bolder text-h6">{{ elapsedTime }}</div>
-      <div id="time-left" class="offset-9 text-weight-bolder text-h6 q-pr-xl">{{ timeLeft }}</div>
+    <div class="fit row  items-center  offset-3 col-9 q-pt-sm ">
+      <div id="current-time" class="offset-3 text-weight-bolder text-caption">{{ elapsedTime }}</div>
+      <div id="time-left" class="offset-9 text-weight-bolder text-caption q-pr-xl">{{ timeLeft }}</div>
     </div>
     <div id="progressSlider" class="offset-3 col-9 q-pb-xs q-pt-sm">
       <q-slider

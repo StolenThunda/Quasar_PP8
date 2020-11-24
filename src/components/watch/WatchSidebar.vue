@@ -12,7 +12,7 @@ const { mapState, mapGetters } = createNamespacedHelpers("watch");
 export default {
   name: "PlayerSideBarTabs",
   data: () => ({
-    tab: true,
+    // tab: true,
     // sections: null
   }),
   computed: {

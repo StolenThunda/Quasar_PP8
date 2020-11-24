@@ -61,6 +61,12 @@ export default {
     loadPlayerSettings({ commit }, objSettings) {
       commit("LOAD_PLAYER_SETTINGS", objSettings);
     },
+    fetchComments({dispatch}, pID) { return dispatch("fetchCommentsData", pID)},
+    async fetchCommentsData(ctx, pID){
+      const comments = await ctx.rootState.TXBA_UTILS.getComments(pID, pID)
+      console.log('coms', comments)
+      return comments;
+      },
     async fetchUserLoopData(ctx, ID) {
       return await ctx.rootState.TXBA_UTILS.getUserLoopData(ID)
         .then(loopData => {

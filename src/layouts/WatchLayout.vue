@@ -1,6 +1,10 @@
 <template>
-    <q-layout view="lHh LpR lFf" container style="height: 100vh" class="shadow-2 rounded-borders">
-
+  <q-layout
+    view="lHh LpR lFf"
+    container
+    style="height: 100vh"
+    class="shadow-2 rounded-borders"
+  >
     <q-header reveal elevated>
       <watch-tool-bar>
         <template #toggle>
@@ -17,21 +21,17 @@
         </template>
       </watch-tool-bar>
     </q-header>
-      <!-- :width="300"
-      :breakpoint="500"     -->
 
-    <q-drawer 
-      v-model="leftDrawer" 
+    <q-drawer
+      :width="300"
+      :breakpoint="500"
+      v-model="leftDrawer"
       show-if-above
       elevated
-      >
-      <q-scroll-area
-        :delay="1200"
-        :thumb-style="thumbStyle"
-        class="fit"
-      >
+    >
+      <q-scroll-area :delay="1200" :thumb-style="thumbStyle" class="fit">
         <!-- style="height: 90vh; max-width: 300px;" -->
-        <dynamic-tab :tabList="this.tabs" class="q-item"/>
+        <dynamic-tab :tabList="this.tabs" class="q-item" />
       </q-scroll-area>
     </q-drawer>
 
@@ -63,14 +63,21 @@ export default {
     }
   }),
   created() {
-    this.getSegmentData();
+    this.getPackageData();
     this.addSidebarTabs([
       {
         name: "Segments",
         componentName: "Segments",
         icon: "mdi-segment",
-        cmp: () => import("components/watch/WatchSidebar"),
-        menu: () => import("components/watch/WatchSettings")
+        cmp: () => import("components/watch/sidebar/Segments"),
+        menu: () => import("components/watch/settings/WatchSettings")
+      },
+      {
+        name: "Comments",
+        componentName: "Comments",
+        icon: "mdi-comment-multiple-outline",
+        cmp: () => import("components/watch/sidebar/Comments"),
+        // menu: () => import("components/watch/sidebar/WatchSettings")
       }
     ]);
   },
@@ -88,7 +95,7 @@ export default {
     goBack() {
       window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/");
     },
-    async getSegmentData() {
+    async getPackageData() {
       return await this.fetchPackage(this.$route.params.packageID);
     },
     ...mapActions("default", ["addSidebarTabs"]),
