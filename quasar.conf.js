@@ -21,6 +21,7 @@ module.exports = function (/* ctx */) {
     boot: [
       'auth0',
       'axios',
+      'panzoom',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css

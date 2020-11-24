@@ -10,10 +10,10 @@
       <img :src="this.$auth.user.picture" />
     </q-avatar>
     <q-menu v-if="this.$auth.isAuthenticated">
-      <div class="row no-wrap q-pa-md">
-        <div class="column">
+      <div class="row q-pa-lg no-wrap ">
+        <div class="column ">
           <div class="text-h6 q-mb-md">Settings</div>
-          <q-btn icon="fa fa-user" label="Profile" to="/profile" />
+          <q-btn icon="mdi-account-details" label="Account" to="/profile"  />
             <tool-list />
         </div>
 
@@ -50,8 +50,7 @@ export default {
       const props = !this.$auth.isAuthenticated && !this.$auth.loading
       ? {
         'icon-right': 'fas fa-sign-in-alt',
-        label: 'Login',
-        
+        label: 'Login',        
       }
       : {
         round: true

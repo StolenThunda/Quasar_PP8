@@ -1,5 +1,5 @@
 <template>
-  <div width="100%" height="100%">
+  <div>
     <q-card v-model="currentCourse" class="my-card" :set="(s = getCourseInfo)">
       <div class="text-h6" v-html="s.title"></div>
       <q-img :ratio="16 / 9" contain :src="s.image">

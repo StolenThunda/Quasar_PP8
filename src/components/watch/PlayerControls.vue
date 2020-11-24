@@ -1,5 +1,5 @@
 <template>
-  <div id="mediaControlsWrapper">
+  <div id="mediaControlsWrapper" >
     <slot name="slider" />
     <!-- <div id="progressSliderWrapper">
       <div id="current-time">0.00</div>
@@ -22,14 +22,14 @@
           />
         </li>
         <li class="">
-          <button
+          <q-btn
             id="playback-beginning"
             class="transport-button"
             @click="restartPlayback"
+            icon='mdi-skip-backward'
             title="Back to the beginning."
-          >
-            <i class="fa fa-fast-backward"></i>
-          </button>
+            :disable="this.currentTime === 0"
+          />
         </li>
         <li class="">
           <q-btn
@@ -37,9 +37,9 @@
             class="transport-button"
             @click="seek('back')"
             title="Rewind 5 Seconds."
-            icon-right="fa fa-backward"
-            :label="5"
-          />
+            icon-right="mdi-rewind-5"
+            >
+          </q-btn>
         </li>
         <li class="">
           <q-btn
@@ -47,9 +47,8 @@
             class="transport-button"
             @click="seek('forward')"
             title="Forward 5 Seconds."
-            icon="fa fa-forward"
-            :label="5"
-          >
+            icon="mdi-fast-forward-5"
+           >
           </q-btn>
         </li>
         <li class="">
@@ -59,9 +58,10 @@
             @click="setLoop('loopStart')"
             title="Set loop starting point."
             :color="typeof loopStart === 'number' ? 'green' : 'white'"
-            label="[ A"
+            icon="mdi-arrow-collapse-left"
             flat
-          />
+          ><span class="text-weight-bold text-body1 q-px-xs">A</span></q-btn>
+            <!-- icon="mdi-format-horizontal-align-left" -->
         </li>
         <li class="">
           <q-btn
@@ -70,9 +70,10 @@
             @click="setLoop('loopStop')"
             title="Set loop stopping point."
             :color="typeof loopStop === 'number' ? 'green' : 'white'"
-            label="B ]"
+            :disable="stopDisabled"
+            icon-right="mdi-arrow-collapse-right"
             flat
-          />
+          ><span class="text-weight-bold text-body1 q-px-xs">B</span></q-btn>
         </li>
         <li class="">
           <q-btn
@@ -86,99 +87,8 @@
             <q-icon name="mdi-autorenew" :class="{ rotate: looping }"></q-icon>
           </q-btn>
         </li>
-        <li>
-          <button
-            id="controls-toggle"
-            class="transport-button"
-            title="Video Settings."
-          >
-            <q-icon name="mdi-cog"></q-icon>
-            <!-- #region Player settings -->
-
-            <!-- <q-menu
-              class="q-ma-lg"
-              anchor="top left"
-              self="bottom left"
-              transition-show="flip-right"
-              transition-hide="flip-left"
-              fit
-            >
-              <q-list class="q-pa-md" dense>
-                <q-item>
-                  <q-item-section avatar>
-                    <q-icon color="secondary" name="volume_up" title="Volume" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-slider
-                      v-model="volume"
-                      :min="0"
-                      :max="1"
-                      :step="0.1"
-                      label
-                      color="secondary"
-                      @change="volumeChange"
-                    />
-                  </q-item-section>
-                </q-item>
-                <q-item tag="label" v-ripple>
-                 
-                  <q-item-section avatar>
-                    <q-checkbox color="secondary" v-model="videoZoomEnabled" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>Video Zoom</q-item-label>
-                  </q-item-section>
-                </q-item>
-                <q-item v-show="videoZoomEnabled">
-                  <q-item-section>
-                    <q-slider
-                      v-model="zoom"
-                      :min="1"
-                      :max="4"
-                      :step="0.005"
-                      label
-                      color="secondary"
-                    />
-                  </q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section avatar>
-                    <q-icon
-                      name="mdi-play-speed"
-                      color="secondary"
-                      title="Speed"
-                    />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-slider
-                      v-model="speed"
-                      :min="0.5"
-                      :max="1.5"
-                      :step="0.25"
-                      label
-                      color="secondary"
-                      @change="speedChange"
-                    />
-                  </q-item-section>
-                </q-item>
-                <q-item-label>Options</q-item-label>
-                <q-separator />
-                <q-item>
-                  <q-item-section avatar>
-                    <q-checkbox
-                      color="secondary"
-                      v-model="lefty"
-                      @click="this.lefty = !this.lefty"
-                    />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>Lefty View</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu> -->
-            <!-- #endregion -->
-          </button>
+        <li>         
+            <video-settings-menu />
         </li>
       </ul>
     </div>
@@ -189,8 +99,16 @@
 import MediaProgressSlider from "./MediaProgressSlider.vue";
 export default {
   name: "PlayerControls",
+  components: {
+    'videoSettingsMenu' : () => import('components/watch/settings/VideoSettings')
+  },
   props: ["isPlaying", "loopStart", "loopStop", "currentTime", "isLoopDefined"],
   data: () => ({ looping: false }),
+  computed:{
+    stopDisabled(){
+      return !(typeof this.loopStart === 'number')
+    }
+  },
   methods: {
     togglePlay(val) {
       this.$root.$emit("togglePlay", val);
@@ -253,7 +171,7 @@ export default {
   margin: 0;
 }
 #mediaControlsWrapper {
-  position: absolute;
+  // position: absolute;
   bottom: 0;
   height: auto;
   width: 100%;
@@ -286,14 +204,14 @@ ul#transportButtonsList li {
 }
 .transport-button {
   width: 100%;
-  line-height: 2.5em;
+  // line-height: 2.5em;
   background: none;
   border: none;
-  font-size: 1rem;
+  // font-size: 1rem;
   -webkit-font-smoothing: antialiased;
   color: white;
   text-align: center;
-  font-weight: 600;
+  // font-weight: 600;
   background: rgb(86, 86, 86);
   background: -moz-linear-gradient(
     top,

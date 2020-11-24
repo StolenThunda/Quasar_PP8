@@ -16,6 +16,7 @@ export default class TXBA_Utilities {
     this.segment_slug = "--ajax-get-segment-info";
     this.load_media_slug = "--ajax-load-media";
     this.load_vimeo_slug = "/--ajax-load-media/vimeo/";
+    this.load_comments_slug = "/--ajax-load-comments/";
     this.slug_code = {
       pro_player_packages:
         "wcm9fcGxheWVyX3BhY2thZ2VzXC8iLCJjaGFubmVsIjoicHJvX3BsYXllcl9wYWNrYWdlcyJ9",
@@ -38,12 +39,6 @@ export default class TXBA_Utilities {
     const url = `${this.baseURL}${slug}`;
     return await axios
       .get(url)
-      // .then(response => {
-      //   console.log(
-      //     url + " || " + JSON.stringify(response, null, 4).substring(300, 400)
-      //   );
-      //   return response;
-      // })
       .then(async response => await response.data)
       .then(data => (callback ? callback.call(this, data) : data))
       .catch(err => {
@@ -128,6 +123,10 @@ export default class TXBA_Utilities {
     // console.log("retr Seg", seg)
     // return seg;
     return this.getAsyncData(`${this.segment_slug}/${ID}`);
+  }
+
+   async getComments(packageID, segmentID) {
+    return this.getAsyncData(`${this.load_comments_slug}/?package_id=${packageID}&segment_id=${segmentID}&author=no`);
   }
 
   parseSections(sections, poster) {

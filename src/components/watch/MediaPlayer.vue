@@ -1,27 +1,35 @@
 <template>
-  <div>
-    <!-- <pan-zoom selector> -->
-    <plyr-vue v-if="divPlayer" ref="mediaPlayer" v-on="$attrs">
-      <!-- class="plyr__video-embed videoWrapper"  -->
-      <div class="videoWrapper" id="mediaPlayer">
-        <iframe
-          :class="{ flipped: this.flipped }"
-          v-if="type === 'youtube'"
-          :src="youtubePlayer"
-          allowfullscreen
-          allowtransparency
-        />
+  <div class="">
+  
+      <plyr-vue 
+        name="plyr"
+        v-if="divPlayer"
+        ref="mediaPlayer"
+        v-on="$attrs"
+        data-plyr-config='{ "debug": true, "controls": false }'
+      >  
+      <!-- <panZoom
+      :options="pzOptions"
+      @init="pzInit"
+    > -->
+        <div class="videoWrapper" id="mediaPlayer" :class="{ flipped: playerSettings.flipped }">
+          <iframe
+            v-if="type === 'youtube'"
+            :src="youtubePlayer"
+            allowfullscreen
+            allowtransparency
+          />
 
-        <iframe
-          v-if="type === 'vimeo'"
-          :src="vimeoPlayer"
-          allowfullscreen
-          allowtransparency
-          allow="autoplay"
-        />
-      </div>
-    </plyr-vue>
-    <!-- </pan-zoom> -->
+          <iframe
+            v-if="type === 'vimeo'"
+            :src="vimeoPlayer"
+            allowfullscreen
+            allowtransparency
+            allow="autoplay"
+          />
+        </div>
+    <!-- </panZoom> -->
+      </plyr-vue>
 
     <!-- <pan-zoom> -->
     <plyr-vue v-if="!divPlayer" ref="mediaPlayer">
@@ -58,12 +66,12 @@
 
 <script>
 import Vue from "vue";
+// import panzoom from "vue-panzoom";
 import VuePlyr from "vue-plyr";
 import { utilities } from "../../mixins/utilities";
-// import panZoom from "vue-panzoom";
+import { mapState, mapActions } from "vuex";
 Vue.use(VuePlyr);
 // Vue.use(panZoom);
-const STM = val => utilities.secondsToMinutes(val);
 export default {
   name: "PlyerMediaPlayer",
   inheritAttrs: false,
@@ -88,12 +96,17 @@ export default {
     ctime: 0,
     loopStart: null,
     loopStop: null,
-    flipped: false,
+    pzOptions: {
+      minZoom: 1,
+      maxZoom: 4,
+      bounds: true,
+      boundsPadding: 0.1
+    },
+    zoom: null,
     playing: false,
     loopActive: false
   }),
   created() {
-    this.$root.$on("flip-player", this.flipPlayer);
     this.$root.$on("slider-change", this.seekTo);
     this.$root.$on("togglePlay", this.togglePlay);
     this.$root.$on("restart", this.restart);
@@ -102,14 +115,19 @@ export default {
     this.$root.$on("loopStart", this.setloopStart);
     this.$root.$on("loopStop", this.setloopStop);
     this.$root.$on("toggleLooping", this.toggleLooping);
+    this.$root.$on("speed", this.speedChange);
+    this.$root.$on("volume", this.volumeChange);
+    this.$root.$on("zoom", this.toggleZoom);
+    this.$root.$on("resetZoom", this.resetZoom);
     this.$root.$on("clearLoop", () => {
       this.loopStop = this.loopStart = null;
     });
   },
-  mounted() {
-    // this.$nextTick(() => {
+  mounted() { 
     this.player.on("ready", e => {
       this.duration = e.detail.plyr.duration;
+      this.loadDefaultSettings();
+      this.player.toggleControls(false)
     });
     this.player.on("timeupdate", this.timeUpdated);
     this.player.on("playing play pause", this.stateChange);
@@ -127,6 +145,7 @@ export default {
     }
   },
   computed: {
+    ...mapState("watch", ["playerSettings"]),
     player() {
       return this.$refs.mediaPlayer.player;
     },
@@ -135,7 +154,7 @@ export default {
     },
     youtubePlayer() {
       // return `http://www.youtube.com/embed/${this.sources[0].src}?rel=0&hd=1 `;
-      return `https://www.youtube.com/embed/${this.sources[0].src}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1`;
+      return `https://www.youtube.com/embed/${this.sources[0].src}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&controls=0&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1`;
     },
     validLoop() {
       return (
@@ -147,6 +166,41 @@ export default {
     }
   },
   methods: {
+    ...mapActions("watch", ["flipPlayer", "loadPlayerSettings"]),
+    pzInit(pz_instance) {
+      console.log("pz", pz_instance);
+      this.pz = pz_instance;
+      this.pz.originalScale = this.pz.getTransform();
+      this.pz.pause();
+      this.pz.on("panstart", e => {
+        console.log(e);
+      });
+    },
+    toggleZoom(e) {
+      if (this.pz.isPaused()) {
+        this.pz.resume();
+      } else {
+        this.pz.pause();
+      }
+      console.log(`pz is: ${this.pz.isPaused() ? "paused" : "unpaused"}`);
+    },
+    resetZoom(e) {
+      this.pz.smoothMoveTo(0, 0, 1);
+      this.pz.smoothZoomAbs(0, 0, 1);
+    },
+    loadDefaultSettings() {
+      const settings = {
+        speed: this.player.speed * 100,
+        volume: this.player.volume * 100
+      };
+      this.loadPlayerSettings(settings);
+    },
+    volumeChange(val) {
+      this.player.volume = val / 100;
+    },
+    speedChange(val) {
+      this.player.speed = val / 100;
+    },
     timeUpdated: function(e) {
       this.duration = this.player.duration;
       this.ctime = this.player.currentTime;
@@ -162,9 +216,6 @@ export default {
           });
         }
       }
-    },
-    flipPlayer() {
-      this.flipped = !this.flipped;
     },
     divPlayer() {
       const isDivPlayer = this.titletype in ["youtube", "vimeo"];
@@ -199,29 +250,39 @@ export default {
       if (this.loopStop <= current) this.loopStop = null;
       this.showMessage(
         Object.assign({}, this.cfgLoopIcon, {
-          type: 'positive',
+          type: "positive",
           message: "Loop Start Set",
           caption: this.secondsToMinutes(this.loopStart)
         })
       );
     },
     setloopStop() {
-      if (!this.player) return;
+      if (this.player.currentTime === "NaN") return;
       const current = this.player.currentTime;
+      console.log("curr", this.secondsToMinutes(current));
       if (typeof this.loopStart === "number") {
         if (this.loopStart !== current) {
-          this.loopStop = this.player.currentTime;
-          this.showMessage(
-            Object.assign({}, this.cfgLoopIcon, {
-              type: 'positive',
-              message: "Loop End Set",
-              caption: this.secondsToMinutes(this.loopStop)
-            })
-          );
+          if (this.loopStart < current) {
+            this.loopStop = current;
+            this.showMessage(
+              Object.assign({}, this.cfgLoopIcon, {
+                type: "positive",
+                message: "Loop End Set",
+                caption: this.secondsToMinutes(this.loopStop)
+              })
+            );
+          } else {
+            this.showMessage(
+              Object.assign({}, this.cfgLoopInfo, {
+                type: "negative",
+                message: "Loop end must be greater the loop start!"
+              })
+            );
+          }
         } else {
           this.showMessage(
             Object.assign({}, this.cfgLoopInfo, {
-              type: 'negative',
+              type: "negative",
               message: "Loop Start and End cannot be equal"
             })
           );
@@ -229,7 +290,7 @@ export default {
       } else {
         this.showMessage(
           Object.assign({}, this.cfgLoopWarning, {
-            type: 'info',
+            type: "info",
             message: "Must set loop start first"
           })
         );
@@ -241,7 +302,7 @@ export default {
       this.loopActive = !this.loopActive;
       this.player.togglePlay(this.loopActive);
       this.showMessage({
-        type: 'info',
+        type: "info",
         caption: this.loopActive
           ? `Start: ${this.secondsToMinutes(
               this.loopStart
@@ -250,27 +311,49 @@ export default {
         message: this.loopActive ? "Loop Active" : "Loop Stopped",
         icon: this.loopIcon
       });
-    }
+    },
+    // resizeIFrameToFitContent( iFrame ) {
+    //   console.log('b-iframe', iFrame)
+    //   iFrame.width  = iFrame.contentWindow.parent.document.body.scrollWidth + 'px';
+    // iFrame.height = iFrame.contentWindow.parent.document.body.scrollHeight  * .9 + 'px';
+    //   console.log('a-iframe', iFrame)
+// }
   }
 };
 </script>
-<style scoped>
+<style>
 @import "https://cdn.plyr.io/3.6.2/plyr.css";
-.videoWrapper {
+
+.container {
   position: relative;
+  width: 100%;
   height: 0;
-  padding-bottom: calc(var(--aspect-ratio, 0.75) * 100%);
+  /* padding-bottom: 39%; */
 }
 
-.videoWrapper iframe {
-  position: absolute;
+.videoWrapper {
+  position: relative;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
 }
+
+.videoWrapper iframe {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+   /* padding-bottom: calc(var(--aspect-ratio, 0.35) * 100%);  */
+}
 .flipped {
   -webkit-transform: rotateY(180deg);
   transform: rotateY(180deg);
+}
+.plyr__controls {
+  opacity: 0;
+  pointer-events: none;
+  display: none;
 }
 </style>

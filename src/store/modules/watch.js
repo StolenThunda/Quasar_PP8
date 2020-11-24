@@ -9,16 +9,33 @@ export default {
     currentLoops: null,
     sections: null,
     courseHistory: [],
+    playerSettings: {
+      speed: null,
+      volume: null,
+      zoomEnabled: false,
+      zoom: 1,
+      flipped: false
+    },
     playerOpts: {
       controls: false
     },
     loopManager: new ProPlayerLoopsManager()
   },
   mutations: {
+    FLIP_PLAYER(ctx) {
+      console.log("b4", ctx.playerSettings.flipped);
+      ctx.playerSettings.flipped = !ctx.playerSettings.flipped;
+      console.log("aft", ctx.playerSettings.flipped);
+    },
+    LOAD_PLAYER_SETTINGS(ctx, objSettings) {
+      Vue.set(
+        ctx,
+        "playerSettings",
+        Object.assign({}, ctx.playerSettings, objSettings)
+      );
+    },
     SET_PACKAGE_DATA(ctx, data) {
       if (!data) return;
-      // console.log("SettingCourse:", data);
-      // debugger
       if (ctx.currentCourse !== null) {
         if (ctx.courseHistory.length > 4) ctx.courseHistory.shift();
         ctx.courseHistory.push(ctx.currentCourse);
@@ -38,6 +55,18 @@ export default {
     }
   },
   actions: {
+    flipPlayer({ commit }, bool) {
+      commit("FLIP_PLAYER");
+    },
+    loadPlayerSettings({ commit }, objSettings) {
+      commit("LOAD_PLAYER_SETTINGS", objSettings);
+    },
+    fetchComments({dispatch}, pID) { return dispatch("fetchCommentsData", pID)},
+    async fetchCommentsData(ctx, pID){
+      const comments = await ctx.rootState.TXBA_UTILS.getComments(pID, pID)
+      console.log('coms', comments)
+      return comments;
+      },
     async fetchUserLoopData(ctx, ID) {
       return await ctx.rootState.TXBA_UTILS.getUserLoopData(ID)
         .then(loopData => {
@@ -74,9 +103,9 @@ export default {
           itm => itm.id === segmentId
         )[0];
         // console.log("seg-data", segmentData);
-        if (segmentData)  ctx.commit("SET_CURRENT_SEGMENT_SETUP", segmentData);
+        if (segmentData) ctx.commit("SET_CURRENT_SEGMENT_SETUP", segmentData);
       }
-      return  segmentId
+      return segmentId;
     }
   },
   getters: {
