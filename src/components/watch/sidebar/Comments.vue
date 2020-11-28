@@ -1,25 +1,138 @@
 <template>
   <div>
-    <h6>Comments</h6>
-    <span v-html="info"></span>
+    <div class="bg-grey-7 row no-wrap">
+      <q-toolbar-title class="q-pl-sm">Questions</q-toolbar-title>
+      <q-space />
+      <q-btn
+        dense
+        size="sm"
+        icon="mdi-comment-processing"
+        label="Ask"
+        :color="ask ? 'primary' : 'secondary'"
+        :disable="ask"
+        @click="ask = !ask"
+      />
+    </div>
+    <div class="bg-grey-9 row no-wrap">
+      <q-checkbox
+        v-model="notify"
+        label="Notify"
+        class="q-mr-lg q-ml-none q-pr-md"
+      />
+      <q-space />
+      <q-btn-toggle
+        v-model="view"
+        toggle-color="secondary"
+        :options="[
+          { label: 'All', value: 'all' },
+          { label: 'Mine', value: 'mine' }
+        ]"
+      />
+    </div>
+    <add-comment :ask="ask" />
+    <div class="flex flex-center">
+      <div v-if="user" class="text-center text-weight-light q-pb-lg">
+        <i>
+          Commenting as
+          <span class="text-weight-bolder">{{ user }}</span></i
+        >
+      </div>
+      <div v-else>
+        NOT LOGGED IN
+      </div>
+      <div v-if="!list && !ask">
+        <p>Be the first to ask a question about this course or video.</p>
+      </div>
+      <q-btn
+        label="Ask a Question"
+        color="secondary"
+        @click="ask = !ask"
+      :thumb-style="thumbStyle" 
+        icon="mdi-comment-processing"
+        v-show="!ask && !list"
+      />
+    </div>
+    <section v-if="list">
+      <q-scroll-area :delay="1200" style="height: 100vh;">
+        <template v-for="(dateGroup, i) in Object.keys(list)">
+          <q-chat-message :label="dateGroup" :key="dateGroup + '_' + i" />
+          <template v-for="comment in list[dateGroup]">
+            <user-chat
+              :admin="isAdmin(comment.user)"
+              :message="comment"
+              :key="comment.commentId"
+            />
+              <!-- class="child" -->
+            <user-chat
+              v-for="childComment in comment.children"
+              :key="childComment.commentId"
+              :message="childComment"
+              :admin="isAdmin(childComment.user)"
+            />
+          </template>
+        </template>
+      </q-scroll-area>
+    </section>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from "vuex";
+import UserChat from "./UserChat.vue";
+import AddComment from "./AddComment";
 export default {
-  data: () => ({ info: null }),
+  name: "Comments",
+  data: () => ({
+    user: null,
+    list: null,
+    notify: false,
+    view: "all",
+    ask: false,
+    comment: "",
+    thumbStyle: {
+      right: "5px",
+      borderRadius: "5px",
+      backgroundColor: "#027be3",
+      width: "10px",
+      opacity: 0.35
+    }
+  }),
+  created() {
+    this.$root.$on("toggle-ask", this.toggleAsk);
+    this.$root.$on("submit-comment", this.submitComment);
+  },
   mounted() {
     this.loadComments();
   },
-  computed: {},
+  components: {
+    addComment: () => import("./AddComment"),
+    UserChat
+  },
   methods: {
+    toggleReplies(parent){
+      console.log(parent)
+    },
+    isAdmin(str) {
+      return str.indexOf("Texas Blues Alley") > -1;
+    },
+    toggleAsk() {
+      this.ask = !this.ask;
+    },
     async loadComments() {
-      this.info = await this.fetchComments(this.$route.params.packageID);
+      const { notice, list } = await this.fetchComments(
+        this.$route.params.packageID
+      );
+      // console.log("info", info);
+      this.list = list;
+      // this.list = this.sortedCommentsByDate(info.list, 'day');
+      this.user = notice;
+    },
+    submitComment(comment) {
+      this.comment = comment;
+      console.log(this.ask, this.comment);
+      this.ask = !this.ask;
     },
     ...mapActions("watch", ["fetchComments"])
   }
 };
 </script>
-
-<style lang="scss" scoped></style>

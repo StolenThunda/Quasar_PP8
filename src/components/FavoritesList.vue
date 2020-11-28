@@ -2,11 +2,11 @@
   <q-list v-if="favs !== null" dense>
     <template v-for="(item, i) in Object.keys(favs)">
       <q-expansion-item
+        :key="i"
         group="accordion"
         class="text-capitalize text-body2 section-header"
         header-style="background-color:#464646; min-width: 250px;"
         style="max-width: 350px"
-        :key="i"
         switch-toggle-side
       >
         <template #header>

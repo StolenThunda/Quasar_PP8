@@ -1,20 +1,21 @@
 <template>
   <q-list>
-    <q-item v-for="i in playSections" :key="i.sectionID">
+    <template v-for="i in playSections">
       <q-expansion-item
+        :key="i.sectionID"
         v-if="i.segments"
-        :caption="i.sectionTitle"
         group="somegroup"
-        dense-toggle
         default-opened
-        style="min-width: 225px;"
-        class="text-capitalize text-body2 section-header"
-        header-style="background-color:#464646"
+        style="max-width: 350px"
+        header-style="background-color:#464646; min-width: 250px;"
+        expand-separator
+        switch-toggle-side
       >
-        <!-- expand-separator -->
-        <q-list keep-alive bordered dense>
-          <!-- :data-setup="JSON.stringify(seg)"
-        :data-to="seg.to" -->
+        <template #header>
+          {{ i.sectionTitle }}
+          <q-space />
+        </template>
+        <q-list class="q-py-sm rounded-borders" keep-alive bordered dense>
           <q-item
             v-for="seg in i.segments"
             :key="seg.id"
@@ -37,7 +38,7 @@
           </q-item>
         </q-list>
       </q-expansion-item>
-    </q-item>
+    </template>
   </q-list>
 </template>
 
@@ -45,10 +46,6 @@
 import { mapActions, mapState } from "vuex";
 export default {
   name: "Segments",
-  // props: {
-  //   title: String,
-  //   segments: Array
-  // },
   computed: {
     ...mapState("watch", ["playSections"]),
     packID() {
@@ -65,8 +62,6 @@ export default {
     },
     getSegIco(seg) {
       var ico = {};
-      // console.log("seginfo", seg);
-      // const type = seg.sources ? seg.sources[0].type : "";
       switch (seg.sources[0].type) {
         case "audio":
           ico = {

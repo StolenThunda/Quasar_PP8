@@ -1,5 +1,7 @@
 import Vue from "vue";
-import { ProPlayerLoopsManager } from "../../middleware/ProPlayerLoopsManager";
+import { 
+  LoopsManager,
+  CommentsManager } from "../../middleware/ProPlayerCore";
 export default {
   namespaced: true,
   state: {
@@ -19,7 +21,8 @@ export default {
     playerOpts: {
       controls: false
     },
-    loopManager: new ProPlayerLoopsManager()
+    loopManager: new LoopsManager(),
+    commentManager: new CommentsManager(),
   },
   mutations: {
     FLIP_PLAYER(ctx) {
@@ -64,7 +67,7 @@ export default {
     fetchComments({dispatch}, pID) { return dispatch("fetchCommentsData", pID)},
     async fetchCommentsData(ctx, pID){
       const comments = await ctx.rootState.TXBA_UTILS.getComments(pID, pID)
-      console.log('coms', comments)
+      // console.log('coms', comments)
       return comments;
       },
     async fetchUserLoopData(ctx, ID) {

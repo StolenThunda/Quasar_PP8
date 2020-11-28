@@ -22,15 +22,14 @@
       </watch-tool-bar>
     </q-header>
 
+      <!-- :width="300"
+      :breakpoint="500" -->
     <q-drawer
-      :width="300"
-      :breakpoint="500"
       v-model="leftDrawer"
       show-if-above
       elevated
     >
       <q-scroll-area :delay="1200" :thumb-style="thumbStyle" class="fit">
-        <!-- style="height: 90vh; max-width: 300px;" -->
         <dynamic-tab :tabList="this.tabs" class="q-item" />
       </q-scroll-area>
     </q-drawer>
