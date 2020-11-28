@@ -2712,7 +2712,8 @@ Drop me a note when u have a moment. Question about billing. No rush.</p>
   
     
   
-</ul>`;
+</ul>
+`;
     switch (example) {
       case 1:
       case true:

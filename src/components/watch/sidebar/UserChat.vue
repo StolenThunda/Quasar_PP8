@@ -8,6 +8,7 @@
       text-sanitize
       v-bind="getUserProps"
     >
+      <!-- :hidden="message.level !== 0" -->
       <template v-slot:avatar v-if="!admin">
         <q-avatar
           class="q-message-avatar q-message-avatar--sent"
@@ -15,13 +16,13 @@
         />
       </template>
       <template #default v-show="reply">
-        <p>{{ message.text[0] }}</p>
+        <p :class="message.parentId > 0 ? 'text-grey-4' : 'white'">{{ message.text[0] }}</p>
         <p>
           <q-icon name="mdi-account" />
-          <span class="author text-weight-bolder">{{ message.user }}</span
+          <span class="text-grey-4 text-caption">{{ message.user }}</span
           >,
           <q-icon name="mdi-clock-outline" />
-          <span class="author text-secondary">{{ message.relativeDate }}</span>
+          <span class="text-secondary text-caption">{{ message.relativeDate }}</span>
         </p>
         <div class="row justify-between q-py-md">
           <q-btn
@@ -32,14 +33,15 @@
             :color="!admin ? 'grey-5' : 'blue-7'"
           />
           <q-btn
-            v-bind="replyBtnProps"
             rounded
-            title="View Replies"
+            v-show="hasChildren"
+            v-bind="replyBtnProps"
             :color="!showReplies ? 'secondary' : 'primary'"
             @click="showReplies = !showReplies"
+            :title="showReplies ? 'Close Replies' : 'View Replies'"
           >
-            <q-icon name="mdi-forum" />
-            <q-icon name="mdi-close" v-if="reply" />
+            <q-icon name="mdi-close" v-show="showReplies" />
+            <q-icon name="mdi-forum" v-show="!showReplies" />
           </q-btn>
         </div>
         <div v-show="reply">
@@ -67,13 +69,21 @@ export default {
   },
   data: () => ({
     reply: false,
-    showReplies: false
+    showReplies: true
   }),
-  created() {
+  mounted() {
     // this.$root.$on("toggle-ask", this.reply = !this.reply);
     this.$root.$on("submit-comment", this.submitComment);
   },
+  watch: {
+    showReplies(val){
+      // console.log('show', val,  this.message.children.length)
+      this.toggleChildren(val)
+    }
+  },
   computed: {
+    hasChildren() { return this.message.children.length > 0 },
+    childIDs() { return this.message.children.map(function(cmt) { return cmt.commentId })},
     getUserProps() {
       // debugger;
       return this.message.level > 0 && !this.admin
@@ -86,7 +96,7 @@ export default {
         ? {
             "bg-color": "grey-9",
             "text-color": "white",
-            class: "text-weight-bold",
+            class: "text-weight-medium text-italic",
             avatar: "https://texasbluesalley.com/TXBA-Icon-152.png"
           }
         : {
@@ -101,6 +111,13 @@ export default {
     })
   },
   methods: {
+    toggleChildren(val){
+      if (this.childIDs.length > 0 ) {
+        this.childIDs.forEach(elID => {
+          document.getElementById(elID).style.display = val ? 'block' : 'none'
+        });
+      }
+    },
     submitComment(str) {
       this.reply = !this.reply;
       this.$root.$emit("submit-comment", this.comment);

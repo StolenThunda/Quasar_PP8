@@ -54,20 +54,25 @@
     </div>
     <section v-if="list">
       <q-scroll-area :delay="1200" style="height: 100vh;">
-        <template v-for="(dateGroup, i) in Object.keys(list)">
-          <q-chat-message :label="dateGroup" :key="dateGroup + '_' + i" />
-          <template v-for="comment in list[dateGroup]">
+        <template v-for="(dateGroup, i) in Object.keys(list).reverse()">
+          <q-chat-message :label="dateGroup" :key="dateGroup + '_' + i" class="cursor-pointer" @click="hideDay = !hideDay" />
+          <hr :key="i" v-show="hideDay" />
+          
+          <template v-for="comment in list[dateGroup]"  >
             <user-chat
               :admin="isAdmin(comment.user)"
               :message="comment"
-              :key="comment.commentId"
+              :key="comment.commentId + '_' + i"
+              :hidden="hideDay"
             />
               <!-- class="child" -->
             <user-chat
               v-for="childComment in comment.children"
+              v-model="comment.commentId"
               :key="childComment.commentId"
               :message="childComment"
               :admin="isAdmin(childComment.user)"
+              :hidden="hideDay"
             />
           </template>
         </template>
@@ -83,6 +88,7 @@ import AddComment from "./AddComment";
 export default {
   name: "Comments",
   data: () => ({
+    hideDay: false,
     user: null,
     list: null,
     notify: false,
