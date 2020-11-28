@@ -11,15 +11,15 @@
         <span class="absolute-center" v-else>No Course Data</span>
         <!-- <span> -->
         <q-fab
-          v-if="courseHistory.length"
-          :label="'History: ' + courseHistory.length"
+          v-if="getHistory.length"
+          :label="'History: ' + getHistory.length"
           vertical-actions-align="right"
           color="secondary"
           icon="keyboard_arrow_down"
           direction="down"
         >
           <q-fab-action
-            v-for="course in courseHistory"
+            v-for="course in getHistory"
             :key="course.id"
             color="primary"
             :label="course.packageTitle"
@@ -37,7 +37,7 @@
 
 <script>
 import { createNamespacedHelpers } from "vuex";
-const { mapState } = createNamespacedHelpers("watch");
+const { mapState, mapGetters } = createNamespacedHelpers("watch");
 export default {
   name: "WatchToolbar",
   components: {
@@ -48,7 +48,8 @@ export default {
     visible: false
   }),
   computed: {
-    ...mapState(["packageTitle", "courseHistory"])
+    ...mapGetters(["getHistory"]),
+    ...mapState(["packageTitle"])
   },
   methods: {
     showInfo(c) {

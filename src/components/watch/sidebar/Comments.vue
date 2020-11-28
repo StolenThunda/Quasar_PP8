@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="fit">
     <div class="bg-grey-7 row no-wrap">
       <q-toolbar-title class="q-pl-sm">Questions</q-toolbar-title>
       <q-space />
@@ -28,6 +28,7 @@
           { label: 'Mine', value: 'mine' }
         ]"
       />
+        <!-- @click="getView" -->
     </div>
     <add-comment :ask="ask" />
     <div class="flex flex-center">
@@ -47,13 +48,12 @@
         label="Ask a Question"
         color="secondary"
         @click="ask = !ask"
-      :thumb-style="thumbStyle" 
         icon="mdi-comment-processing"
         v-show="!ask && !list"
       />
     </div>
-    <section v-if="list">
-      <q-scroll-area :delay="1200" style="height: 100vh;">
+    <div v-if="list">
+      <q-scroll-area  style="height: 75vh;">
         <template v-for="(dateGroup, i) in Object.keys(list).reverse()">
           <q-chat-message :label="dateGroup" :key="dateGroup + '_' + i" class="cursor-pointer" @click="hideDay = !hideDay" />
           <hr :key="i" v-show="hideDay" />
@@ -77,7 +77,7 @@
           </template>
         </template>
       </q-scroll-area>
-    </section>
+    </div>
   </div>
 </template>
 
@@ -95,13 +95,6 @@ export default {
     view: "all",
     ask: false,
     comment: "",
-    thumbStyle: {
-      right: "5px",
-      borderRadius: "5px",
-      backgroundColor: "#027be3",
-      width: "10px",
-      opacity: 0.35
-    }
   }),
   created() {
     this.$root.$on("toggle-ask", this.toggleAsk);
@@ -124,9 +117,9 @@ export default {
     toggleAsk() {
       this.ask = !this.ask;
     },
-    async loadComments() {
+    async loadComments(view) {
       const { notice, list } = await this.fetchComments(
-        this.$route.params.packageID
+        this.$route.params.packageID, view
       );
       // console.log("info", info);
       this.list = list;

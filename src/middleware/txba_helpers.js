@@ -135,19 +135,12 @@ export default class TXBA_Utilities {
     const $ = cheerio.load(strComments);
     // console.log("cHTML", $("body").html());
     lvl = $(".cmts-list > #no-questions").length > 0;
-    var objComment = {};
-    switch (lvl) {
-      case 0:
-        break;
-      default:
-        objComment = this.parseNoQuestions(strComments);
-        break;
-    }
+    var objComment = this.parseComments(strComments);
     console.log("aft parse", objComment);
     return objComment.list ? objComment : strComments;
   }
 
-  parseNoQuestions(str) {
+  parseComments(str) {
     const $ = cheerio.load(str, {
       withDomLvl1: true,
       normalizeWhitespace: true
@@ -158,29 +151,39 @@ export default class TXBA_Utilities {
 
     var notice = $("strong").html() || "NO SCREENNAME";
     if ($("#no-questions").length === 0) {
-      console.log("objlist", objList);
+      // console.log("objlist", objList);
       // loop all levels
       do {
         var objList = $(`.level-${lvl} > .cmt-inner`);
         console.log("generating level-" + lvl);
         objList.each(function(idx, itm) {
           list = self.assembleCommentObject($(itm), list);
-          console.log(lvl, idx, $($(itm).closest("li")).html());
+          // console.log(lvl, idx, $($(itm).closest("li")).html());
         });
         lvl++;
-        console.log("testing level-" + lvl);
+        // console.log("testing level-" + lvl);
         var next = $(`.level-${lvl} > .cmt-inner`).length > 0;
-        console.log("next", next, lvl);
+        // var next = lvl > -1;
+        // console.log("next", next, lvl);
       } while (next);
     }
 
     return {
       notice: notice,
       // list: list
+      // list: this.groupByReplyDate(list, "day")
       list: this.groupArrayOfObjects(list, "day")
     };
   }
 
+  groupByReplyDate(list) {
+    for (var i = 0; list.length; i++) {
+      list[i].children.sort(function(a, b) {
+        return a.date - b.date;
+      });
+    }
+    return list;
+  }
   assembleCommentObject(itm, list) {
     const $ = cheerio;
     // get parent data info
@@ -213,12 +216,12 @@ export default class TXBA_Utilities {
     objItm.date = dateFmts.date;
     objItm.day = dateFmts.day;
     objItm.time = dateFmts.time;
-    console.log("lvl", objItm.level);
+    // console.log("lvl", objItm.level);
     if (objItm.level > 0) {
       // find parent and add to parent's children
       const found = list.find(o => o.commentId === objItm.parentId);
       found.children.push(objItm);
-      console.log(`parent found`, found);
+      // console.log(`parent found`, found);
     } else {
       list.push(objItm);
     }

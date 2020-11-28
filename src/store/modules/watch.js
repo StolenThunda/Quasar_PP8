@@ -40,7 +40,7 @@ export default {
     SET_PACKAGE_DATA(ctx, data) {
       if (!data) return;
       if (ctx.currentCourse !== null) {
-        if (ctx.courseHistory.length > 4) ctx.courseHistory.shift();
+        // if (ctx.courseHistory.length > 4) ctx.courseHistory.shift();
         ctx.courseHistory.push(ctx.currentCourse);
       }
       ctx.currentCourse = data;
@@ -112,6 +112,11 @@ export default {
     }
   },
   getters: {
+    getHistory: ctx =>  { 
+      const histLength = ctx.courseHistory.length;
+      if (histLength === 0) return [];
+      const numCourses = histLength < 5 ? histLength : 5
+      return ctx.courseHistory.slice(numCourses, -1)},
     getPlaySections: ctx => {
       return ctx.playSections;
     }
