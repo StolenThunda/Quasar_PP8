@@ -94,12 +94,12 @@ export default {
   },
   methods: {
     lnk(entry) {
-      console.log("isYT", entry.avatar);
+      // console.log("isYT", entry.avatar);
       const isYoutubeVid = entry.avatar.indexOf("youtube") >= 0;
       const lnk = isYoutubeVid
         ? `/watch/${entry.id}/${entry.id}`
         : `/watch/${entry.id}`;
-      console.log("lnk", lnk);
+      // console.log("lnk", lnk);
       return lnk;
     },
     toggler(e) {

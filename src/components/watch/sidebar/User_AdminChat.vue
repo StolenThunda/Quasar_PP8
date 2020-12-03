@@ -74,7 +74,7 @@ export default {
   }),
   mounted() {
     const evtReply = `toggle-ask-reply_${this.message.commentId}`;
-    console.log("evt", evtReply);
+    // console.log("evt", evtReply);
     this.$root.$on(evtReply, this.toggleReply);
     this.$root.$on("submit-comment", this.submitComment);
   },

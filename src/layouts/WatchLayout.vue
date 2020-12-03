@@ -35,23 +35,31 @@
     <!-- </q-drawer> -->
 
     <q-page-container>
-         <!-- unit="px" -->
-      <q-splitter 
-         v-model="splitterModel"
-         reverse
-      :limits="[50, 100]"
-      style="height: 85vh"
-        >
+      <q-splitter
+        v-model="splitterModel"
+        reverse
+        :limits="[65, 100]"
+        style="height: 87vh"
+      >
         <template v-slot:before v-bind:tabs="tabs">
-            <q-scroll-area :thumb-style="thumbStyle" class="fit">
-              <dynamic-tab :tabList="tabs" class="q-item" />
-            </q-scroll-area>
+          <q-scroll-area :thumb-style="thumbStyle" class="fit">
+            <dynamic-tab :tabList="tabs" class="q-item" />
+          </q-scroll-area>
         </template>
-<template v-slot:separator>
-        <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator" />
-      </template>
+
+        <template v-slot:separator>
+          <q-avatar
+            color="primary"
+            text-color="white"
+            size="40px"
+            icon="drag_indicator"
+            @dblclick="leftDrawer = !leftDrawer"
+            @hover.native="doStuff"
+          />
+
+        </template>
         <template v-slot:after>
-            <router-view :key="$route.fullPath" />
+          <router-view :key="$route.fullPath" />
         </template>
       </q-splitter>
     </q-page-container>
@@ -68,10 +76,10 @@ export default {
     AuthButton: () => import("components/base/AuthButton")
   },
   data: () => ({
-    leftDrawer: false,
+    leftDrawer: true,
     currentTab: null,
     favs: false,
-    splitterModel: 350,
+    splitterModel: 80,
     thumbStyle: {
       right: "5px",
       borderRadius: "5px",
@@ -81,11 +89,25 @@ export default {
     }
   }),
   computed: {
-    getTabs() { return this.tabs }
+    getTabs() {
+      return this.tabs;
+    }
+  },
+  watch: {
+    leftDrawer(val) {
+      this.splitterModel = val ? 80 : 100;
+    }
   },
   created() {
     this.getPackageData();
     this.addSidebarTabs([
+      {
+        name: "Comments",
+        componentName: "Comments",
+        icon: "mdi-comment-multiple-outline",
+        cmp: () => import("components/watch/sidebar/Comments")
+        // menu: () => import("components/watch/sidebar/WatchSettings")
+      },
       {
         name: "Segments",
         componentName: "Segments",
@@ -93,13 +115,6 @@ export default {
         cmp: () => import("components/watch/sidebar/Segments"),
         menu: () => import("components/watch/settings/WatchSettings")
       },
-      {
-        name: "Comments",
-        componentName: "Comments",
-        icon: "mdi-comment-multiple-outline",
-        cmp: () => import("components/watch/sidebar/Comments")
-        // menu: () => import("components/watch/sidebar/WatchSettings")
-      }
     ]);
   },
   computed: {
@@ -110,6 +125,7 @@ export default {
     })
   },
   methods: {
+    doStuff(val) { console.log('val', val.type)},
     showTab(tab) {
       this.currentTab = tab;
     },
