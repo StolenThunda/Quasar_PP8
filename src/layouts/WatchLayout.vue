@@ -1,11 +1,10 @@
 <template>
+    <!-- <q-layout view="hhh lpR lFf" -->
+    <!-- <q-layout view="hhr lpR lfr" -->
   <q-layout
     view="lHh LpR lFf"
-    container
-    style="height: 100vh"
-    class="shadow-2 rounded-borders"
   >
-    <q-header reveal elevated>
+    <q-header >
       <watch-tool-bar>
         <template #toggle>
           <q-btn
@@ -29,7 +28,7 @@
       show-if-above
       elevated
     >
-      <q-scroll-area :delay="1200" :thumb-style="thumbStyle" class="fit">
+      <q-scroll-area :thumb-style="thumbStyle" class="fit">
         <dynamic-tab :tabList="this.tabs" class="q-item" />
       </q-scroll-area>
     </q-drawer>

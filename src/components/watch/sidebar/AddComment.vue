@@ -1,5 +1,5 @@
 <template>
-  <section v-show="ask">
+  <q-card v-show="ask" :id="replyId">
     <q-card-section>
       <q-input
         filled
@@ -7,14 +7,12 @@
         bottom-slots
         counter
         maxlength="500"
-        rows="4" autofocus
+        rows="4"
+        autofocus
         cols="70"
         label="Comment/Question"
         v-model="comment"
       >
-        <!-- <template v-slot:before>
-          <q-icon name="comment" />
-        </template> -->
         <template v-slot:hint>
           Comment/Question
         </template>
@@ -24,19 +22,27 @@
       <q-btn color="negative" label="Cancel" @click="toggleAsk" />
       <q-btn color="secondary" label="Submit" @click="submitComment" />
     </q-card-actions>
-  </section>
+  </q-card>
 </template>
 
 <script>
 export default {
   props: {
-    ask: Boolean,
-    default: () => false
+    ask: {
+      type: Boolean,
+      default: () => false
+    },
+    id: [String, Number]
   },
-  data: () => ({ comment: "" }),
+  data: () => ({ comment: "", replyId: null }),
+  mounted() {
+    this.replyId = "reply_" + this.id;
+  },
   methods: {
     toggleAsk() {
-      this.$root.$emit("toggle-ask");
+      const strEmit = `toggle-ask-${this.replyId}`;
+      console.log("emit", strEmit);
+      this.$root.$emit(strEmit);
     },
     submitComment() {
       this.$root.$emit("submit-comment", this.comment);

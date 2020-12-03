@@ -28,9 +28,9 @@
           { label: 'Mine', value: 'mine' }
         ]"
       />
-        <!-- @click="getView" -->
+      <!-- @click="getView" -->
     </div>
-    <add-comment :ask="ask" />
+    <add-comment :ask="ask" :id="id" />
     <div class="flex flex-center">
       <div v-if="user" class="text-center text-weight-light q-pb-lg">
         <i>
@@ -47,57 +47,59 @@
       <q-btn
         label="Ask a Question"
         color="secondary"
-        @click="ask = !ask"
+        @click.self="ask = !ask"
         icon="mdi-comment-processing"
         v-show="!ask && !list"
       />
     </div>
-    <div v-if="list">
-      <q-scroll-area  style="height: 75vh;">
-        <template v-for="(dateGroup, i) in Object.keys(list).reverse()">
-          <q-chat-message :label="dateGroup" :key="dateGroup + '_' + i" class="cursor-pointer" @click="hideDay = !hideDay" />
-          <hr :key="i" v-show="hideDay" />
-          
-          <template v-for="comment in list[dateGroup]"  >
-            <user-chat
-              :admin="isAdmin(comment.user)"
-              :message="comment"
-              :key="comment.commentId + '_' + i"
-              :hidden="hideDay"
-            />
-              <!-- class="child" -->
-            <user-chat
-              v-for="childComment in comment.children"
-              v-model="comment.commentId"
-              :key="childComment.commentId"
-              :message="childComment"
-              :admin="isAdmin(childComment.user)"
-              :hidden="hideDay"
-            />
-          </template>
+    <q-scroll-area v-if="list" style="height: 75vh;">
+      <template v-for="(dateGroup, i) in Object.keys(list).reverse()">
+        <q-expansion-item
+          default-opened
+          expand-separator
+          switch-toggle-side
+          :group="dateGroup"
+          :label="dateGroup"
+          :key="i"
+        >
+        <template v-for="comment in list[dateGroup]">
+          <user-admin-chat 
+            :admin="isAdmin(comment.user)"
+            :message="comment"
+            :key="comment.commentId + '_' + i"
+          />
+          <user-admin-chat
+            v-for="childComment in comment.children"
+            :key="childComment.commentId"
+            :message="childComment"
+            :admin="isAdmin(childComment.user)"
+          />
         </template>
-      </q-scroll-area>
-    </div>
+        </q-expansion-item>
+      </template>
+    
+    </q-scroll-area>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from "vuex";
-import UserChat from "./UserChat.vue";
+import UserAdminChat from "./User_AdminChat.vue";
 import AddComment from "./AddComment";
 export default {
   name: "Comments",
   data: () => ({
-    hideDay: false,
+    id: "000",
+    hideDay: true,
     user: null,
     list: null,
     notify: false,
     view: "all",
     ask: false,
-    comment: "",
+    comment: ""
   }),
   created() {
-    this.$root.$on("toggle-ask", this.toggleAsk);
+    this.$root.$on(`toggle-ask-reply_${this.id}`, this.toggleAsk);
     this.$root.$on("submit-comment", this.submitComment);
   },
   mounted() {
@@ -105,11 +107,11 @@ export default {
   },
   components: {
     addComment: () => import("./AddComment"),
-    UserChat
+    UserAdminChat
   },
   methods: {
-    toggleReplies(parent){
-      console.log(parent)
+    toggleReplies(parent) {
+      console.log(parent);
     },
     isAdmin(str) {
       return str.indexOf("Texas Blues Alley") > -1;
@@ -119,7 +121,8 @@ export default {
     },
     async loadComments(view) {
       const { notice, list } = await this.fetchComments(
-        this.$route.params.packageID, view
+        this.$route.params.packageID,
+        view
       );
       // console.log("info", info);
       this.list = list;
@@ -135,3 +138,10 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.section-heading {
+  background-color: #bb8c59;
+  color: #000;
+}
+</style>

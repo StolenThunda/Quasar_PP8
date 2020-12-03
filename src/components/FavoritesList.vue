@@ -23,7 +23,7 @@
                   icon="play_circle_filled"
                   color="secondary"
                   size="xs"
-                  round 
+                  round
                   @click="link(fav)"
                 />
               </q-item-section>

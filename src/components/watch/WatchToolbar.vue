@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-toolbar>
+    <q-toolbar >
       <slot name="toggle"></slot>
       <slot>
         <q-btn round flat to="/" icon="home" />
