@@ -22,38 +22,20 @@
       </watch-tool-bar>
     </q-header>
 
-    <!-- :width="300"
+      <!-- :width="300"
       :breakpoint="500" -->
-    <!-- <q-drawer -->
-    >
-    <!-- v-model="leftDrawer"
+    <q-drawer
+      v-model="leftDrawer"
       show-if-above
-      elevated -->
-    <!-- <q-scroll-area :delay="1200" :thumb-style="thumbStyle" class="fit">
+      elevated
+    >
+      <q-scroll-area :delay="1200" :thumb-style="thumbStyle" class="fit">
         <dynamic-tab :tabList="this.tabs" class="q-item" />
-      </q-scroll-area> -->
-    <!-- </q-drawer> -->
+      </q-scroll-area>
+    </q-drawer>
 
     <q-page-container>
-         <!-- unit="px" -->
-      <q-splitter 
-         v-model="splitterModel"
-         reverse
-      :limits="[50, 100]"
-      style="height: 85vh"
-        >
-        <template v-slot:before v-bind:tabs="tabs">
-            <q-scroll-area :thumb-style="thumbStyle" class="fit">
-              <dynamic-tab :tabList="tabs" class="q-item" />
-            </q-scroll-area>
-        </template>
-<template v-slot:separator>
-        <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator" />
-      </template>
-        <template v-slot:after>
-            <router-view :key="$route.fullPath" />
-        </template>
-      </q-splitter>
+      <router-view :key="$route.fullPath" />
     </q-page-container>
   </q-layout>
 </template>
@@ -71,7 +53,6 @@ export default {
     leftDrawer: false,
     currentTab: null,
     favs: false,
-    splitterModel: 350,
     thumbStyle: {
       right: "5px",
       borderRadius: "5px",
@@ -80,9 +61,6 @@ export default {
       opacity: 0.35
     }
   }),
-  computed: {
-    getTabs() { return this.tabs }
-  },
   created() {
     this.getPackageData();
     this.addSidebarTabs([
@@ -97,7 +75,7 @@ export default {
         name: "Comments",
         componentName: "Comments",
         icon: "mdi-comment-multiple-outline",
-        cmp: () => import("components/watch/sidebar/Comments")
+        cmp: () => import("components/watch/sidebar/Comments"),
         // menu: () => import("components/watch/sidebar/WatchSettings")
       }
     ]);

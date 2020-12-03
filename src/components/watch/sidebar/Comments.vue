@@ -60,6 +60,7 @@
           switch-toggle-side
           :group="dateGroup"
           :label="dateGroup"
+          class="menu-list"
           :key="i"
         >
         <template v-for="comment in list[dateGroup]">

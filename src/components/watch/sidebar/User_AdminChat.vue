@@ -1,6 +1,7 @@
 <template>
   <q-chat-message
     v-bind="getUserProps"
+    class="q-my-md"
     :id="'message_' + message.commentId"
     :label="message.label"
     :data-level="message.level"
@@ -27,12 +28,13 @@
           {{ message.relativeDate }}
         </span>
       </p>
-      <div class="row justify-between q-py-xs">
+      <div class="row justify-between q-my-sm text-capitalize text-weight-bolder">
         <q-btn
           label="Reply"
           v-bind="replyBtnProps"
           @click="reply = !reply"
-          :color="!admin ? 'grey-6' : 'blue-7'"
+          :color="!admin ? 'grey-9' : 'blue-7'"
+          class=""
         />
         <q-btn
           v-show="hasChildren"
@@ -54,7 +56,6 @@
 </template>
 
 <script>
-// import AddComment from "./AddComment.vue";
 export default {
   name: "UserAdminChatMessage",
   props: {
@@ -68,9 +69,8 @@ export default {
     AddComment: () => import("./AddComment")
   },
   data: () => ({
-    // id: this.message.commentId,
     reply: false,
-    showReplies: false
+    showReplies: true
   }),
   mounted() {
     const evtReply = `toggle-ask-reply_${this.message.commentId}`;
@@ -121,15 +121,13 @@ export default {
     },
     replyBtnProps: () => ({
       dense: true,
-      class: " q-mb-sm q-pa-md",
-      size: "sm",
+      class: "q-px-sm",
+      size: "xs",
       rounded: true
     })
   },
   methods: {
     toggleReply() {
-      debugger;
-      console.log("reply");
       this.reply = !this.reply;
     },
     toggleChildren(val) {
