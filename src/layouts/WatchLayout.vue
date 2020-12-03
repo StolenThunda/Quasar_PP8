@@ -49,11 +49,11 @@
 
         <template v-slot:separator>
           <q-avatar
-            color="primary"
+            color="secondary"
             text-color="white"
             size="40px"
             icon="drag_indicator"
-            @dblclick="leftDrawer = !leftDrawer"
+            @click="leftDrawer = !leftDrawer"
             @hover.native="doStuff"
           />
 

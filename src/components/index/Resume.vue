@@ -1,4 +1,6 @@
 <template>
+<div>
+
   <q-card color="grey" class="container q-ma-lg" v-if="currentCourse" bordered>
     <q-card-section>
       <center>
@@ -10,6 +12,7 @@
       </center>
     </q-card-section>
   </q-card>
+</div>
 </template>
 
 <script>
