@@ -1,36 +1,44 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+<q-layout view="hHh Lpr lff" container style="height: 100vh" class="shadow-2 rounded-borders">
+  <!-- <q-layout view="lHh Lpr lff"> -->
     <q-header elevated>
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          
-          @click="leftDrawerOpen = !leftDrawerOpen"
+        <drawer-toggle 
+          v-if="$auth.isAuthenticated"
+          @toggle-drawer="leftDrawerOpen = !leftDrawerOpen"
         />
-        <q-toolbar-title >ProPlayer v8 </q-toolbar-title>
-        <q-img
-          to="/"
-          class="logo"
-          
-          :src="logo"
-          style="height: 60px; max-width: 100px"
-          contain
-        />
+        <q-toolbar-title class="text-h6 text-bold"
+          ><span color="secondary">ProPlayer v8</span>
+        </q-toolbar-title>
 
-        
+        <q-btn
+          v-if="$auth.isAuthenticated"
+          size="25px"
+          color="secondary"
+          to="/browser"
+          icon="mdi-magnify"
+          split
+          flat
+        />
+        <auth-button></auth-button>
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen"  show-if-above bordered>
-      <dyna-tab ref="dTab" :tabList="sidebarTabs" @add-tabs="addTabs" />
+    <q-drawer
+      v-if="$auth.isAuthenticated"
+      v-model="leftDrawerOpen"
+      show-if-above
+      bordered
+      :width="350"
+      :breakpoint="500"
+    >
+      <dynamic-tab :tabList="sidebarTabs" />
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <transition mode="out-in">
+      <router-view @toggle-drawer="leftDrawerOpen = !leftDrawerOpen" />
+      </transition>
     </q-page-container>
   </q-layout>
 </template>
@@ -40,43 +48,29 @@ import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions } = createNamespacedHelpers("default");
 export default {
   name: "MainLayout",
-
   components: {
-    DynaTab: () => import("components/DynaTab")
+    DynamicTab: () => import("components/base/DynamicTab"),
+    DrawerToggle: () => import("components/base/DrawerToggle"),
+    AuthButton: () => import("components/base/AuthButton")
   },
-
-  data() {
-    return {
-      logo: "https://cdn.texasbluesalley.com/styles/TXBALogo.svg",
-      leftDrawerOpen: false,
-    };
-  },
+  data: () => ({
+      leftDrawerOpen: false
+  }),
   computed: {
     ...mapState(["sidebarTabs"])
   },
   mounted() {
-    this.$refs.dTab.$on('add-tabs', this.addTabs)
-
+    this.resetSideBar();
   },
   methods: {
-    addTabs(e) {
-      // this.resetSideBar();
-      console.log(`Adding from emit: ${e}`)
-      this.addSidebarTabs(e);
-    },
-    ...mapActions(["resetSideBar","removeSidebarTab", "addSidebarTabs"])
+    ...mapActions(["resetSideBar"])
   }
 };
 </script>
 
-<style scoped>
-.logo {
-  /* border-radius: 50%; */
-  -webkit-transition: -webkit-transform 0.8s ease-in-out;
-  transition: transform 0.8s ease-in-out;
-}
-.logo:hover {
-  -webkit-transform: rotate(360deg);
-  transform: rotate(360deg);
+<style>
+#mobileAuthNavBar {
+  min-height: 125px;
+  justify-content: space-between;
 }
 </style>

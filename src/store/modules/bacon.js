@@ -1,7 +1,5 @@
+// import Vue from "vue";
 import axios from "axios";
-import VueAxios from "vue-axios";
-import Vue from "vue";
-Vue.use(VueAxios, axios);
 export default {
   namespaced: true,
   state: {
@@ -45,7 +43,9 @@ export default {
   },
   getters: {
     getBacon: state => state.bacon,
-    getSliceBacon: state =>
-      state.bacon[Math.floor(Math.random() * state.bacon.length)]
+    getSliceBacon(state) {
+      if (state.bacon?.length) return state.bacon[Math.floor(Math.random() * state.bacon.length)]
+      return ""
+    }
   }
 };

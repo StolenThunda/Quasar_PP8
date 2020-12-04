@@ -1,45 +1,29 @@
 <template>
-  <q-layout view="hHh lpR fFf"> <!-- Be sure to play with the Layout demo on docs -->
-
-    <!-- (Optional) The Header -->
+  <!-- <q-layout view="lHh Lpr lff"> -->
+  <q-layout view="hHh Lpr lff">
     <q-header elevated>
-      <current-search>
+      <browser-toolbar @toggle-drawer="toggleDrawer">
         <template #toggleDrawer>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"          
-          @click="leftDrawerOpen = !leftDrawerOpen"
-        />
+          <q-btn
+            label="Toggle Filters"
+            title="Toggle Filters"
+            color="secondary"
+            icon="menu"
+            icon-right="mdi-filter-plus-outline"
+            aria-label="Filters"
+            @click="toggleDrawer"
+          />
         </template>
-        </current-search>
+      </browser-toolbar>
     </q-header>
 
-
-    <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
-    <q-drawer
-      v-model="leftDrawerOpen"
-      side="left"
-       show-if-above
-      bordered
-    >
-      <!-- QScrollArea is optional -->
-      <q-scroll-area class="fit q-pa-sm">
-        <dyna-tab 
-          @changeCategory="catChange"
-          :tabList="drawer"
-       />
-          <!-- v-if="drawer.length > 0"  -->
-      </q-scroll-area>
+    <q-drawer v-model="leftDrawerOpen" side="left" bordered>
+      <dynamic-tab @changeCategory="catChange" :tabList="drawer" />
     </q-drawer>
 
     <q-page-container>
-      <!-- This is where pages get injected -->
       <router-view :title="currentCategory" />
     </q-page-container>
-
   </q-layout>
 </template>
 
@@ -47,22 +31,33 @@
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions } = createNamespacedHelpers("browser");
 export default {
-  name: 'BrowserLayout',
+  name: "BrowserLayout",
   components: {
-    DynaTab: () => import('components/DynaTab'),
-    CurrentSearch: () => import('components/browse/BrowserToolbar')
+    DynamicTab: () => import("components/base/DynamicTab"),
+    BrowserToolbar: () => import("components/browse/BrowserToolbar")
   },
   data: () => ({
-      leftDrawerOpen: true,
-      category:  null,
+    leftDrawerOpen: false,
+    category: null
   }),
+  created() {
+    this.$root.$on("toggle-drawer", this.toggleTruncate);
+  },
   computed: {
     ...mapState(["drawer", "currentCategory"])
   },
   methods: {
+    toggleDrawer(val) {
+      this.leftDrawerOpen =
+        typeof val === "boolean" ? val : !this.leftDrawerOpen;
+    },
     catChange(cat) {
       this.category = cat;
-    }
+    },
+    removeDrawer(name) {
+      this.removeDrawer(name);
+    },
+    ...mapActions(["removeDrawer"])
   }
-}
+};
 </script>

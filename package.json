@@ -6,26 +6,32 @@
   "author": "Tony Moses <tonym415@gmail.com>",
   "private": true,
   "scripts": {
+    "build_deploy": "quasar build && ./deploy.sh",
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
+    "@capacitor/android": "^2.4.1",
+    "@capacitor/core": "^2.4.1",
+    "@quasar/extras": "^1.9.5",
     "axios": "^0.18.1",
     "cheerio": "^1.0.0-rc.3",
+    "cordova": "^10.0.0",
     "core-js": "^3.6.5",
-    "quasar": "^1.0.0",
-    "vue-axios": "^2.1.5"
+    "plyr": "^3.6.2",
+    "quasar": "^1.13.2",
+    "vue-plyr": "^6.0.4"
   },
   "devDependencies": {
-    "@quasar/app": "^2.0.0",
+    "@auth0/auth0-spa-js": "^1.12.0",
+    "@quasar/app": "^2.0.9",
     "@vue/devtools": "^5.3.3",
     "babel-eslint": "^10.0.1",
     "devtron": "^1.4.0",
     "electron": "^9.0.0",
     "electron-debug": "^3.0.1",
     "electron-devtools-installer": "^3.0.0",
-    "electron-packager": "^14.1.1",
+    "electron-packager": "^15.1.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-loader": "^3.0.3",

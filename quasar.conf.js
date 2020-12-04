@@ -19,7 +19,7 @@ module.exports = function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
-      
+      'auth0',
       'axios',
     ],
 
@@ -32,11 +32,11 @@ module.exports = function (/* ctx */) {
     extras: [
       // 'ionicons-v4',
       'mdi-v5',
-      // 'fontawesome-v5',
+      'fontawesome-v5',
       // 'eva-icons',
       // 'themify',
-      'line-awesome',
-      'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
+      // 'line-awesome',
+      // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
       'roboto-font', // optional, you are not bound to it
       'material-icons', // optional, you are not bound to it
@@ -45,7 +45,7 @@ module.exports = function (/* ctx */) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
-
+      devtool: 'source-map',
       // transpile: false,
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
@@ -54,10 +54,10 @@ module.exports = function (/* ctx */) {
       // transpileDependencies: [],
 
       // rtl: false, // https://quasar.dev/options/rtl-support
-      // preloadChunks: true,
-      // showProgress: false,
-      // gzip: true,
-      // analyze: true,
+      preloadChunks: true,
+      showProgress: false,
+      gzip: true,
+      analyze: true,
 
       // Options below are automatically set depending on the env, set them if you want to override
       // extractCSS: false,
@@ -75,20 +75,30 @@ cfg.module.rules.push({
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      host: '10.0.0.102',
       // host: '10.0.0.81',
-      https: false,
-      port: 8080,
+      host: 'localhost',
+      https: true,
+      port: 3000,
       open: true, // opens browser window automatically
       // vueDevtools: true
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
-      iconSet: 'material-icons', // Quasar icon set
+      // iconSet: 'material-icons', // Quasar icon set
       lang: 'en-us', // Quasar language pack
       config: {
-        dark: true
+        dark: true,
+        brand: {
+          primary: '#555555',
+          secondary: '#0099ff',
+          accent: '#65ac65',
+          dark: '#1d1d1d',
+          positive: '#21BA45',
+          negative: '#C10015',
+          info: '#31CCEC',
+          warninng: '#f2c037'
+        }
       },
 
       // Possible values for "importStrategy":
@@ -97,7 +107,14 @@ cfg.module.rules.push({
       importStrategy: 'auto',
 
       // Quasar plugins
-      plugins: []
+      plugins: [
+        'Notify'
+      ],
+      // config: {
+      //   notify: {
+
+      //   }
+      // }
     },
 
     // animations: 'all', // --- includes all animations
@@ -159,7 +176,7 @@ cfg.module.rules.push({
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-capacitor-apps/configuring-capacitor
     capacitor: {
-      hideSplashscreen: true
+      hideSplashscreen: false
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-electron-apps/configuring-electron

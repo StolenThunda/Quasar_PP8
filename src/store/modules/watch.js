@@ -4,23 +4,23 @@ export default {
   state: {
     currentCourse: null,
     currentSegment: null,
-    currentSetup: null,
+    currentSetup: { sources: null},
     currentLoops: null,
     sections: null,
-    previousCourses: [],
+    courseHistory: [], 
     playerOpts: {
-      autoplay: false,
-      controls: false,
-      live: false,
-      aspectRatio: "16:9",
+      // autoplay: false,
+      controls: false
+      // live: false,
+      // aspectRatio: "4:3",
     }
   },
   mutations: {
-    SET_COURSE_DATA(ctx, data) {
+    SET_PACKAGE_DATA(ctx, data) {
       if (!data) return;
       // console.log("SettingCourse:", data);
       if (ctx.currentCourse !== null)
-        ctx.previousCourses.push(ctx.currentCourse);
+        ctx.courseHistory.push(ctx.currentCourse);
       ctx.currentCourse = data;
       // map course to state
       for (let [k, v] of Object.entries(data)) {
@@ -32,7 +32,7 @@ export default {
       ctx.currentLoops = data;
     },
     SET_CURRENT_SEGMENT_SETUP(ctx, data) {
-      ctx.currentSetup = Object.assign( {}, ctx.playerOpts, data);
+      ctx.currentSetup = Object.assign({}, ctx.playerOpts, data);
     }
   },
   actions: {
@@ -42,21 +42,21 @@ export default {
       ctx.commit("SET_USER_LOOP_DATA", response);
     },
     fetchUserLoop: (ctx, ID) => ctx.dispatch("fetchUserLoopData", ID),
+    fetchPackage: (ctx, ID) => ctx.dispatch("fetchPackageData", ID),
     async fetchPackageData(ctx, ID) {
       const response = await ctx.rootState.TXBA_UTILS.getPackage(ID);
       // console.log('courseData', response)
-      ctx.commit("SET_COURSE_DATA", response);
+      ctx.commit("SET_PACKAGE_DATA", response);
     },
-    fetchPackage: (ctx, ID) => ctx.dispatch("fetchPackageData", ID),
+    fetchSegment: (ctx, ID) => ctx.dispatch("fetchSegmentData", ID),
     async fetchSegmentData(ctx, ID) {
       const response = await ctx.rootState.TXBA_UTILS.getSegment(ID);
       // console.log('segData', response)
       ctx.commit("SET_CURRENT_SEGMENT", response);
     },
-    fetchSegment: ( ctx, ID ) => ctx.dispatch( "fetchSegmentData", ID ),
-    setCurrentSegmentSetup( ctx, setup ) {
-      console.log("store: ", setup)
-      if (setup) ctx.commit("SET_CURRENT_SEGMENT_SETUP", JSON.parse(setup))
+    setCurrentSegmentSetup(ctx, setup) {
+      console.log(JSON.stringify(setup));
+      if (setup) ctx.commit("SET_CURRENT_SEGMENT_SETUP", JSON.parse(setup));
     }
   },
   getters: {

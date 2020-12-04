@@ -25,3 +25,14 @@ quasar build
 ### Customize the configuration
 See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
 # Quasar_PP8
+
+
+## TODO
+### General
+[ ] Tool List functions
+
+### Browser Section
+[ ] Add KeyboardEvents
+
+### Watch Section
+[ ] Add KeyboardEvents

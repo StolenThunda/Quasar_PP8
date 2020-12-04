@@ -1,26 +1,37 @@
 <template>
-  <div class="column">
-      <q-btn :label="title" icon="play_circle_outlined" color="primary" size='md' push outline rounded />
-    <div>
-      <span class="text-body1"> </span>
-    </div>
-  </div>
+  <q-card color="grey" class="container q-ma-lg" v-if="currentCourse" bordered>
+    <q-card-section>
+      <center>
+
+        <q-btn label="Resume" :to="'/watch/' + currentCourse.packageID" icon="play_circle_outlined" color="secondary" />
+      </center>
+      <center class="q-pa-md">
+        <span class="text-weight-bold text-subtitle2" v-html="currentCourse.packageTitle"></span>
+      </center>
+    </q-card-section>
+  </q-card>
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
-  props: {
-    course: String,
-    title: {
-      type: String,
-      default: "Albert’s Influence: Rockin Blues: Lesson 2 - Demonstration"
-    }
+  name: "ResumeLast",
+  computed: {
+    ...mapState('watch',['currentCourse'])
   }
+//   props: {
+//     course: String,
+//     title: {
+//       type: String,
+//       default: "Albert’s Influence: Rockin Blues: Lesson 2 - Demonstration"
+//     }
+//   }
 };
 </script>
 
-<style>
-container {
-  background-color: rgba(33, 33, 33, 0.7) !important;
-}
+<style lang="stylus" scoped>
+.container
+   border: 1px solid #555
+   background-color: rgba(84, 84, 84, 0.44)
 </style>

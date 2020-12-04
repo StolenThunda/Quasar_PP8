@@ -1,0 +1,16 @@
+{
+    "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Quasar App: chrome",
+      "url": "https://localhost:3000",
+      "webRoot": "${workspaceFolder}/src",
+      "breakOnLoad": true,
+      // "sourceMapPathOverrides": {
+      //   "webpack:///./src/*": "${webRoot}/*"
+      // },
+      "trace": "verbose"
+    }
+    ]
+}

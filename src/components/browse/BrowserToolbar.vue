@@ -1,51 +1,81 @@
 <template>
   <div>
     <q-toolbar>
-      <slot name="toggleDrawer"></slot>
-      <q-toolbar-title class="text-uppercase text-subvalue2 text-justify">
-        Browser - {{ model }}
+      <slot name="toggleDrawer" v-if="activeCategory"></slot>
+      <q-toolbar-title class="text-capitalize text-center text-subvalue2">
+        Browser
+        
+        <q-breadcrumbs-el v-model="activeCategory"> {{ entitleCategory(activeCategory) }}</q-breadcrumbs-el>
       </q-toolbar-title>
-      <q-btn flat round dense icon="close" to="/" />
+      <q-btn label="Close" color="secondary" icon="close" to="/" />
     </q-toolbar>
 
-    <q-toolbar>
-      <q-btn-toggle
-        v-model="model"
-        toggle-color="secondary"
-        :options="tabs"
-        @input="loadCategory"
+    <!-- <q-toolbar inset> -->
+      <center>
+      
+        <div id="browser-wrapper">
+      <q-scroll-area
+        horizontal
+        style="height: 50px; width: 95vw;"
+        class="bg-grey-14 rounded-borders"
       >
-      </q-btn-toggle>
-
-      <!-- @click="leftDrawer = !leftDrawer" -->
-    </q-toolbar>
+          <div class="browser-filter-row row no-wrap q-pa-sm" id="top-level-filters">
+            <ul
+              class="browser-top-filter-list"
+              id="filter-level-1"
+              v-for="tab in tabs"
+              :key="tab.name"
+            >
+              <li class="q-mx-xs">
+                <q-btn
+                  push
+                  rounded
+                  fab-mini
+                  no-wrap
+                  :color="activeCategory === tab.value ? 'secondary' : 'black'"
+                  :label="tab.label"
+                  size="md"
+                  @click="loadCategory(tab.value)"
+                  :icon="tab.icon"
+                />
+              </li>
+            </ul>
+          </div>
+      </q-scroll-area>
+        </div>
+          
+      </center>
+    <!-- </q-toolbar> -->
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
+import { morph, format } from "quasar";
 
+// Morph one DOM element to another:
+const searchMorph = morph({
+  from: ".browser-top-filter-list",
+  to: ".q-tab--active"
+});
 export default {
   name: "BrowserToolBar",
   data: () => ({
-    model: null,
-    tabsAdded: false,
+    category: null,
+    filtersAdded: false,
     tabs: [
       {
         value: "courses",
-        label: "courses",
-        icon: "mdi-bookshelf",
-        click: () => {
-          console.log("HEY COURSES");
-        }
+        label: "Courses",
+        icon: "mdi-bookshelf"
       },
       {
-        value: "free lesson friday",
+        value: "free_lesson_friday",
         label: "free lesson friday",
         icon: "mdi-sign-direction"
       },
       {
-        value: "tone tuesday",
+        value: "tone_tuesday",
         label: "tone tuesday",
         icon: "mdi-bugle"
       },
@@ -55,12 +85,12 @@ export default {
         icon: "mdi-music-clef-treble"
       },
       {
-        value: "backing tracks",
+        value: "backing_tracks",
         label: "backing tracks",
         icon: "mdi-volume-high"
       },
       {
-        value: "imported",
+        value: "youtube_videos",
         label: "imported",
         icon: "mdi-import"
       },
@@ -71,19 +101,29 @@ export default {
       }
     ]
   }),
+  computed: {
+    ...mapState('browser',["activeCategory"])
+  },
   methods: {
-    loadCategory(category) {
-      console.log(`Cat: ${category}`);
-      this.setCriteria(category);
-      if (!this.tabsAdded) this.tabsAdded = this.addTabs();
+    entitleCategory() { return (this.activeCategory) ? " - " + format.capitalize(
+        this.activeCategory.replaceAll("_", " ")
+      ) : ""
     },
-    addTabs() {
+    loadCategory(category) {
+      // console.log(`Cat: ${category}`);
+      searchMorph();
+      this.setCriteria(category);
+      if (!this.filtersAdded) this.filtersAdded = this.addTabs(category);
+      this.$emit("toggle-drawer", true);
+    },
+    addTabs(category) {
       this.addToDrawer([
         {
-          name: "Browser",
-          componentName: "Browser",
-          icon: "magnify",
-          cmp: () => import("components/browse/BrowserTabs")
+          name: "filters",
+          componentName: "category_filters",
+          icon: "mdi-filter-plus-outline",
+          cmp: () => import("components/browse/BrowserFilters"),
+          menu: () => import("components/browse/BrowserSettings")
         }
       ]);
       return true;
@@ -93,7 +133,17 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-.btn-fixed-width
-  width: 200px
+<style scoped>
+.q-toolbar--inset {
+  background-color: rgba(192, 192, 192, 0.39);
+  /* background-color: white !important ; */
+  transition: opacity 0.1s;
+  /* z-index: 1000; */
+}
+ul.browser-top-filter-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: inline-flex;
+}
 </style>
