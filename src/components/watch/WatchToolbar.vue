@@ -1,15 +1,13 @@
 <template>
   <div>
-    <q-toolbar >
+    <q-toolbar>
       <slot name="toggle"></slot>
       <slot>
         <q-btn round flat to="/" icon="home" />
         <q-btn round flat @click="toggleInfo" icon="info" />
-        <q-toolbar-title v-if="packageTitle">
-          <span class="absolute-center" v-html="packageTitle"></span>
+        <q-toolbar-title >
+          <span class="absolute-center text-capitalize" v-html="getTitle"></span>
         </q-toolbar-title>
-        <span class="absolute-center" v-else>No Course Data</span>
-        <!-- <span> -->
         <q-fab
           v-if="getHistory.length"
           :label="'History: ' + getHistory.length"
@@ -48,8 +46,17 @@ export default {
     visible: false
   }),
   computed: {
+    getTitle() {
+      const title =
+        this.packageTitle !== "Imported Video"
+          ? this.packageTitle
+          : this.currentSegment?.segmentFullDisplayName
+          ? this.currentSegment.segmentFullDisplayName
+          : "No Data Loaded";
+      return title;
+    },
     ...mapGetters(["getHistory"]),
-    ...mapState(["packageTitle"])
+    ...mapState(["packageTitle", "currentSegment"])
   },
   methods: {
     showInfo(c) {

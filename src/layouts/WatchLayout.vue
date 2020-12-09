@@ -1,11 +1,6 @@
 <template>
-  <q-layout
-    view="lHh LpR lFf"
-    container
-    style="height: 100vh"
-    class="shadow-2 rounded-borders"
-  >
-    <q-header reveal elevated>
+  <q-layout view="lHh LpR lFf">
+    <q-header>
       <watch-tool-bar>
         <template #toggle>
           <q-btn
@@ -17,29 +12,17 @@
           />
         </template>
         <template #auth>
-          <auth-button></auth-button>
+          <auth-button />
         </template>
       </watch-tool-bar>
     </q-header>
-
-    <!-- :width="300"
-      :breakpoint="500" -->
-    <!-- <q-drawer -->
-    >
-    <!-- v-model="leftDrawer"
-      show-if-above
-      elevated -->
-    <!-- <q-scroll-area :delay="1200" :thumb-style="thumbStyle" class="fit">
-        <dynamic-tab :tabList="this.tabs" class="q-item" />
-      </q-scroll-area> -->
-    <!-- </q-drawer> -->
 
     <q-page-container>
       <q-splitter
         v-model="splitterModel"
         reverse
         :limits="[65, 100]"
-        style="height: 87vh"
+        style="height: 92vh"
       >
         <template v-slot:before v-bind:tabs="tabs">
           <q-scroll-area :thumb-style="thumbStyle" class="fit">
@@ -48,15 +31,14 @@
         </template>
 
         <template v-slot:separator>
+          <!-- size="140px" -->
           <q-avatar
-            color="primary"
+            color="secondary"
             text-color="white"
-            size="40px"
             icon="drag_indicator"
             @dblclick="leftDrawer = !leftDrawer"
             @hover.native="doStuff"
           />
-
         </template>
         <template v-slot:after>
           <router-view :key="$route.fullPath" />
@@ -103,18 +85,32 @@ export default {
     this.addSidebarTabs([
       {
         name: "Comments",
-        componentName: "Comments",
+        componentName: "CommentsManager",
         icon: "mdi-comment-multiple-outline",
         cmp: () => import("components/watch/sidebar/Comments")
         // menu: () => import("components/watch/sidebar/WatchSettings")
       },
       {
         name: "Segments",
-        componentName: "Segments",
+        componentName: "SegmentsManager",
         icon: "mdi-segment",
         cmp: () => import("components/watch/sidebar/Segments"),
         menu: () => import("components/watch/settings/WatchSettings")
       },
+      {
+        name: "Loops",
+        componentName: "InstantLoopsManager",
+        icon: "mdi-sync",
+        cmp: () => import("components/watch/sidebar/InstantLoops")
+        // menu: () => import("components/watch/settings/WatchSettings")
+      },
+      {
+        name: "Chapters",
+        componentName: "ChaptersManager",
+        icon: "mdi-bookmark",
+        cmp: () => import("components/watch/sidebar/Chapters")
+        // menu: () => import("components/watch/settings/WatchSettings")
+      }
     ]);
   },
   computed: {
@@ -125,7 +121,9 @@ export default {
     })
   },
   methods: {
-    doStuff(val) { console.log('val', val.type)},
+    doStuff(val) {
+      console.log("val", val.type);
+    },
     showTab(tab) {
       this.currentTab = tab;
     },

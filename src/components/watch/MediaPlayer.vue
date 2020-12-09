@@ -1,35 +1,38 @@
 <template>
-  <div class="">
-  
-      <plyr-vue 
-        name="plyr"
-        v-if="divPlayer"
-        ref="mediaPlayer"
-        v-on="$attrs"
-        data-plyr-config='{ "debug": true, "controls": false }'
-      >  
+  <div>
+    <plyr-vue
+      name="plyr"
+      v-if="divPlayer"
+      ref="mediaPlayer"
+      v-on="$attrs"
+      data-plyr-config='{ "debug": true, "controls": false }'
+    >
       <!-- <panZoom
       :options="pzOptions"
       @init="pzInit"
     > -->
-        <div class="videoWrapper" id="mediaPlayer" :class="{ flipped: playerSettings.flipped }">
-          <iframe
-            v-if="type === 'youtube'"
-            :src="youtubePlayer"
-            allowfullscreen
-            allowtransparency
-          />
+      <div
+        class="videoWrapper"
+        id="mediaPlayer"
+        :class="{ flipped: playerSettings.flipped }"
+      >
+        <iframe
+          v-if="type === 'youtube'"
+          :src="youtubePlayer"
+          allowfullscreen
+          allowtransparency
+        />
 
-          <iframe
-            v-if="type === 'vimeo'"
-            :src="vimeoPlayer"
-            allowfullscreen
-            allowtransparency
-            allow="autoplay"
-          />
-        </div>
-    <!-- </panZoom> -->
-      </plyr-vue>
+        <iframe
+          v-if="type === 'vimeo'"
+          :src="vimeoPlayer"
+          allowfullscreen
+          allowtransparency
+          allow="autoplay"
+        />
+      </div>
+      <!-- </panZoom> -->
+    </plyr-vue>
 
     <!-- <pan-zoom> -->
     <plyr-vue v-if="!divPlayer" ref="mediaPlayer">
@@ -58,7 +61,7 @@
       :loopStop="loopStop"
     >
       <template #slider>
-        <media-progress-slider :remaining="duration" :ctime="ctime" />
+        <media-progress-slider :remaining="duration" :ctime="ctime" :activeLoop="loopObj" />
       </template>
     </player-controls>
   </div>
@@ -66,7 +69,6 @@
 
 <script>
 import Vue from "vue";
-// import panzoom from "vue-panzoom";
 import VuePlyr from "vue-plyr";
 import { utilities } from "../../mixins/utilities";
 import { mapState, mapActions } from "vuex";
@@ -104,7 +106,8 @@ export default {
     },
     zoom: null,
     playing: false,
-    loopActive: false
+    loopActive: false,
+    loopObj: null
   }),
   created() {
     this.$root.$on("slider-change", this.seekTo);
@@ -123,15 +126,14 @@ export default {
       this.loopStop = this.loopStart = null;
     });
   },
-  mounted() { 
+  mounted() {
     this.player.on("ready", e => {
       this.duration = e.detail.plyr.duration;
       this.loadDefaultSettings();
-      this.player.toggleControls(false)
+      this.player.toggleControls(false);
     });
     this.player.on("timeupdate", this.timeUpdated);
     this.player.on("playing play pause", this.stateChange);
-    // });
   },
   components: {
     "plyr-vue": VuePlyr,
@@ -300,6 +302,7 @@ export default {
       console.log("looptoggle");
       if (this.validLoop) this.player.currentTime = this.loopStart;
       this.loopActive = !this.loopActive;
+      this.loopObj = this.loopActive ? { min: this.loopStart, max: this.loopStop} : null
       this.player.togglePlay(this.loopActive);
       this.showMessage({
         type: "info",
@@ -311,13 +314,13 @@ export default {
         message: this.loopActive ? "Loop Active" : "Loop Stopped",
         icon: this.loopIcon
       });
-    },
+    }
     // resizeIFrameToFitContent( iFrame ) {
     //   console.log('b-iframe', iFrame)
     //   iFrame.width  = iFrame.contentWindow.parent.document.body.scrollWidth + 'px';
     // iFrame.height = iFrame.contentWindow.parent.document.body.scrollHeight  * .9 + 'px';
     //   console.log('a-iframe', iFrame)
-// }
+    // }
   }
 };
 </script>
@@ -345,7 +348,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-   /* padding-bottom: calc(var(--aspect-ratio, 0.35) * 100%);  */
+  /* padding-bottom: calc(var(--aspect-ratio, 0.35) * 100%);  */
 }
 .flipped {
   -webkit-transform: rotateY(180deg);

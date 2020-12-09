@@ -30,7 +30,6 @@
               <q-item-section :title="fav.title">
                 {{ fav.title }}
               </q-item-section>
-
               <q-item-section color="grey" @click="removeFavorite(fav)" side>
                 <q-btn icon="delete" color="red" size="xs" round />
               </q-item-section>
@@ -63,7 +62,7 @@ export default {
   },
   methods: {
     link(fav) {
-      this.playSegment(fav.id).then(id => {
+      this.setCurrentSegmentSetup(fav.id).then(id => {
         const route =
           fav.src !== "Imported" ? `/watch/${id}` : `/watch/${id}/${id}`;
         console.log("link_route", route);
@@ -74,7 +73,7 @@ export default {
       this.favs = this.$store.getters["default/getFavsByType"];
     },
     ...mapActions("default", ["removeFavorite"]),
-    ...mapActions("watch", ["playSegment"])
+    ...mapActions("watch", ["setCurrentSegmentSetup", "fetchPackage"])
   }
 };
 </script>

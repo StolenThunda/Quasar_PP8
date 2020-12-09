@@ -27,11 +27,9 @@
             height="20px"
             active-class="secondary"
           >
-            <!-- @click="$router.push({path:`/watch/${$route.params.packageID}/${playSegment(seg.id)}`})" -->
             <q-item-section avatar>
               <q-icon :color="seg.color" :name="s.icon" size="xs" />
             </q-item-section>
-
             <q-item-section>
               <q-item-label caption>{{ seg.title }}</q-item-label>
             </q-item-section>
@@ -53,8 +51,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions("watch", ["setCurrentSegmentSetup"]),
     link(id) {
-      this.playSegment(id).then(id => {
+      this.setCurrentSegmentSetup(id).then(id => {
         const route = `/watch/${this.packID}/${id}`;
         console.log("link_route", route);
         this.$router.push({ path: `${route}` });
@@ -101,8 +100,7 @@ export default {
       }
       // console.log("SEGINFO", seg, ico);
       return ico;
-    },
-    ...mapActions("watch", ["playSegment"])
+    }
   }
 };
 </script>

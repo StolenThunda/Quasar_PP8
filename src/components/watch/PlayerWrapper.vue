@@ -1,11 +1,10 @@
 <template>
-    <!-- style="height: 80vh" -->
   <div
     id="mediaPlayerWrapper"
     v-if="currentSetup.sources"
     :set="(s = currentSetup.sources[0])"
   >
-    {{ s.type }}
+    <!-- {{ s.type }} -->
     <template v-if="renderers.includes(s.type)">
       <pdf-renderer v-if="s.type === 'pdf'" :src="s.src" />
       <soundslice-renderer v-if="s.type === 'soundslice'" :src="s.src" />
@@ -56,3 +55,18 @@ export default {
   }
 };
 </script>
+<style >
+
+#mediaPlayerWrapper {
+  bottom: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* background: black; */
+  overflow: hidden;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+</style>

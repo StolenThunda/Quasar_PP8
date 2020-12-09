@@ -7,6 +7,9 @@
         :name="tab.name"
         :icon="tab.icon"
         @click.prevent="selectedTab = tab.name"
+        inline-label
+        outside-arrows
+        mobile-arrows
       >
         <q-menu v-if="tab.menu">
           <component :is="tab.menu"></component>
@@ -62,11 +65,11 @@ export default {
         "Favorites",
         "Comments"
       ];
-      console.log("orig", JSON.stringify(this.tabList));
+      // console.log("orig", JSON.stringify(this.tabList));
       this.tabList.sort(function(a, b) {
         return tabOrder.indexOf(a.name) - tabOrder.indexOf(b.name);
       });
-      console.log("sorted", JSON.stringify(this.tabList));
+      // console.log("sorted", JSON.stringify(this.tabList));
       // console.log("sorted", JSON.stringify(sorted));
       this.getFirst();
     },
