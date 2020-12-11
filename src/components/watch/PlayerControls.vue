@@ -190,8 +190,8 @@ export default {
     rgba(50, 50, 50, 1) 100%
   );
   z-index: 100;
-  padding-top: 0.25em;
-  padding-bottom: 0.25em;
+  // padding-top: 0.25em;
+  // padding-bottom: 0.25em;
 }
 ul#transportButtonsList {
   float: left;

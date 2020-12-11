@@ -1,6 +1,6 @@
 <template>
   <q-list id="progressSliderWrapper">
-    <q-item class="row ">
+    <q-item class="row">
       <q-item-section
         id="current-time"
         class="q-pl-md col-1 text-weight-bolder text-caption"

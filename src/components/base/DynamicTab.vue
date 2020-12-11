@@ -5,7 +5,8 @@
         v-for="tab in this.tabList"
         :key="tab.name"
         :name="tab.name"
-        :icon="tab.icon"
+        :label="tab.iconOnly ? '' : tab.name"
+        :icon="tab.labelOnly  ? '' : tab.icon"
         @click.prevent="selectedTab = tab.name"
         inline-label
         outside-arrows
@@ -30,7 +31,8 @@
         :key="tab.name"
         :name="tab.name"
       >
-        <component :is="tab.cmp"></component>
+      <!-- {{ tab.props ? tab.props : ''}} -->
+        <component :is="tab.cmp" v-bind="tab.props"></component>
       </q-tab-panel>
     </q-tab-panels>
   </div>

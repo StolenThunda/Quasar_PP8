@@ -20,7 +20,7 @@
             v-for="course in getHistory"
             :key="course.id"
             color="primary"
-            :label="course.packageTitle"
+            :label="getTitle"
             :to="`/watch/${course.packageID}`"
           />
           <!-- color="primary" -->

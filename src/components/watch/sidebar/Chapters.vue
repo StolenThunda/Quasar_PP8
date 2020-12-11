@@ -1,6 +1,8 @@
 <template>
   <div>
-    Chapters
+    <q-toolbar class="bg-primary shadow-2 tab-title">
+      <q-toolbar-title class="text-capitalize text-caption">Chapters</q-toolbar-title>
+    </q-toolbar>
   </div>
 </template>
 

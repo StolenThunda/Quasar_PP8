@@ -16,6 +16,9 @@
       </q-img>
       <div class="col" v-html="s.overview" />
     </div>
+    <q-inner-loading>
+        <q-spinner-gears size="50px" color="primary" />
+      </q-inner-loading>
   </q-card>
 </template>
 

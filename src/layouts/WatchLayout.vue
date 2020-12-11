@@ -87,6 +87,7 @@ export default {
         name: "Comments",
         componentName: "CommentsManager",
         icon: "mdi-comment-multiple-outline",
+        iconOnly: true, 
         cmp: () => import("components/watch/sidebar/Comments")
         // menu: () => import("components/watch/sidebar/WatchSettings")
       },
@@ -94,6 +95,7 @@ export default {
         name: "Segments",
         componentName: "SegmentsManager",
         icon: "mdi-segment",
+        iconOnly: true,
         cmp: () => import("components/watch/sidebar/Segments"),
         menu: () => import("components/watch/settings/WatchSettings")
       },
@@ -101,13 +103,15 @@ export default {
         name: "Loops",
         componentName: "InstantLoopsManager",
         icon: "mdi-sync",
-        cmp: () => import("components/watch/sidebar/InstantLoops")
+        iconOnly: true,
+        cmp: () => import("components/watch/sidebar/LoopTabs/InstantLoops")
         // menu: () => import("components/watch/settings/WatchSettings")
       },
       {
         name: "Chapters",
         componentName: "ChaptersManager",
         icon: "mdi-bookmark",
+        iconOnly: true,
         cmp: () => import("components/watch/sidebar/Chapters")
         // menu: () => import("components/watch/settings/WatchSettings")
       }

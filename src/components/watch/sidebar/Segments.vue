@@ -37,7 +37,11 @@
         </q-list>
       </q-expansion-item>
     </template>
-  </q-list>
+    <q-inner-loading>
+        <q-spinner-gears size="50px" color="primary" />
+      </q-inner-loading>
+        </q-list>
+   
 </template>
 
 <script>

@@ -244,6 +244,7 @@ export default {
       } else {
         this.player.play();
       }
+      console.log('player status: ', this.player.playing)
     },
     setloopStart() {
       if (!this.player) return;
