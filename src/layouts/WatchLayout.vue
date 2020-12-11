@@ -104,16 +104,14 @@ export default {
         componentName: "InstantLoopsManager",
         icon: "mdi-sync",
         iconOnly: true,
-        cmp: () => import("components/watch/sidebar/LoopTabs/InstantLoops")
-        // menu: () => import("components/watch/settings/WatchSettings")
+        cmp: () => import("components/watch/sidebar/LoopTab/InstantLoops")
       },
       {
         name: "Chapters",
         componentName: "ChaptersManager",
         icon: "mdi-bookmark",
         iconOnly: true,
-        cmp: () => import("components/watch/sidebar/Chapters")
-        // menu: () => import("components/watch/settings/WatchSettings")
+        cmp: () => import("components/watch/sidebar/ChapterTab/Chapters")
       }
     ]);
   },
