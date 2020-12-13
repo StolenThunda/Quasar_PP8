@@ -1,14 +1,15 @@
 <template>
   <div>
-    <q-list v-if="loopArray.length" bordered separator>
-      <template v-for="loop in loopArray">
+    <q-list v-if="loopArray.length" bordered separator dense>
+      <template v-for="(item, i) in Object.entries(loopArray)">
         <q-item
           clickable
           v-ripple
           active-class="text-orange"
-          :id="getItemName(loop)"
-          :key="getItemName(loop) + listType + componentKey"
-          @click="toggleActive(loop)"
+          :set="(loop = loopArray[i])"
+          :id="getItemName(loop) + collectionID + i"
+          :key="getItemName(loop) + collectionID + i"
+          @click="toggleActive(loop, i)"
           :active="active(loop)"
         >
           <q-item-section avatar>
@@ -42,7 +43,7 @@ export default {
       type: String,
       default: "No Alt Message or Data"
     },
-    listType: {
+    collectionID: {
       type: Number,
       default: () => 0
     }
@@ -63,7 +64,7 @@ export default {
       console.log("lstat", loopStatus);
       return loopStatus;
     },
-    toggleActive(loop) {
+    toggleActive(loop, i) {
       this.$nextTick(() => {
         const itm = this.getActiveItemName(loop);
         console.log("toggle from", itm, this.activeList[itm]);
@@ -76,6 +77,7 @@ export default {
       return this.getItemName(val) + "_active";
     },
     getItemName(val) {
+      if (!val) return val;
       const name = val[0].replace(/\s/g, "") || "";
       console.log("getIName", name);
       return name;
@@ -83,5 +85,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped></style>

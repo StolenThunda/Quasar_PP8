@@ -15,9 +15,7 @@ export default {
       default: false
     }
   },
-  components: {
-    LoopList
-  },
+  components: { LoopList },
   computed: {
     loopData() {
       const msg = this.TXBALoops
@@ -25,17 +23,16 @@ export default {
         : "There are no community loops for this item.";
       const loops = this.TXBALoops
         ? this.currentSegment.getLoopsArray() || []
-        : this.currentUserLoops.memberLoopCollections[0]?.memberLoops || [];
-  const type = this.TXBALoops ? 0 : 2;
+        : this.currentUserLoops.memberLoopCollections[0]?.memberLoops
+        ? this.currentUserLoops.memberLoopCollections[0].memberLoops
+        : [];
       return {
         altMessage: msg,
         loopArray: loops,
-        listType: type
+        collectionID: this.TXBALoops ? 0 : 2
       };
     },
     ...mapState("watch", ["currentSegment", "currentUserLoops"])
   }
 };
 </script>
-
-<style lang="scss" scoped></style>

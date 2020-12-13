@@ -1,5 +1,6 @@
 import Vue from "vue";
 import {
+  ProPlayer,
   LoopsManager,
   CommentsManager,
   Segment,
@@ -16,6 +17,8 @@ export default {
     currentUserLoops: null,
     sections: null,
     courseHistory: [],
+    seekToTime: 0,
+    ProPlayer: new ProPlayer(),
     playerSettings: {
       speed: null,
       volume: null,
@@ -30,6 +33,7 @@ export default {
     commentManager: new CommentsManager()
   },
   mutations: {
+
     FLIP_PLAYER(ctx) {
       console.log("b4", ctx.playerSettings.flipped);
       ctx.playerSettings.flipped = !ctx.playerSettings.flipped;
@@ -70,8 +74,8 @@ export default {
       }
     },
     SET_USER_LOOP_DATA(ctx, data) {
-      console.log('usLoops', data)
-      ctx.currentUserLoops = data;
+      console.log('Setting user Loops', data)
+      ctx.currentUserLoops = JSON.parse(JSON.stringify(data));
     },
     SET_CURRENT_PACKAGE(ctx, packageData) {
       if (packageData.packageError === "") {
@@ -120,11 +124,23 @@ export default {
     },
     SET_CURRENT_SEGMENT_SETUP(ctx, data) {
       ctx.currentSetup = Object.assign({}, ctx.playerOpts, data);
+    },
+    SET_SEEK_TIME(ctx, data) {
+      ctx.seekToTime = data
+    },
+    SET_LOOP_SELECTED(ctx, {nCollectionID, nListIndex, nLoopIndex}){
+      ctx.loopManager.loopSelected(nCollectionID, nListIndex, nLoopIndex)
     }
   },
   actions: {
+    setLoopSelected({commit}, data) {
+      commit('SET_LOOP_SELECTED', data)
+    },
     flipPlayer({ commit }, bool) {
       commit("FLIP_PLAYER");
+    },
+    setSeekToTime({commit}, time){
+      commit('SET_SEEK_TIME', time)
     },
     loadPlayerSettings({ commit }, objSettings) {
       commit("LOAD_PLAYER_SETTINGS", objSettings);

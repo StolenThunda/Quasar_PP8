@@ -133,6 +133,7 @@ export default {
       this.player.toggleControls(false);
     });
     this.player.on("timeupdate", this.timeUpdated);
+    this.player.on("clear-loop", this.clearLoop);
     this.player.on("playing play pause", this.stateChange);
   },
   components: {
@@ -142,12 +143,21 @@ export default {
     "player-controls": () => import("components/watch/PlayerControls")
   },
   watch: {
+    seekToTime(time) { this.seekTo(time); this.playPlayer() },
     playing(e) {
       this.playing = e;
+    },
+    validLoop: function(valid) {
+      this.loopObj = this.loopActive ? { min: this.loopStart, max: this.loopStop} : null
+      if (valid){
+        this.$root.$emit('valid-loop', {status: this.validLoop, loop: this.loopObj })
+      } else {
+        this.$root.$emit('valid-loop', {status: this.validLoop })
+      }
     }
   },
   computed: {
-    ...mapState("watch", ["playerSettings"]),
+    ...mapState("watch", ["playerSettings", 'seekToTime']),
     player() {
       return this.$refs.mediaPlayer.player;
     },
@@ -169,6 +179,12 @@ export default {
   },
   methods: {
     ...mapActions("watch", ["flipPlayer", "loadPlayerSettings"]),
+    clearLoop(){
+      this.loopStart = null
+      this.loopStop = null
+      this.loopObj = null
+      console.log('loop cleared')
+    },
     pzInit(pz_instance) {
       console.log("pz", pz_instance);
       this.pz = pz_instance;
@@ -225,7 +241,7 @@ export default {
       return isDivPlayer;
     },
     seekTo(time) {
-      // console.log("orig time ", time);
+      console.log("Seek to time ", time);
       if (!this.player) return;
       this.ctime = this.player.currentTime = time >= 0 ? time : 0;
     },
@@ -240,12 +256,14 @@ export default {
     togglePlay(val) {
       if (!this.player) return;
       if (this.player.playing || !val) {
-        this.player.pause();
+        this.pausePlayer();
       } else {
-        this.player.play();
+        this.playPlayer();
       }
       console.log('player status: ', this.player.playing)
     },
+    pausePlayer() { this.player.pause() },
+    playPlayer() { this.player.play() },
     setloopStart() {
       if (!this.player) return;
       const current = this.player.currentTime;
@@ -303,7 +321,7 @@ export default {
       console.log("looptoggle");
       if (this.validLoop) this.player.currentTime = this.loopStart;
       this.loopActive = !this.loopActive;
-      this.loopObj = this.loopActive ? { min: this.loopStart, max: this.loopStop} : null
+      
       this.player.togglePlay(this.loopActive);
       this.showMessage({
         type: "info",

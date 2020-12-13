@@ -1,32 +1,32 @@
 <template>
   <div>
     <q-toolbar class="bg-primary shadow-2 tab-title">
-      <q-toolbar-title class="text-capitalize text-caption">Chapters</q-toolbar-title>
+      <q-toolbar-title class="text-capitalize text-caption">
+        Chapters
+      </q-toolbar-title>
     </q-toolbar>
-  <chapter-list v-bind="chapterData" />
+    <chapter-list v-bind="chapterData" />
   </div>
 </template>
 
 <script>
-import ChapterList  from "./ChapterList";
+import ChapterList from "./ChapterList";
 import { mapState } from "vuex";
-  export default {
-    name: 'Chapters',
-    components: {
-      ChapterList
+export default {
+  name: "Chapters",
+  components: {
+    ChapterList
   },
   computed: {
-    chapterData(){
+    chapterData() {
       return {
-        altMessage: 'This segment does not have any chapter markers.',
-        loopArray: this.currentSegment.getChaptersArray() || []
-      }
+        altMessage: "This segment does not have any chapter markers.",
+        chapterArray: this.currentSegment.getChaptersArray() || []
+      };
     },
-     ...mapState("watch", ["currentSegment"])
+    ...mapState("watch", ["currentSegment"])
   }
-  }
+};
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

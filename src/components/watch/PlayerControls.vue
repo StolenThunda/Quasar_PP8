@@ -79,16 +79,30 @@
           </q-btn>
         </li>
         <li class="">
-          <q-btn
+          <q-btn-dropdown
             id="looping-toggle"
+            split
+            fab-mini
             title="Begin/End Looping."
             class="transport-button"
+            icon="mdi-autorenew"
+            :class="{ rotate: looping }"
             :color="!isLoopDefined ? 'grey' : 'green'"
             :disable="!isLoopDefined"
             @click="toggleLooping"
           >
-            <q-icon name="mdi-autorenew" :class="{ rotate: looping }"></q-icon>
-          </q-btn>
+            <!-- <q-icon name="mdi-autorenew" ></q-icon> -->
+              <q-list>
+        <q-item clickable v-close-popup @click="$root.$emit('clear-loop')">
+          <q-item-section avatar>
+            <q-avatar icon="mdi-minus-circle-off" color="primary" text-color="white" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Clear Loop</q-item-label>
+          </q-item-section>
+        </q-item>
+              </q-list>
+          </q-btn-dropdown>
         </li>
         <li>
           <video-settings-menu />

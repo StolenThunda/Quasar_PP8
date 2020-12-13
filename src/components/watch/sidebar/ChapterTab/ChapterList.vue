@@ -1,16 +1,16 @@
 <template>
   <div>
-    <q-list v-if="loopArray.length" bordered separator>
-      <template v-for="loop in loopArray">
+    <q-list v-if="chapterArray.length" bordered separator dense>
+      <template v-for="[index, loop] in chapterArray.entries()">
         <q-item
           clickable
           v-ripple
           active-class="text-orange"
           :id="getItemName(loop)"
-          :key="getItemName(loop) + listType + componentKey"
-          @click="toggleActive(loop)"
-          :active="active(loop)"
+          :key="getItemName(loop) + collectionID + componentKey + index"
+          @click="loopSelected(index)"
         >
+          <!-- @click="setSeekToTime(loop[1])" -->
           <q-item-section avatar>
             <q-icon name="mdi-bookmark" />
           </q-item-section>
@@ -19,7 +19,6 @@
               {{ loop[0] }}
             </q-item-label>
           </q-item-section>
-          
         </q-item>
       </template>
     </q-list>
@@ -28,10 +27,11 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "ChapterList",
   props: {
-    loopArray: {
+    chapterArray: {
       type: Array,
       default: () => []
     },
@@ -39,15 +39,15 @@ export default {
       type: String,
       default: "No Alt Message or Data"
     },
-    listType: {
+    collectionID: {
       type: Number,
       default: () => 0
     }
   },
   data: () => ({ activeList: {}, componentKey: 0 }),
   created() {
-    if (this.loopArray.length) {
-      this.loopArray.map(loop => {
+    if (this.chapterArray.length) {
+      this.chapterArray.map(loop => {
         const key = this.getActiveItemName(loop);
         this.activeList[key] = false;
         Object.assign({}, this, this.activeList);
@@ -55,19 +55,13 @@ export default {
     }
   },
   methods: {
-    active(loop) {
-      const loopStatus = this.activeList[this.getActiveItemName(loop)];
-      console.log("lstat", loopStatus);
-      return loopStatus;
-    },
-    toggleActive(loop) {
-      this.$nextTick(() => {
-        const itm = this.getActiveItemName(loop);
-        console.log("toggle from", itm, this.activeList[itm]);
-        this.activeList[itm] = !this.activeList[itm];
-        console.log("toggle to", itm, this.activeList[itm]);
-      });
-      this.componentKey++;
+    loopSelected(idx) {
+      const selection = {
+        nCollectionID: this.collectionID,
+        nListIndex: 0,
+        nLoopIndex: idx
+      };
+      this.setLoopSelected(selection);
     },
     getActiveItemName(val) {
       return this.getItemName(val) + "_active";
@@ -76,9 +70,8 @@ export default {
       const name = val[0].replace(/\s/g, "") || "";
       console.log("getIName", name);
       return name;
-    }
+    },
+    ...mapActions("watch", ["setSeekToTime", "setLoopSelected"])
   }
 };
 </script>
-
-<style lang="scss" scoped></style>

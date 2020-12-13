@@ -1,4 +1,1585 @@
-export class ProPlayerBrowser {
+/*jslint this:true, white:true */
+/*jslint this:true, white:true */
+// import {
+//     ProPlayerBrowser
+// } from "./--js-ProPlayerBrowser";
+// import {
+//     ProPlayerFavoritesManager
+// } from "./--js-ProPlayerFavoritesManager";
+// import {
+//     ProPlayerHistoryManager
+// } from "./--js-ProPlayerHistoryManager";
+// import {
+//     ProPlayerCommentsManager
+// } from "./--js-ProPlayerCommentManager";
+// import {
+//     InstantLoop,
+//     ProPlayerLoopsManager
+// } from "./--js-ProPlayerLoopsManager";
+// import {
+//     ProPlayerUserDataManager
+// } from "./--js-ProPlayerUserDataManager";
+// import {
+//     ProPlayerPackage
+// } from "./--js-ProPlayerPackage";
+// import {
+//     ProPlayerSegment
+// } from "./--js-ProPlayerSegment";
+// import {
+//     gc_BranchPath
+// } from "./globals";
+export class ProPlayer {
+  constructor() {
+    "use strict";
+    // TODO: ADD MobileDetect.js
+    // this.theMobileDetect = new MobileDetect(window.navigator.userAgent);
+    // Top Level Objects
+    this.browserTool = new Browser("contentBrowser");
+    this.favoritesManager = new FavoritesManager("favoritesList");
+    this.historyManager = new HistoryManager("historyList");
+    this.commentsManager = new CommentsManager("cmtList");
+    this.loopsManager = new LoopsManager();
+    this.userDataManager = new UserDataManager();
+    this.thePackage = new Package();
+    this.theSegment = new Segment();
+    this.theEngine = null;
+    this.packageOverviewTemplate = "";
+    this.strFavoritesListWrapperID = "favoritesList";
+    this.strCommentsListWrapperID = "cmtList";
+    this.spinnerDiv =
+      '<div class="spinner"><i class="fa fa-spinner fa-spin"></i></div>';
+    this.bPackageDataLoadingStarted = false;
+    this.bPackageDataLoadingFinished = false;
+    this.bSegmentDataLoadingStarted = false;
+    this.bSegmentDataLoadingFinished = false;
+    this.b_LoadingFinished = false;
+    this.b_UpdateURL = false;
+    this.b_KeepSidebarOpen = false;
+    this.n_SidebarToggleTimerID = -1;
+    window.addEventListener("onpopstate", event => {
+      //console.log(event.state);
+      let theState = event.state;
+      //console.log("Popping state: " + JSON.stringify(theState));
+      if (theState !== null) {
+        if (
+          theState.type === "facebook" &&
+          theState.segment1 === "facebook" &&
+          theState.segment2 !== "" &&
+          theState.segment3 !== ""
+        ) {
+          thePlayer.openExternalFBVideo(
+            theState.segment2,
+            theState.segment3,
+            false
+          );
+        } else if (
+          theState.type === "youtube" &&
+          theState.segment1 === "youtube" &&
+          theState.segment2 !== ""
+        ) {
+          thePlayer.openExternalYouTubeVideo(theState.segment2, false);
+        } else if (
+          theState.type === "package" &&
+          theState.segment1 !== "" &&
+          theState.segment2 === ""
+        ) {
+          thePlayer.openPackage(theState.segment1, false);
+        } else if (
+          theState.type === "package" &&
+          theState.segment1 !== "" &&
+          theState.segment2 !== ""
+        ) {
+          if (theState.segment1 === thePlayer.thePackage.getEntryID()) {
+            thePlayer.openSegmentWithinCurrentPackage(theState.segment2, false);
+          } else {
+            thePlayer.openPackageWithSegment(
+              theState.segment1,
+              theState.segment2,
+              false
+            );
+          }
+        } else if (theState.type === "empty") {
+          thePlayer.initializeWithoutPackage(false);
+        }
+      }
+    });
+  }
+  /******************************/
+  /* Interface callback functions */
+  /******************************/
+  initializeWithoutPackage(bUpdateURL) {
+    this.resetEverything();
+    this.mediaLoadDefaultPage();
+    this.closeSidebar();
+    this.pushSegmentDownloadsMenu();
+    this.pushFullscreenButtonState();
+    this.pushHomeButtonState();
+    this.userDataManager.resetAll();
+    this.favoritesManager.reloadFavorites();
+    this.reattachKeyboardEvents();
+    this.enableSidebarTabs();
+    this.pushPackageTitle("TXBA Pro Player");
+    this.pushSegmentTitle("Version 7.4 (Tony Branch)");
+    if (bUpdateURL) {
+      this.updateURL();
+    }
+  }
+  /******************************/
+  /***    All Reset Functions **/
+  /******************************/
+  resetEverything() {
+    //first shut everything down and reset everything.
+    this.toolsCloseToolWindow();
+    this.resetPackage();
+    this.resetSegment();
+    this.resetLoadingFlags();
+  }
+  resetLoadingFlags() {
+    this.bPackageDataLoadingFinished = false;
+    this.bSegmentDataLoadingFinished = false;
+    this.bPackageDataLoadingStarted = false;
+    this.bSegmentDataLoadingStarted = false;
+    this.b_LoadingFinished = false;
+    this.b_UpdateURL = false;
+  }
+  resetPackageTitle() {
+    this.pushPackageTitle("TXBA Pro Player");
+    $("#proPlayerWrapper").toggleClass("has-info", false);
+  }
+  resetPlayerTitle() {
+    this.resetPackageTitle("TXBA Pro Player");
+    this.pushSegmentTitle("No Media Loaded");
+    $("#proPlayerWrapper").toggleClass("has-info", false);
+  }
+  resetPackage() {
+    this.thePackage.resetAll();
+    this.resetPackageSections();
+    this.resetPackageTitle();
+    this.resetPackageOverview();
+    this.closeInfoPane();
+    this.commentsManager.reset();
+    this.favoritesManager.reset();
+  }
+  resetPackageSections() {
+    //console.log('Deleting segments list');
+    $("#sectionList").empty();
+    $("#sectionListEmpty").toggle(true);
+  }
+  resetSegment() {
+    if (this.theEngine !== null) {
+      this.theEngine.prepareForDestruction();
+      delete this.theEngine;
+    }
+    this.theSegment.resetAll();
+    this.userDataManager.resetAll();
+    $("#mediaWrapper").empty();
+    this.resetSegmentChapters();
+    this.resetSegmentLoops();
+    this.resetSegmentTitle();
+  }
+  resetSegmentChapters() {
+    $("#chapterList").empty();
+    $("#chapterListEmpty").text("No segment loaded.");
+    $("#chapterListEmpty").toggle(true);
+  }
+  resetSegmentLoops() {
+    this.loopsManager.resetAll();
+  }
+  resetSegmentTitle() {
+    this.pushSegmentTitle("&nbsp;");
+  }
+  resetSelectedSegment() {
+    $(".sidebar-list-item.segment.active").toggleClass("active", false);
+  }
+  resetPackageOverview() {
+    $("#packageOverviewWrapper").toggle(false);
+    $("#packageOverviewWrapper").appendTo("body");
+  }
+  bailOut() {
+    // When loading encounters an error, this is where it comes back to
+    // We reset everything and go back to the homescreen.
+    if (this.thePackage.getErrorMessage() !== "") {
+      alert(this.thePackage.getErrorMessage());
+    }
+    this.initializeWithoutPackage();
+  }
+  /******************************************/
+  /*********   All Opening Functions  ********/
+  /*******************************************/
+  openPackage(strPackageID, bUpdateURL) {
+    this.resetEverything();
+    this.b_UpdateURL = bUpdateURL;
+    this.openSectionsSidebar();
+    this.beginFetchPackageData(strPackageID);
+    this.waitForPackageData(strPackageID);
+  }
+  openPackageWithSegment(strPackageID, strSegmentID, bUpdateURL) {
+    this.resetEverything();
+    this.b_UpdateURL = bUpdateURL;
+    this.beginFetchPackageData(strPackageID);
+    this.beginFetchSegmentData(strSegmentID);
+    this.waitForPackageAndSegmentData();
+  }
+  openSegmentWithinCurrentPackage(strSegmentID, bUpdateURL) {
+    //console.log("Opening segment: " + strSegmentID);
+    this.resetPackageOverview();
+    this.closeInfoPane();
+    this.resetSegment();
+    this.resetLoadingFlags();
+    this.b_UpdateURL = bUpdateURL;
+    this.beginFetchSegmentData(strSegmentID);
+    this.waitForSegmentData();
+  }
+  openExternalYouTubeVideo(strYTCode, bUpdateURL) {
+    this.resetEverything();
+    this.b_UpdateURL = bUpdateURL;
+    this.beginFetchYouTubeData(strYTCode);
+    this.waitForYouTubeData();
+  }
+  openExternalFBVideo(strFBUserID, strFBVideoID, bUpdateURL) {
+    //console.log("Opening FB Video for User/ID: " + strFBUserID + "," + strFBVideoID);
+    this.resetEverything();
+    this.b_UpdateURL = bUpdateURL;
+    this.beginFetchFacebookData(strFBUserID, strFBVideoID);
+    this.waitForFacebookData();
+  }
+  openExternalInstagramVideo(strInstagramID, bUpdateURL) {
+    //console.log("Opening FB Video for User/ID: " + strFBUserID + "," + strFBVideoID);
+    this.resetEverything();
+    this.b_UpdateURL = bUpdateURL;
+    this.beginFetchInstagramData(strInstagramID);
+    this.waitForInstagramData();
+  }
+  openUnknownPackageType(packageOptions, bUpdateURL) {
+    if (packageOptions.type == "entry") {
+      this.openPackage(packageOptions.packageID, bUpdateURL);
+    } else if (packageOptions.type == "youtube") {
+      this.openExternalYouTubeVideo(packageOptions.packageID, bUpdateURL);
+    } else if (packageOptions.type == "facebook") {
+      this.openExternalFBVideo(
+        packageOptions.fbUserID,
+        packageOptions.fbVideoID,
+        bUpdateURL
+      );
+    }
+  }
+  openUnknownPackageFromSegments(
+    strSegment1,
+    strSegment2,
+    strSegment3,
+    bUpdateURL
+  ) {
+    if (strSegment1 === "") {
+      this.initializeWithoutPackage(bUpdateURL);
+    } else if (strSegment1 == "youtube") {
+      this.openExternalYouTubeVideo(strSegment2, bUpdateURL);
+      this.openSidebar();
+    } else if (strSegment1 == "facebook") {
+      this.openExternalFBVideo(strSegment2, strSegment3, bUpdateURL);
+      this.openSidebar();
+    } else {
+      if (strSegment2 !== "") {
+        this.openPackageWithSegment(strSegment1, strSegment2, bUpdateURL);
+        this.openSidebar();
+      } else {
+        this.openPackage(strSegment1, bUpdateURL);
+        this.openSidebar();
+      }
+    }
+  }
+  /*****************************************
+   *************   Begin Loading Functions  ************
+   *****************************************/
+  beginFetchPackageData(strPackageID) {
+    this.bPackageDataLoadingStarted = true;
+    $.get(gc_BranchPath + "/--ajax-get-package-info/" + strPackageID, function(
+      data
+    ) {
+      let tempData = jQuery.parseJSON(data);
+      if (tempData.packageError === "") {
+        thePlayer.thePackage.setEntryID(tempData.packageID);
+        thePlayer.thePackage.setTitle(tempData.packageTitle);
+        thePlayer.thePackage.setChannelName(tempData.packageChannel);
+        thePlayer.thePackage.setChannelShortName(tempData.packageChannelSlug);
+        thePlayer.thePackage.setDate(tempData.packageDate);
+        thePlayer.thePackage.setDefaultSegmentEntryID(
+          tempData.packageDefaultSegmentID
+        );
+        thePlayer.thePackage.setDescription(tempData.packageDescription);
+        thePlayer.thePackage.setOverview(tempData.packageOverview);
+        thePlayer.thePackage.setImageURL(tempData.packageImage);
+        thePlayer.thePackage.setSections(tempData.sections);
+        thePlayer.thePackage.setTuning(tempData.packageTuning);
+        thePlayer.thePackage.setLoaded(true);
+        thePlayer.bPackageDataLoadingFinished = true;
+      } else {
+        thePlayer.thePackage.setLoaded(false);
+        thePlayer.thePackage.setErrorMessage(tempData.packageError);
+      }
+    });
+  }
+  beginFetchSegmentData(strSegmentID) {
+    //console.log("Beginning Fetch of segment data.");
+    this.showMediaLoading();
+    this.pushSelectedSegmentState(strSegmentID);
+    this.bSegmentDataLoadingStarted = true;
+    $.get(gc_BranchPath + "/--ajax-get-segment-info/" + strSegmentID, function(
+      data
+    ) {
+      //console.log("Finished loading segment info;");
+      let tempData = jQuery.parseJSON(data);
+      //console.log(tempData);
+      thePlayer.theSegment.setEntryID(tempData.segmentEntryID);
+      thePlayer.theSegment.setSegmentType("entry");
+      thePlayer.theSegment.setVimeoCode(tempData.segmentVimeoCode);
+      thePlayer.theSegment.setYouTubeCode(tempData.segmentYouTubeCode);
+      thePlayer.theSegment.setMP3Filename(tempData.segmentMP3Filename);
+      thePlayer.theSegment.setSoundSliceCode(tempData.segmentSoundSliceCode);
+      thePlayer.theSegment.setPDFFilename(tempData.segmentPDFFilename);
+      thePlayer.theSegment.setMediaURL(tempData.segmentURL);
+      thePlayer.theSegment.setGPXFilename(tempData.segmentGPXFilename);
+      thePlayer.theSegment.setTitle(tempData.segmentTitle);
+      thePlayer.theSegment.setDisplayName(tempData.segmentDisplayName);
+      thePlayer.theSegment.setFullDisplayName(tempData.segmentFullDisplayName);
+      thePlayer.theSegment.setChaptersArray(tempData.chaptersArray);
+      thePlayer.theSegment.setLoopsArray(tempData.loopsArray);
+      thePlayer.theSegment.setMediaStartTime(tempData.mediaStartTime);
+      thePlayer.theSegment.setHTMLContent(tempData.segmentHTML);
+      thePlayer.theSegment.setDescription(tempData.segmentShortDescription);
+      thePlayer.theSegment.setUserLoopsEntryIDsFromString(
+        tempData.userLoopEntryIDs
+      );
+      thePlayer.theSegment.setIsLoaded(true);
+      thePlayer.theSegment.inferMediaType();
+      thePlayer.bSegmentDataLoadingFinished = true;
+    });
+  }
+  beginFetchYouTubeData(strYTCode) {
+    //segment info must be reset prior to calling this function.
+    this.showMediaLoading();
+    $.get(gc_BranchPath + "/--ajax-get-yt-info/" + strYTCode, function(data) {
+      //console.log("Finished loading YT Info:");
+      let tempData = jQuery.parseJSON(data);
+      //console.log(tempData);
+      thePlayer.theSegment.setYTMatchingEntryID(tempData.matchingYTEntryID);
+      thePlayer.theSegment.setSegmentType("other");
+      thePlayer.theSegment.setPrimaryMediaType("youtube");
+      thePlayer.theSegment.setYouTubeCode(tempData.segmentYouTubeCode);
+      thePlayer.theSegment.setFullDisplayName(tempData.segmentFullDisplayName);
+      thePlayer.theSegment.setDescription(tempData.segmentShortDescription);
+      thePlayer.theSegment.setIsLoaded(true);
+      thePlayer.bSegmentDataLoadingFinished = true;
+    });
+  }
+  beginFetchFacebookData(strFBUser, strFBCode) {
+    //segment info must be reset prior to calling this function.
+    this.showMediaLoading();
+    this.theSegment.setFacebookUser(strFBUser);
+    this.theSegment.setFacebookVideoCode(strFBCode);
+    this.theSegment.setSegmentType("other");
+    this.theSegment.setPrimaryMediaType("facebook");
+    this.theSegment.setIsLoaded(true);
+    thePlayer.theSegment.inferMediaType();
+    this.bSegmentDataLoadingFinished = true;
+  }
+  beginFetchInstagramData(strInstgramID) {
+    //segment info must be reset prior to calling this function.
+    this.showMediaLoading();
+    this.theSegment.setInstagramID(strInstgramID);
+    this.theSegment.setSegmentType("other");
+    this.theSegment.setPrimaryMediaType("instagram");
+    this.theSegment.setIsLoaded(true);
+    thePlayer.theSegment.inferMediaType();
+    this.bSegmentDataLoadingFinished = true;
+  }
+  /*****************************************
+   *************   WAITING FUNCTIONS  ************
+   *****************************************/
+  waitForPackageData() {
+    if (this.bPackageDataLoadingFinished) {
+      if (!this.thePackage.getErrorMessage()) {
+        this.processOnlyNewPackageData();
+      } else {
+        this.bailOut();
+      }
+    } else {
+      setTimeout(function() {
+        thePlayer.waitForPackageData();
+      }, 250);
+    }
+  }
+  waitForSegmentData() {
+    if (this.bSegmentDataLoadingFinished) {
+      this.processOnlyNewSegmentData();
+    } else {
+      setTimeout(function() {
+        thePlayer.waitForSegmentData();
+      }, 250);
+    }
+  }
+  waitForPackageAndSegmentData() {
+    if (this.bPackageDataLoadingFinished && this.bSegmentDataLoadingFinished) {
+      if (!this.thePackage.getErrorMessage()) {
+        this.processBothNewPackageAndSegmentData();
+      } else {
+        this.bailOut();
+      }
+    } else {
+      setTimeout(function() {
+        thePlayer.waitForPackageAndSegmentData();
+      }, 250);
+    }
+  }
+  waitForYouTubeData() {
+    if (this.bSegmentDataLoadingFinished) {
+      //console.log("YouTube Data Loaded.");
+      this.processNewYouTubeData();
+    } else {
+      setTimeout(function() {
+        thePlayer.waitForYouTubeData();
+      }, 250);
+    }
+  }
+  waitForFacebookData() {
+    if (this.bSegmentDataLoadingFinished) {
+      this.processNewFacebookData();
+    } else {
+      setTimeout(function() {
+        thePlayer.waitForFacebookData();
+      }, 250);
+    }
+  }
+  waitForInstagramData() {
+    if (this.bSegmentDataLoadingFinished) {
+      this.processNewInstagramData();
+    } else {
+      setTimeout(function() {
+        thePlayer.waitForInstagramData();
+      }, 250);
+    }
+  }
+  cleanUpLoading() {
+    this.pushHomeButtonState();
+    this.pushFullscreenButtonState();
+    if (this.isIOS()) {
+      $("body").toggleClass("is-ios", true);
+    }
+    if (this.isSafari()) {
+      $("body").toggleClass("is-safari", true);
+    }
+    if (this.isChrome()) {
+      $("body").toggleClass("is-chrome", true);
+    }
+    this.b_LoadingIsFinished = true;
+    if (this.b_UpdateURL) {
+      this.updateURL();
+    }
+  }
+  /*****************************************/
+  /******  New Data Processing Functions ***/
+  /*****************************************/
+  processOnlyNewPackageData() {
+    // This function should only be called when ONLY a new package is being
+    // loaded.
+    //First, if this package has a default segment, begin opening that so the media
+    //can load while we're doing the rest.
+    if (this.thePackage.getDefaultSegmentEntryID() !== "") {
+      this.openSegmentWithinCurrentPackage(
+        this.thePackage.getDefaultSegmentEntryID(),
+        this.b_UpdateURL
+      );
+    } else {
+      //only load package overview if we're not also loading the default segment.
+      this.pushInfoPaneData();
+      this.pushPackageOverviewData();
+    }
+    this.pushPackageSectionList();
+    this.pushPackageTitle();
+    this.pushInfoPaneData();
+    //this function is called after package data has been loaded
+    this.commentsManager.setNewPackageID(this.thePackage.getEntryID());
+    this.favoritesManager.setNewPackageID(this.thePackage.getEntryID());
+    this.favoritesManager.reloadFavorites();
+    this.commentsManager.reloadComments();
+    this.openSectionsSidebar();
+    this.openFirstSection();
+    this.cleanUpLoading();
+    this.enableSidebarTabs();
+    this.updateLocalHistory();
+    this.updateURL();
+    this.reattachKeyboardEvents();
+  }
+  processOnlyNewSegmentData() {
+    //console.log("Processing New Segment Data");
+    this.processOnlyNewSegmentMedia();
+    this.pushSelectedSegmentState();
+    this.pushSegmentChapters();
+    this.extractSegmentLoops();
+    this.pushSegmentTitle();
+    this.pushSegmentDownloadsMenu();
+    this.pushFullscreenButtonState();
+    this.pushInfoPaneData();
+    this.enableSidebarTabs();
+    this.mobileSidebarCheck();
+    this.updateLocalHistory();
+    this.cleanUpLoading();
+    this.commentsManager.setNewSegmentID(this.theSegment.getEntryID());
+    this.commentsManager.reloadComments();
+    if (this.theSegment.allowUserData()) {
+      this.userDataManager.setNewSegmentID(this.theSegment.getEntryID());
+      this.userDataManager.loadUserDataForm();
+    }
+  }
+  processBothNewPackageAndSegmentData() {
+    // This function should only be called when processing BOTH
+    // a new Package AND a new embedded Segment at the same time.
+    //First, start loading the media so that can process while we do the rest.
+    this.processOnlyNewSegmentMedia();
+    //Update interface elements related to Package.
+    this.pushPackageSectionList();
+    this.pushPackageTitle();
+    this.pushInfoPaneData();
+    //Deal with comments.
+    this.commentsManager.setNewPackageID(this.thePackage.getEntryID());
+    this.commentsManager.setNewSegmentID(this.theSegment.getEntryID());
+    this.commentsManager.reloadComments();
+    //this function is called after package data has been loaded
+    this.favoritesManager.setNewPackageID(this.thePackage.getEntryID());
+    this.favoritesManager.reloadFavorites();
+    //Now open the Sidebar
+    this.openSectionsSidebar();
+    this.openFirstSection();
+    //Now do the segment stuff that doesn't overlap with package stuff.
+    this.pushSelectedSegmentState();
+    this.pushSegmentChapters();
+    this.extractSegmentLoops();
+    this.pushSegmentTitle();
+    this.pushSegmentDownloadsMenu();
+    this.pushFullscreenButtonState();
+    this.updateLocalHistory();
+    if (this.theSegment.allowUserData()) {
+      this.userDataManager.setNewSegmentID(this.theSegment.getEntryID());
+      this.userDataManager.loadUserDataForm();
+    }
+    this.cleanUpLoading();
+    this.enableSidebarTabs();
+  }
+  processNewYouTubeData() {
+    //console.log("Processing new YouTube Data");
+    if (this.theSegment.getYTMatchingEntryID() !== "") {
+      var matchingSegmentID = this.theSegment.getYTMatchingEntryID();
+      //We just need to open the matching segment as a package, because
+      // in the package loading code, the segment will set itself as
+      // the default segment, and the package loading code will trigger
+      // a load when it finds that data.
+      //console.log("Matching Entry found for new YouTube Video");
+      this.openPackage(matchingSegmentID, true);
+    } else {
+      this.processOnlyNewSegmentData();
+      this.favoritesManager.reloadFavorites();
+      this.loadSaveYouTubeInterface();
+      this.enableSidebarTabs();
+    }
+  }
+  processNewFacebookData() {
+    //console.log("Processing new Facebook Data");
+    this.processOnlyNewSegmentData();
+    this.enableSidebarTabs();
+  }
+  processNewInstagramData() {
+    //console.log("Processing new Facebook Data");
+    this.processOnlyNewSegmentData();
+    this.enableSidebarTabs();
+  }
+  processOnlyNewSegmentMedia() {
+    this.resetPackageOverview();
+    let mediaType = this.theSegment.getPrimaryMediaType();
+    //console.log("Processing new Segment Media:" + mediaType);
+    switch (mediaType) {
+      case "vimeo":
+        this.mediaLoadVimeo(this.theSegment.getVimeoCode());
+        break;
+      case "youtube":
+        this.mediaLoadYouTube(this.theSegment.getYouTubeCode());
+        break;
+      case "mp3":
+        this.mediaLoadMP3(this.theSegment.getMP3Filename());
+        break;
+      case "soundslice":
+        this.mediaLoadSoundSlice(this.theSegment.getSoundSliceCode());
+        break;
+      case "pdf":
+        this.mediaLoadPDFViewer(this.theSegment.getPDFFilename());
+        break;
+      case "url":
+        this.mediaLoadURL(this.theSegment.getMediaURL());
+        break;
+      case "facebook":
+        this.mediaLoadFacebook(
+          this.theSegment.getFacebookUser(),
+          this.theSegment.getFacebookVideoCode()
+        );
+        break;
+      case "instagram":
+        this.mediaLoadInstagram(this.theSegment.getInstagramID());
+        break;
+      case "html":
+        this.mediaLoadHTML();
+        break;
+    }
+  }
+  extractSegmentLoops() {
+    //loops manager is assumed to be reset by this point.
+    this.loopsManager.createNewCollection("loopList", "system", false);
+    this.loopsManager.addListToCollectionFromArray(
+      this.theSegment.getLoopsArray(),
+      "system"
+    );
+  }
+  /******************************/
+  /* Interface Update Functions */
+  /*****************************
+   */
+  pushHomeButtonState() {
+    if (this.thePackage.isLoaded() || this.theSegment.isLoaded()) {
+      $("#resetPlayerButton").toggle(true);
+    } else {
+      $("#resetPlayerButton").toggle(false);
+    }
+  }
+  pushPackageSectionList() {
+    //console.log('Updating sections');
+    this.spinner("#sectionList");
+    var sections = this.thePackage.getSections();
+    var segmentListString = "";
+    var bUseSections = sections.length > 1 ? true : false;
+    if (bUseSections) {
+      segmentListString +=
+        '<ul class="accordion sidebar-accordion" id="segmentListAccordion" data-accordion data-allow-all-closed="true" data-multi-expand="false">';
+    }
+    for (let i = 0; i < sections.length; i++) {
+      if (bUseSections) {
+        segmentListString += '<li class="accordion-item ';
+        segmentListString += '" data-accordion-item>';
+        segmentListString +=
+          '<a class="accordion-title">' +
+          sections[i].sectionTitle +
+          " <sup>" +
+          sections[i].segments.length +
+          "</sup></a>";
+        segmentListString +=
+          '<div class="accordion-content" id="section-' +
+          i +
+          '" data-tab-content>';
+      }
+      segmentListString += '<ul class="sidebar-list">';
+      for (let j = 0; j < sections[i].segments.length; j++) {
+        var theSegment = sections[i].segments[j];
+        segmentListString += '<li class="sidebar-list-item segment ';
+        segmentListString += this.getSegmentClass(theSegment);
+        segmentListString +=
+          '" id="segment-item-' + theSegment.segmentID + '">';
+        segmentListString +=
+          "<a onClick=\"thePlayer.openSegmentWithinCurrentPackage('" +
+          theSegment.segmentID +
+          "', true); return false;\"";
+        segmentListString += 'title="' + theSegment.segmentFullTitle + '">';
+        segmentListString += theSegment.segmentTitle + "</a></li>";
+      }
+      segmentListString += "</ul>";
+      if (bUseSections) {
+        segmentListString += "</div></li>";
+      }
+    }
+    if (bUseSections) {
+      segmentListString += "</ul>";
+    }
+    $("#sectionList").html(segmentListString);
+    if (bUseSections) {
+      //console.log('Setting up Accordion for the first time');
+      $("#segmentListAccordion").foundation();
+    }
+    if ($("#sectionList").children().length === 0) {
+      $("#sectionListEmpty").text("No segments to show.");
+      $("#sectionListEmpty").toggle(true);
+    } else {
+      $("#sectionListEmpty").toggle(false);
+    }
+  }
+  pushPackageTitle(strTitleOverride) {
+    if (typeof strTitleOverride != "undefined") {
+      $(".packageTitle").html(strTitleOverride);
+    } else if (this.thePackage.isLoaded()) {
+      $(".packageTitle").html(this.thePackage.getTitle());
+      $("#proPlayerWrapper").toggleClass("has-info", true);
+    } else {
+      $(".packageTitle").html("TXBA Pro Player");
+      $("#proPlayerWrapper").toggleClass("has-info", false);
+    }
+  }
+  pushPackageOverviewData() {
+    $("#packageTitle").html("<h1>" + this.thePackage.getTitle() + "</h1>");
+    $("#packageImage").html(
+      "<img class='bordered' src='" + this.thePackage.getImageURL() + "'/>"
+    );
+    $("#packageDescription").html(this.thePackage.getDescription());
+    $("#packageOverview").html(this.thePackage.getOverview());
+    $("#packageOverviewWrapper").appendTo("#mediaWrapper");
+    $("#packageOverviewWrapper").toggle(true);
+  }
+  pushSegmentTitle(strTitle) {
+    if (typeof strTitle != "undefined") {
+      $(".segmentTitle").html(strTitle);
+    } else {
+      $(".segmentTitle").html(this.theSegment.getFullDisplayName());
+      $("#proPlayerWrapper").toggleClass("has-info", true);
+    }
+  }
+  pushInfoPaneData() {
+    $("#proPlayerWrapper").toggleClass("has-info", true);
+    $("#info-package-name").html(this.thePackage.getTitle());
+    $("#info-segment-name").html(this.theSegment.getFullDisplayName());
+    $("#info-package-tuning").html(
+      "<strong>Tuning</strong>: " + this.thePackage.getTuning()
+    );
+    if (!this.theSegment.isLoaded()) {
+      $("#info-package-description").html(this.thePackage.getDescription());
+      $("#info-segment-overview").html(this.thePackage.getOverview());
+    } else {
+      $("#info-package-description").html("");
+      $("#info-segment-overview").html(this.theSegment.getDescription());
+    }
+  }
+  pushSelectedSegmentState(nForceSegment) {
+    this.resetSelectedSegment();
+    if (!nForceSegment && !this.theSegment.isLoaded()) {
+      return;
+    }
+    var newSegmentElementID = "#segment-item-";
+    if (nForceSegment) {
+      newSegmentElementID += nForceSegment;
+    } else if (this.theSegment.isLoaded()) {
+      newSegmentElementID += this.theSegment.getEntryID();
+    }
+    //console.log("Setting active segment ID: " + newSegmentElementID);
+    $(newSegmentElementID).toggleClass("active", true);
+    var parentElement = $(newSegmentElementID).closest(".accordion-content");
+    var parentLink = $(newSegmentElementID).closest(".accordion-item");
+    if (parentElement.length !== 0 && !$(parentLink).hasClass("is-active")) {
+      $("#segmentListAccordion").foundation("toggle", parentElement);
+    }
+  }
+  pushSegmentDownloadsMenu() {
+    $("#downloads-list").empty();
+    if (this.theSegment.isLoaded() && this.theSegment.getMP3Filename() !== "") {
+      $("#downloadsToggle").toggle(true);
+      $("#downloadsToggle").toggle(true);
+      var newItem = "<li class='sidebar-list-item segment download'><a href='";
+      newItem +=
+        "https://cdn.texasbluesalley.com/audio/" +
+        this.theSegment.getMP3Filename();
+      newItem +=
+        "' download='" +
+        this.theSegment.getMP3Filename() +
+        "'>Download MP3</a></li>";
+      $("#downloads-list").append(newItem);
+    } else {
+      $("#downloadsToggle").toggle(false);
+    }
+  }
+  pushFullscreenButtonState() {
+    if (
+      this.theSegment.isLoaded() &&
+      (this.theSegment.getVimeoCode() !== "" ||
+        this.theSegment.getYouTubeCode() !== "" ||
+        this.theSegment.getMP3Filename() !== "" ||
+        this.theSegment.getSoundSliceCode() !== "")
+    ) {
+      $("#fullscreenButton").toggle(true);
+    } else {
+      $("#fullscreenButton").toggle(false);
+    }
+  }
+  pushSegmentChapters() {
+    if (!this.theSegment.isLoaded()) {
+      $("#chapterListEmpty").text("No segment loaded.");
+      $("#chapterListEmpty").toggle(true);
+    } else if (this.theSegment.getChaptersArray().length === 0) {
+      $("#chapterListEmpty").text(
+        "This segment does not have any chapter markers."
+      );
+      $("#chapterListEmpty").toggle(true);
+    } else {
+      $("#chapterListEmpty").toggle(false);
+      //this function assumes the chapter list has already been reset
+      var chapters = this.theSegment.getChaptersArray();
+      for (let i = 0; i < chapters.length; i++) {
+        var chapterItem =
+          '<li class="sidebar-list-item chapter" id="chapterItem-' + i + '">';
+        chapterItem +=
+          '<a onClick="thePlayer.chapterSelected(this,' + i + ')">';
+        chapterItem += chapters[i][0];
+        chapterItem += "</a></li>";
+        $("#chapterList").append(chapterItem);
+      }
+    }
+  }
+  getEngineLoop() {
+    if (
+      typeof this.theEngine !== "undefined" &&
+      this.theEngine.getLoopDefined()
+    ) {
+      return new InstantLoop(
+        "",
+        this.theEngine.getLoopStart(),
+        this.theEngine.getLoopEnd()
+      );
+    } else {
+      return null;
+    }
+  }
+  /*****************************************
+   ********  Media Loading Functions	******
+   *****************************************/
+  mediaLoadDefaultPage() {
+    $("#mediaWrapper").load(gc_BranchPath + "/--ajax-load-default-page");
+  }
+  mediaLoadVimeo(nVimeoID) {
+    $("#mediaWrapper").load(
+      gc_BranchPath + "/--ajax-load-media/vimeo/" + nVimeoID,
+      function() {
+        thePlayer.reattachKeyboardEvents();
+      }
+    );
+  }
+  mediaLoadYouTube(strYouTubeCode) {
+    this.showMediaLoading();
+    $("#mediaWrapper").load(
+      gc_BranchPath + "/--ajax-load-media/youtube/" + strYouTubeCode,
+      function() {
+        thePlayer.reattachKeyboardEvents();
+      }
+    );
+  }
+  mediaLoadFacebook(strFacebookUser, strFacebookCode) {
+    //console.log("About to load FB video for user/id: " + strFacebookUser + "," + strFacebookCode);
+    this.showMediaLoading();
+    $("#mediaWrapper").load(
+      gc_BranchPath +
+        "/--ajax-load-media/facebook/" +
+        strFacebookUser +
+        "/" +
+        strFacebookCode,
+      function() {
+        thePlayer.reattachKeyboardEvents();
+      }
+    );
+  }
+  mediaLoadInstagram(strInstagramID) {
+    //console.log("About to load FB video for user/id: " + strFacebookUser + "," + strFacebookCode);
+    this.showMediaLoading();
+    $("#mediaWrapper").load(
+      gc_BranchPath + "/--ajax-load-media/instagram/" + strInstagramID,
+      function() {
+        thePlayer.reattachKeyboardEvents();
+      }
+    );
+  }
+  mediaLoadMP3(strMP3Filename) {
+    $("#mediaWrapper").load(
+      gc_BranchPath + "/--ajax-load-media/audio/" + strMP3Filename,
+      function() {
+        thePlayer.reattachKeyboardEvents();
+      }
+    );
+  }
+  mediaLoadSoundSlice(strSoundSliceCode) {
+    $("#mediaWrapper").load(
+      gc_BranchPath + "/--ajax-load-soundslice/" + strSoundSliceCode
+    );
+  }
+  mediaLoadPDFViewer(strPDFFilename) {
+    //console.log('Trying to load ' + strPDFFilename );
+    $("#mediaWrapper").load(
+      gc_BranchPath + "/--ajax-load-pdf/" + strPDFFilename
+    );
+  }
+  mediaLoadURL(theURL) {
+    var contentString = "<iframe id='content-frame' src='";
+    contentString += decodeURIComponent(theURL) + "' frameBorder='0'></iframe>";
+    $("#mediaWrapper").html(contentString);
+  }
+  mediaLoadHTML() {
+    var contentString = "<div class='media-content-wrapper'>";
+    contentString += this.theSegment.getHTMLContent();
+    contentString += "</div>";
+    $("#mediaWrapper").html(contentString);
+  }
+  triggerSaveUserData() {
+    this.loopsManager.savingUserData();
+    this.userDataManager.saveUserData();
+  }
+  /**********************************/
+  /*** Chapter And Loop Related Functions ***/
+  /**********************************/
+  chapterSelected(sender, nChapterIndex) {
+    var theChapter = this.theSegment.getChaptersArray()[nChapterIndex];
+    //console.log('Chapter Selected: ' + nChapterIndex);
+    //console.log( this.theSegment.chapters[ nChapterIndex] );
+    //console.log( "Calling engine gotoChapter" );
+    this.loopsManager.clearAllActiveLoops();
+    var chapterParentItemID = "#chapterItem-" + nChapterIndex;
+    $(chapterParentItemID).toggleClass("active", true);
+    this.theEngine.goToChapter(theChapter[1]);
+    window.setTimeout(function() {
+      $(".sidebar-list-item.chapter.active").toggleClass("active", false);
+    }, 200);
+  }
+  engineLoopHasChanged() {
+    this.loopsManager.pushUserLoopInterfaceState();
+  }
+  /*****************************************
+   *************	Tool Window Functions ************
+   *****************************************/
+  toolsShowBrowser() {
+    this.closeInfoPane();
+    //console.log('Opening Browser');
+    if (typeof this.theEngine !== "undefined") {
+      this.theEngine.stopPlayback();
+    }
+    if (thePlayer.browserTool.b_BrowserLoaded === true) {
+      $("#browser-wrapper").appendTo("#toolWindowInnerWrapper");
+      $("#browser-wrapper").toggle(true);
+      this.browserTool.reloadResultsFavoritesForms();
+    } else {
+      $("#toolWindowInnerWrapper").load(
+        gc_BranchPath + "/--ajax-browser",
+        function() {
+          thePlayer.browserTool.b_BrowserLoaded = true;
+          thePlayer.browserTool.browserReset();
+        }
+      );
+    }
+    $("#toolWindowTitle").text("Browser");
+    $("#toolWindowOuterWrapper").data("tool", "browser");
+    $("#toolWindowOuterWrapper").toggle(true);
+  }
+  toolsShowTuner() {
+    this.closeInfoPane();
+    if (typeof this.theEngine !== "undefined") {
+      this.theEngine.stopPlayback();
+    }
+    var contentString = "<iframe src='/dev/tuner'></iframe>";
+    $("#toolWindowInnerWrapper").html(contentString);
+    $("#toolWindowTitle").text("Tuner");
+    $("#toolWindowOuterWrapper").data("tool", "tuner");
+    $("#toolWindowOuterWrapper").toggle(true);
+  }
+  toolsShowSpiderTool() {
+    this.closeInfoPane();
+    if (typeof this.theEngine !== "undefined") {
+      this.theEngine.stopPlayback();
+    }
+    var contentString = "<iframe src='/dev/spider'></iframe>";
+    $("#toolWindowInnerWrapper").html(contentString);
+    $("#toolWindowTitle").text("Spider Drills Tool");
+    $("#toolWindowOuterWrapper").data("tool", "spider");
+    $("#toolWindowOuterWrapper").toggle(true);
+  }
+  toolsShowFretboardTool() {
+    this.closeInfoPane();
+    if (typeof this.theEngine !== "undefined") {
+      this.theEngine.stopPlayback();
+    }
+    var contentString = "<iframe src='/dev/fretboard'></iframe>";
+    $("#toolWindowInnerWrapper").html(contentString);
+    $("#toolWindowTitle").text("Fretboard Tool");
+    $("#toolWindowOuterWrapper").data("tool", "fretboard");
+    $("#toolWindowOuterWrapper").toggle(true);
+  }
+  toolsCloseToolWindow() {
+    $("#toolWindowOuterWrapper").toggle(false);
+    if ($("#toolWindowOuterWrapper").data("tool") == "browser") {
+      $("#browser-wrapper").toggle(false);
+      $("#browser-wrapper").appendTo("body");
+      this.favoritesManager.fullRefresh();
+    }
+    $("#toolWindowInnerWrapper").empty();
+    $("#toolWindowTitle").text("");
+  }
+  /**********************************/
+  /*** From here on down, it's a mishmosh of functions ***/
+  /**********************************/
+  getSegmentClass(theSegment) {
+    if (
+      theSegment.segmentVimeoCode !== "" ||
+      theSegment.segmentYouTubeCode !== ""
+    ) {
+      return "video";
+    } else if (theSegment.segmentMP3Filename !== "") {
+      return "audio";
+    } else if (theSegment.segmentSoundSliceCode !== "") {
+      return "tablature";
+    } else if (theSegment.segmentPDFCode !== "") {
+      return "pdf";
+    } else if (theSegment.segmentURL !== "") {
+      return "url";
+    } else if (theSegment.segmentGPXFilename !== "") {
+      return "gpx";
+    } else {
+      return "html";
+    }
+  }
+  /*****************************************
+   ********* Window Related Stuff	   ************
+   *****************************************/
+  toggleSidebar() {
+    clearTimeout(this.n_SidebarToggleTimerID);
+    $("#proPlayerWrapper").toggleClass("sidebar-closed");
+    if ($("#proPlayerWrapper").hasClass("sidebar-closed")) {
+      //in all cases, if (after toggling) the sidebar is closed
+      //we turn off the keep sidebar open flag so that the side hover
+      //area will work to open it again.
+      this.b_KeepSidebarOpen = false;
+      $("#proPlayerWrapper").toggleClass("sidebar-sticky", false);
+    }
+  }
+  toggleSidebarButtonCallback() {
+    if ($("#proPlayerWrapper").hasClass("sidebar-closed")) {
+      //BEFORE toggling, if the sidebar is close, we enable the
+      //keep open flag so that hovinger will be disabled. We only
+      //do this when the top button is clicked to open the sidebar.
+      this.b_KeepSidebarOpen = true;
+      $("#proPlayerWrapper").toggleClass("sidebar-sticky", true);
+    }
+    this.toggleSidebar();
+  }
+  openSidebar() {
+    $("#proPlayerWrapper").toggleClass("sidebar-closed", false);
+  }
+  closeSidebar() {
+    $("#proPlayerWrapper").toggleClass("sidebar-closed", true);
+  }
+  enableSidebarTabs() {
+    //console.log("Enabling sidebar tabs");
+    $("#sectionsTab").toggleClass("enabled", this.thePackage.isLoaded());
+    $("#chaptersTab").toggleClass("enabled", this.theSegment.allowChapters());
+    $("#loopsTab").toggleClass("enabled", this.theSegment.allowLoops());
+    $("#commentsTab").toggleClass("enabled", this.thePackage.isLoaded());
+    $("#importTab").toggleClass("enabled", this.theSegment.allowImport());
+    $("#sidebarPanelTabs li.enabled:first a").trigger("click");
+  }
+  toggleKeyboardShortcuts() {
+    $("#keyboardShortcuts").toggle();
+    $("#keyboardShortcutsButton").toggleClass("active");
+  }
+  openFirstSection() {
+    var sectionAccordionItems = $("#segmentListAccordion .accordion-content");
+    if (
+      typeof sectionAccordionItems !== "undefined" &&
+      sectionAccordionItems.length > 0
+    ) {
+      $("#segmentListAccordion").foundation(
+        "toggle",
+        $(sectionAccordionItems[0])
+      );
+    }
+  }
+  openSectionsSidebar() {
+    this.openSidebar();
+    $("#sidebarPanelTabs").foundation("selectTab", "segmentsPanel");
+  }
+  openChaptersSidebar() {
+    this.openSidebar();
+    $("#sidebarPanelTabs").foundation("selectTab", "chaptersPanel");
+  }
+  openLoopsSidebar() {
+    this.openSidebar();
+    $("#sidebarPanelTabs").foundation("selectTab", "loopsPanel");
+  }
+  showLoopsSidebarList(nListIndex) {
+    this.openLoopsSidebar();
+    let listTab = $("#loopListsTabsContent").children(".tabs-panel")[
+      nListIndex
+    ];
+    let tabID = $(listTab).attr("id");
+    $("#loopsPanelTabs").foundation("selectTab", tabID);
+  }
+  openFavoritesSidebar() {
+    this.openSidebar();
+    $("#sidebarPanelTabs").foundation("selectTab", "favoritesPanel");
+  }
+  openCommentsSidebar() {
+    this.openSidebar();
+    $("#sidebarPanelTabs").foundation("selectTab", "commentsPanel");
+  }
+  mobileSidebarCheck() {
+    if (!Foundation.MediaQuery.atLeast("large")) {
+      this.toggleSidebar();
+    }
+  }
+  updateURL() {
+    let theURL = "/watch/";
+    let theState = {};
+    let theTitle = "";
+    let currentState = history.state;
+    let bPushNewState = true;
+    //First, check if we're pushing the same state that we already have loaded.
+    //console.log("Checking: " + JSON.stringify(currentState));
+    if (currentState !== null) {
+      if (
+        currentState.type == "package" &&
+        currentState.segment1 == this.thePackage.getEntryID() &&
+        currentState.segment2 == this.theSegment.getEntryID()
+      ) {
+        //we have a match, get out of here.
+        bPushNewState = false;
+      } else if (
+        currentState.type == "youtube" &&
+        this.theSegment.getSegmentType() == "other" &&
+        currentState.segment2 == this.theSegment.getYouTubeCode()
+      ) {
+        //It's a matching YouTube video
+        bPushNewState = false;
+      } else if (
+        currentState.type == "facebook" &&
+        this.theSegment.getSegmentType() == "other" &&
+        currentState.segment2 == this.theSegment.getFacebookUser() &&
+        currentState.segment3 == this.theSegment.getFacebookVideoCode()
+      ) {
+        //Matching facebook video.
+        bPushNewState = false;
+      }
+    }
+    if (bPushNewState) {
+      if (this.thePackage.isLoaded()) {
+        theState.type = "package";
+        theState.segment1 = this.thePackage.getEntryID();
+        theTitle += this.thePackage.getTitle();
+        theURL += this.thePackage.getEntryID();
+        if (this.theSegment.isLoaded()) {
+          theState.segment2 = this.theSegment.getEntryID();
+          theURL += "/" + this.theSegment.getEntryID();
+          theTitle += ":" + this.theSegment.getTitle();
+        } else {
+          theState.segment2 = "";
+        }
+        theState.segment3 = "";
+      } else if (
+        this.theSegment.isLoaded() &&
+        this.theSegment.getSegmentType() == "other"
+      ) {
+        if (this.theSegment.getPrimaryMediaType() == "youtube") {
+          theState.type = "youtube";
+          theState.segment1 = "youtube";
+          theState.segment2 = this.theSegment.getYouTubeCode();
+          theState.segment3 = "";
+          theURL += "youtube/" + this.theSegment.getYouTubeCode();
+          theTitle = "YouTube: " + this.theSegment.getDisplayName();
+        } else if (this.theSegment.getPrimaryMediaType() == "facebook") {
+          theState.type = "facebook";
+          theState.segment1 = "facebook";
+          theState.segment2 = this.theSegment.getFacebookUser();
+          theState.segment3 = this.theSegment.getFacebookVideoCode();
+          theTitle = "Facebook Video";
+          theURL +=
+            theState.segment1 +
+            "/" +
+            theState.segment2 +
+            "/" +
+            theState.segment3;
+        }
+      } else {
+        theState.segment1 = "";
+        theState.segment2 = "";
+        theState.segment3 = "";
+        theState.type = "empty";
+        theTitle = "TXBA Pro Player";
+      }
+      //console.log("Pushing: " + JSON.stringify(theState));
+      //console.log("Title is: " + theTitle);
+      history.pushState(theState, theTitle, theURL);
+    }
+  }
+
+  setupMobileiOS() {
+    if (isIOS()) {
+      var viewportmeta = document.querySelector('meta[name="viewport"]');
+      if (viewportmeta) {
+        viewportmeta.content =
+          "width=device-width, minimum-scale=1.0, maximum-scale=1.0";
+        document.body.addEventListener(
+          "gesturestart",
+          function() {
+            viewportmeta.content =
+              "width=device-width, minimum-scale=.6, maximum-scale=1.6";
+          },
+          false
+        );
+      }
+    }
+    if (isIPhone()) {
+      $(".not-on-iPhones").toggle(false);
+    }
+  }
+  isIOS() {
+    return (
+      this.theMobileDetect.is("iphone") ||
+      this.theMobileDetect.is("ipad") ||
+      this.theMobileDetect.is("ipod")
+    );
+  }
+  isIPhone() {
+    return this.theMobileDetect.is("iphone") || this.theMobileDetect.is("ipod");
+  }
+  isIE() {
+    strUserAgent = window.navigator.userAgent;
+    return (
+      strUserAgent.search("Trident") > -1 || strUserAgent.search("Edge") > -1
+    );
+  }
+  isSafari() {
+    strUserAgent = window.navigator.userAgent;
+    return (
+      strUserAgent.search("Safari") > -1 && strUserAgent.search("Chrome") == -1
+    );
+  }
+  isChrome() {
+    strUserAgent = window.navigator.userAgent;
+    return strUserAgent.search("Chrome") > -1;
+  }
+  isWindows10() {
+    strUserAgent = window.navigator.userAgent;
+    return strUserAgent.search("Windows NT 10") > -1;
+  }
+  getChannelTypeString(strChannelShortName) {
+    var strType = "Item";
+    switch (strChannelShortName) {
+      case "pro_player_packages":
+        strType = "Course";
+        break;
+      case "free_lesson_friday":
+        strType = "Lesson";
+        break;
+      case "tone_tuesday":
+      case "performances":
+      case "youtube_video":
+        strType = "Video";
+        break;
+      case "backing_tracks":
+        strType = "Track";
+        break;
+    }
+    return strType;
+  }
+  fullscreenToggle() {
+    if (typeof this.theEngine !== "undefined") {
+      this.theEngine.MediaPlayer.enterFullScreen();
+    } else if (this.theSegment.getPrimaryMediaType() === "soundslice") {
+      $("iframe#ssembed")[0].requestFullscreen();
+    }
+  }
+  spinner(elementID) {
+    //console.log('Activating spinner on ' + elementID);
+    var strSpinner =
+      "<div id='spinner'><i class='fa fa-spinner fa-spin fa-2x'></i></div>";
+    $(elementID).html(strSpinner);
+  }
+  closeBrowserRequested() {
+    this.toolsCloseToolWindow();
+    this.favoritesManager.fullRefresh();
+  }
+  updateLocalHistory() {
+    if (
+      this.thePackage.isLoaded() &&
+      this.theSegment.isLoaded() &&
+      this.theSegment.getSegmentType() !== "other"
+    ) {
+      //console.log('Updating history');
+      this.historyManager.addHistoryItem(
+        this.thePackage.getEntryID(),
+        this.theSegment.getEntryID(),
+        this.thePackage.getTitle(),
+        this.thePackage.getChannelName(),
+        this.theSegment.getFullDisplayName(),
+        "entry"
+      );
+    }
+  }
+  toggleInfoPane() {
+    if (this.theSegment.isLoaded() || this.thePackage.isLoaded()) {
+      $("#infoPane").slideToggle();
+    }
+  }
+  showInfoPane() {
+    if (this.theSegment.isLoaded() || this.thePackage.isLoaded()) {
+      $("#infoPane").toggle(true);
+    }
+  }
+  closeInfoPane() {
+    $("#infoPane").toggle(false);
+  }
+  showMediaLoading() {
+    this.resetPackageOverview();
+    $("#mediaWrapper").html(this.spinnerDiv);
+  }
+  triggerNextLoop() {
+    let listIndex = this.loopsManager.activateNextLoop();
+    if (listIndex > -1 && this.isSidebarOpen()) {
+      this.showLoopsSidebarList(listIndex);
+    }
+  }
+  triggerPreviousLoop() {
+    let listIndex = this.loopsManager.activatePreviousLoop();
+    if (listIndex > -1 && this.isSidebarOpen()) {
+      this.showLoopsSidebarList(listIndex);
+    }
+  }
+  isSidebarOpen() {
+    return !$("#proPlayerWrapper").hasClass("sidebar-closed");
+  }
+  reattachKeyboardEvents() {
+    //console.log('Reattaching Mouse Events');
+    Mousetrap.bind("s", function() {
+      thePlayer.toggleSidebar();
+    });
+    if (this.thePackage.isLoaded()) {
+      Mousetrap.bind("1", function() {
+        thePlayer.openSectionsSidebar();
+      });
+      Mousetrap.bind("5", function() {
+        thePlayer.openCommentsSidebar();
+      });
+    }
+    if (this.theSegment.allowChapters()) {
+      Mousetrap.bind("2", function() {
+        thePlayer.openChaptersSidebar();
+      });
+    }
+    if (this.theSegment.allowLoops()) {
+      Mousetrap.bind("3", function() {
+        thePlayer.openLoopsSidebar();
+      });
+      Mousetrap.bind("j", function() {
+        thePlayer.triggerNextLoop();
+      });
+      Mousetrap.bind("k", function() {
+        thePlayer.triggerPreviousLoop();
+      });
+    }
+    Mousetrap.bind("4", function() {
+      thePlayer.openFavoritesSidebar();
+    });
+    Mousetrap.bind("?", function() {
+      thePlayer.toggleKeyboardShortcuts();
+    });
+    if (typeof this.theEngine !== "undefined") {
+      Mousetrap.bind("space", function() {
+        thePlayer.theEngine.onButtonTogglePlayback();
+      });
+      Mousetrap.bind("right", function() {
+        thePlayer.theEngine.onButtonPlaybackForward1();
+      });
+      Mousetrap.bind("left", function() {
+        thePlayer.theEngine.onButtonPlaybackRewind1();
+      });
+      Mousetrap.bind("alt+right", function() {
+        thePlayer.theEngine.onButtonPlaybackForward5();
+      });
+      Mousetrap.bind("alt+left", function() {
+        thePlayer.theEngine.onButtonPlaybackRewind5();
+      });
+      Mousetrap.bind("i", function() {
+        thePlayer.theEngine.onButtonRestartLoop();
+      });
+      Mousetrap.bind("shift+right", function() {
+        thePlayer.theEngine.onButtonPlaybackForwardPoint5();
+      });
+      Mousetrap.bind("shift+left", function() {
+        thePlayer.theEngine.onButtonPlaybackRewindPoint5();
+      });
+      Mousetrap.bind("shift+up", function() {
+        thePlayer.theEngine.onButtonPlaybackRestart();
+      });
+      Mousetrap.bind("a", function() {
+        thePlayer.theEngine.onButtonSetLoopStart();
+      });
+      Mousetrap.bind("b", function() {
+        thePlayer.theEngine.onButtonSetLoopEnd();
+      });
+      Mousetrap.bind("l", function() {
+        thePlayer.theEngine.onButtonToggleLooping();
+      });
+      Mousetrap.bind("s+up", function() {
+        thePlayer.theEngine.increasePlaybackRate();
+      });
+      Mousetrap.bind("s+down", function() {
+        thePlayer.theEngine.decreasePlaybackRate();
+      });
+      Mousetrap.bind("z", function() {
+        thePlayer.theEngine.toggleZoomEnabled();
+      });
+      Mousetrap.bind("/", function() {
+        thePlayer.theEngine.toggleVideoControls();
+      });
+      $("#playback-play").keydown(function(event) {
+        event.preventDefault();
+      });
+    }
+    $("body").keydown(function(event) {
+      //console.log('Body received key: ' + event.which);
+      //console.log(event);
+      if (
+        event.which === 32 &&
+        (event.target.nodeName === "BODY" || event.target.nodeName === "A")
+      ) {
+        event.preventDefault();
+      }
+    });
+  }
+  convertOldCookies() {
+    //Resolution
+    var savedResolution = Cookies.get("resolution");
+    if (typeof savedResolution != "undefined") {
+      localStorage.setItem("proPlayerResolution", savedResolution);
+      Cookies.remove("resolution");
+    }
+    var savedVolume = Cookies.get("volume");
+    if (typeof savedVolume != "undefined") {
+      localStorage.setItem("proPlayerVolume", savedVolume);
+      Cookies.remove("volume");
+    }
+    var savedFlip = Cookies.get("playerFlipped");
+    if (typeof savedFlip != "undefined") {
+      localStorage.setItem("proPlayerFlipped", savedFlip);
+      Cookies.remove("playerFlipped");
+    }
+    var savedHistory = Cookies.getJSON("proPlayerHistory");
+    if (typeof savedHistory != "undefined") {
+      localStorage.setItem("proPlayerHistory", JSON.stringify(savedHistory));
+      Cookies.remove("proPlayerHistory");
+    }
+    Cookies.remove("packageResumeItems");
+    Cookies.remove("savedResumeItems");
+    Cookies.remove("recentlyViewed");
+    Cookies.remove("savedPlaybackPositions");
+  }
+  showPlayerError() {
+    //console.log("Player Error");
+  }
+  /*****************************************
+   *************   External Video Code  ************
+   *****************************************/
+  loadSaveYouTubeInterface() {
+    $("#saveYTSegmentFormWrapper").load(
+      gc_BranchPath + "/--ajax-load-save-YT-segment-form",
+      function() {
+        thePlayer.pushLoadYTInfo();
+      }
+    );
+  }
+  pushLoadYTInfo() {
+    $("form#saveYouTubeSegmentForm input[name=title]").val(
+      "YouTube: " + this.theSegment.getYouTubeCode()
+    );
+    $("form#saveYouTubeSegmentForm input[name=cf_media_display_name]").val(
+      this.theSegment.getFullDisplayName()
+    );
+    $("form#saveYouTubeSegmentForm input[name=cf_media_yt_code]").val(
+      this.theSegment.getYouTubeCode()
+    );
+    $("form#saveYouTubeSegmentForm input[name=cf_media_short_description]").val(
+      this.theSegment.getDescription()
+    );
+  }
+  submitSaveYouTubeForm() {
+    let theName = $("form#saveYouTubeSegmentForm input[name=title]").val();
+    let theDisplayName = $(
+      "form#saveYouTubeSegmentForm input[name=cf_media_display_name]"
+    ).val();
+    let theYTCode = $(
+      "form#saveYouTubeSegmentForm input[name=cf_media_yt_code]"
+    ).val();
+    if (theName !== "" && theDisplayName !== "" && theYTCode !== "") {
+      var theForm = $("form#saveYouTubeSegmentForm");
+      formData = $(theForm).serialize();
+      //console.log(formData);
+      $.ajax({
+        type: "POST",
+        url: $(theForm).attr("action"),
+        data: formData
+      }).done(function(response) {
+        //console.log(response);
+        $("#saveYTSegmentFormWrapper").empty();
+        thePlayer.reloadYouTube();
+      });
+    }
+  }
+  reloadYouTube() {
+    this.openExternalYouTubeVideo(this.theSegment.getYouTubeCode(), false);
+  }
+  showYouTubeLinkPrompt() {
+    var url = prompt("Enter the YouTube Video Link");
+    if (typeof url !== "undefined" || url !== "") {
+      var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
+      var match = url.match(regExp);
+      if (match && match[2].length === 11) {
+        this.openExternalYouTubeVideo(match[2], true);
+      } else {
+        alert("The YouTube link provided was not valid.");
+      }
+    }
+  }
+  showFacebookLinkPrompt() {
+    var url = prompt("Enter the Facebook Video Link");
+    if (typeof url !== "undefined" || url !== "") {
+      var regExp = /^(?:(?:https?:)?\/\/)?(?:www\.)?facebook\.com\/([a-zA-Z0-9\.]+)\/videos\/(?:[a-zA-Z0-9\.]+\/)?([0-9]+)/;
+      var match = url.match(regExp);
+      //console.log(match);
+      if (match) {
+        this.openExternalFBVideo(match[1], match[2]);
+      } else {
+        alert("The Facebook Video link provided was not valid.");
+      }
+    }
+  }
+  showInstagramLinkPrompt() {
+    var url = prompt("Enter the Instagram Video Link");
+    if (typeof url !== "undefined" || url !== "") {
+      var regExp = /^(?:https?:\/\/(?:www\.)?)?instagram\.com(?:\/p\/(\w+)\/?)/;
+      var match = url.match(regExp);
+      //console.log(match);
+      if (match) {
+        this.openExternalInstagramVideo(match[1]);
+      } else {
+        alert("The Instagram Video link provided was not valid.");
+      }
+    }
+  }
+  testFetchYouTubeData(strYTCode) {
+    $.get(gc_BranchPath + "/--ajax-get-yt-info/" + strYTCode, function(data) {
+      var theData = jQuery.parseJSON(data);
+      //console.log(theData);
+    });
+  }
+  startSidebarToggleHover() {
+    if (!this.b_KeepSidebarOpen) {
+      this.n_SidebarToggleTimerID = setTimeout(function() {
+        thePlayer.toggleSidebar();
+      }, 250);
+    }
+  }
+  cancelSidebarToggleHover() {
+    clearTimeout(this.n_SidebarToggleTimerID);
+    n_SidebarToggleTimerID = -1;
+  }
+  enginePlaybackToggled(bIsPlaying) {
+    $("#mediaPlayerWrapper").toggleClass("paused", !bIsPlaying);
+    $("#mediaPlayerWrapper").toggleClass("playing", bIsPlaying);
+  }
+}
+
+export class Browser {
   constructor(strWrapperDiv) {
     this.b_BrowserLoaded = false;
     this.strBrowserWrapperID = "#" + strWrapperDiv;
@@ -2106,95 +3687,95 @@ export class Segment {
 
     this.setIsLoaded = function(bLoaded) {
       this.b_IsLoaded = bLoaded;
-      return this
+      return this;
     };
     this.setEntryID = function(strEntryID) {
       this.str_EntryID = strEntryID;
-      return this
+      return this;
     };
     this.setYTMatchingEntryID = function(strYTMatchingEntryID) {
       this.str_YTMatchingEntryID = strYTMatchingEntryID;
-      return this
+      return this;
     };
     this.setSegmentType = function(strType) {
       this.str_SegmentType = strType;
-      return this
+      return this;
     };
     this.setPrimaryMediaType = function(strMediaType) {
       this.str_PrimaryMediaType = strMediaType;
-      return this
+      return this;
     };
     this.setVimeoCode = function(strVimeoCode) {
       this.str_VimeoCode = strVimeoCode;
-      return this
+      return this;
     };
     this.setYouTubeCode = function(strYouTubeCode) {
       this.str_YouTubeCode = strYouTubeCode;
-      return this
+      return this;
     };
     this.setMP3Filename = function(strMP3Filename) {
       this.str_MP3Filename = strMP3Filename;
-      return this
+      return this;
     };
     this.setSoundSliceCode = function(strSoundSliceCode) {
       this.str_SoundSliceCode = strSoundSliceCode;
-      return this
+      return this;
     };
     this.setPDFFilename = function(strPDFFilename) {
       this.str_PDFFilename = strPDFFilename;
-      return this
+      return this;
     };
     this.setMediaURL = function(strURL) {
       this.str_URL = strURL;
-      return this
+      return this;
     };
     this.setGPXFilename = function(strGPXFilename) {
       this.str_GPXFilename = strGPXFilename;
-      return this
+      return this;
     };
     this.setTitle = function(strTitle) {
       this.str_Title = strTitle;
-      return this
+      return this;
     };
     this.setDisplayName = function(strDisplayName) {
       this.str_DisplayName = strDisplayName;
-      return this
+      return this;
     };
     this.setFullDisplayName = function(strFullDisplayName) {
       this.str_FullDisplayName = strFullDisplayName;
-      return this
+      return this;
     };
     this.setChaptersArray = function(aChaptersArray) {
       this.a_ChaptersArray = aChaptersArray;
-      return this
+      return this;
     };
     this.setLoopsArray = function(aLoopsArray) {
       this.a_LoopsArray = aLoopsArray;
-      return this
+      return this;
     };
     this.setFacebookUser = function(strUser) {
       this.str_FacebookUser = strUser;
-      return this
+      return this;
     };
     this.setFacebookVideoCode = function(strCode) {
       this.str_FacebookVideoCode = strCode;
-      return this
+      return this;
     };
     this.setInstagramID = function(strID) {
       this.str_InstagramID = strID;
-      return this
+      return this;
     };
     this.setHTMLContent = function(strHTML) {
       this.str_HTMLContent = strHTML;
-      return this
+      return this;
     };
     this.setMediaStartTime = function(fTime) {
       this.f_MediaStartTime = fTime;
-      return this
+      return this;
     };
     this.setDescription = function(strDescription) {
       this.str_Description = strDescription;
-      return this
+      return this;
     };
 
     this.isLoaded = function() {
@@ -2407,107 +3988,107 @@ export class Package {
     this.str_Date = "";
     this.str_ErrorMessage = "";
 
-    this.setPackageType = function ( strType ) {
+    this.setPackageType = function(strType) {
       this.str_PackageType = strType;
-      return this
+      return this;
     };
-    this.setLoaded = function ( bLoaded ) {
+    this.setLoaded = function(bLoaded) {
       this.b_Loaded = bLoaded;
-      return this
+      return this;
     };
-    this.setEntryID = function ( nEntryID ) {
+    this.setEntryID = function(nEntryID) {
       this.str_EntryID = nEntryID;
-      return this
+      return this;
     };
-    this.setTitle = function ( strTitle ) {
+    this.setTitle = function(strTitle) {
       this.str_Title = strTitle;
-      return this
+      return this;
     };
-    this.setChannelName = function ( strChannelName ) {
+    this.setChannelName = function(strChannelName) {
       this.str_ChannelName = strChannelName;
-      return this
+      return this;
     };
-    this.setChannelShortName = function ( strChannelShortName ) {
+    this.setChannelShortName = function(strChannelShortName) {
       this.str_ChannelShortName = strChannelShortName;
-      return this
+      return this;
     };
-    this.setDefaultSegmentEntryID = function ( strEntryID ) {
+    this.setDefaultSegmentEntryID = function(strEntryID) {
       this.str_DefaultSegmentEntryID = strEntryID;
-      return this
+      return this;
     };
-    this.setDescription = function ( strDescription ) {
+    this.setDescription = function(strDescription) {
       this.str_Description = strDescription;
-      return this
+      return this;
     };
-    this.setOverview = function ( strOverview ) {
+    this.setOverview = function(strOverview) {
       this.str_Overview = strOverview;
-      return this
+      return this;
     };
-    this.setImageURL = function ( strImageURL ) {
+    this.setImageURL = function(strImageURL) {
       this.str_ImageURL = strImageURL;
-      return this
+      return this;
     };
-    this.setSections = function ( objSections ) {
+    this.setSections = function(objSections) {
       this.a_Sections = objSections;
-      return this
+      return this;
     };
-    this.setDate = function ( strDate ) {
+    this.setDate = function(strDate) {
       this.str_Date = strDate;
-      return this
+      return this;
     };
-    this.setErrorMessage = function ( strError ) {
+    this.setErrorMessage = function(strError) {
       this.str_ErrorMessage = strError;
-      return this
+      return this;
     };
-    this.setTuning = function ( strTuning ) {
+    this.setTuning = function(strTuning) {
       this.str_Tuning = strTuning;
-      return this
+      return this;
     };
 
-    this.getPackageType = function () {
+    this.getPackageType = function() {
       return this.str_PackageType;
     };
-    this.isLoaded = function () {
+    this.isLoaded = function() {
       return this.b_Loaded;
     };
-    this.getEntryID = function () {
+    this.getEntryID = function() {
       return this.str_EntryID;
     };
-    this.getTitle = function () {
+    this.getTitle = function() {
       return this.str_Title;
     };
-    this.getChannelName = function () {
+    this.getChannelName = function() {
       return this.str_ChannelName;
     };
-    this.getChannelShortName = function () {
+    this.getChannelShortName = function() {
       return this.str_ChannelShortName;
     };
-    this.getDefaultSegmentEntryID = function () {
+    this.getDefaultSegmentEntryID = function() {
       return this.str_DefaultSegmentEntryID;
     };
-    this.getDescription = function () {
+    this.getDescription = function() {
       return this.str_Description;
     };
-    this.getOverview = function () {
+    this.getOverview = function() {
       return this.str_Overview;
     };
-    this.getImageURL = function () {
+    this.getImageURL = function() {
       return this.str_ImageURL;
     };
-    this.getSections = function () {
+    this.getSections = function() {
       return this.a_Sections;
     };
-    this.getDate = function () {
+    this.getDate = function() {
       return this.str_Date;
     };
-    this.getErrorMessage = function () {
+    this.getErrorMessage = function() {
       return this.str_ErrorMessage;
     };
-    this.getTuning = function () {
+    this.getTuning = function() {
       return this.str_Tuning;
     };
 
-    this.resetAll = function () {
+    this.resetAll = function() {
       this.str_PackageType = ""; // must be "entry" or "other"
       this.b_Loaded = false;
       this.str_EntryID = "";
@@ -2523,12 +4104,430 @@ export class Package {
       this.str_ErrorMessage = "";
     };
 
-    this.isEntry = function () {
+    this.isEntry = function() {
       return this.str_PackageTYpe == "entry";
     };
 
-    this.hasSections = function () {
+    this.hasSections = function() {
       return this.a_Sections.length > 0;
+    };
+  }
+}
+export class FavoritesManager {
+  constructor(parentDivID) {
+    this.n_PackageID = 0;
+    this.str_FavoritesListWrapperID = "#" + parentDivID;
+    this.b_CommentsLoadedOnce = false;
+    this.b_FilterComments = false;
+    this.b_FavoritesLoadedOnce = false;
+    this.b_Initialized = false;
+    // this.str_ReloadPath = gc_BranchPath + '/--ajax-load-favorites-list/';
+    this.str_ReloadPath = "/--ajax-load-favorites-list/";
+
+    this.reset = function() {
+      this.n_PackageID = 0;
+      this.b_CommentsLoadedOnce = false;
+      this.b_FilterComments = false;
+      this.b_FavoritesLoadedOnce = false;
+      this.b_Initialized = false;
+      $(this.str_FavoritesListWrapperID).empty();
+      $("#favListEmpty").text("Favorites have not been loaded.");
+      $("#favListEmpty").toggle(true);
+    };
+
+    this.setNewPackageID = function(nPackageID) {
+      this.reset();
+      this.n_PackageID = nPackageID;
+    };
+
+    this.clearFavorites = function() {
+      $(this.str_FavoritesListWrapperID).empty();
+    };
+
+    this.fullRefresh = function() {
+      this.clearFavorites();
+      thePlayer.spinner(this.str_FavoritesListWrapperID);
+      this.reloadFavorites();
+    };
+
+    this.reloadFavorites = function() {
+      //console.log('Reloading favorites, packageID: ' + this.n_PackageID);
+      var reloadPath = this.str_ReloadPath;
+      if (this.n_PackageID != "0") {
+        reloadPath += this.n_PackageID;
+      }
+      $(this.str_FavoritesListWrapperID).load(reloadPath, function() {
+        thePlayer.favoritesManager.finishedReloadingFavorites();
+      });
+    };
+
+    this.finishedReloadingFavorites = function() {
+      if ($(this.str_FavoritesListWrapperID).children().length == 0) {
+        $("#favListEmpty").text("You have not saved any favorites.");
+        $("#favListEmpty").toggle(true);
+      } else {
+        $("#favListEmpty").toggle(false);
+
+        if (this.n_PackageID == "0") {
+          $("#favthis-button").toggle(false);
+        } else {
+          $("#favthis-button").toggle(true);
+          $("#favthis-button").load(
+            gc_BranchPath +
+              "/--ajax-load-favorite-this-button/" +
+              thePlayer.favoritesManager.n_PackageID
+          );
+        }
+      }
+      this.b_FavoritesLoadedOnce = true;
+    };
+    this.removeFavoriteFromList = function(sender) {
+      var formID = $(sender).closest("form.submitFavoriteForm");
+      var courseID = $(formID).attr("data-id");
+      var formData = $(formID).serialize();
+      //this.clearFavorites();
+      //thePlayer.spinner(this.str_FavoritesListWrapperID);
+      var parentItem = $(sender).closest("li.sidebar-list-item");
+      $(parentItem).toggleClass("deleting", true);
+      $.ajax({
+        type: "POST",
+        url: $(formID).attr("action"),
+        data: formData,
+        context: sender
+      }).done(function(response) {
+        var parentItem = $(this).closest("li.sidebar-list-item");
+        var parentList = $(this).closest("ul.sidebar-list");
+        if ($(parentList).children().length == 1) {
+          //console.log("Empty accordion item found.");
+          parentAccordion = $(this).closest("li.accordion-item");
+          $(parentAccordion).fadeOut(400, function() {
+            $(this).remove();
+          });
+        } else {
+          $(parentItem).fadeOut(400, function() {
+            $(this).remove();
+          });
+        }
+        thePlayer.favoritesManager.finishedReloadingFavorites();
+      });
+    };
+    this.addFavoriteToList = function(sender) {
+      var formID = $(sender).closest("form.submitFavoriteForm");
+      var courseID = $(formID).attr("data-id");
+      var formData = $(formID).serialize();
+
+      $(sender).toggle(false);
+      this.clearFavorites();
+      thePlayer.spinner(this.str_FavoritesListWrapperID);
+
+      $.ajax({
+        type: "POST",
+        url: $(formID).attr("action"),
+        data: formData
+      }).done(function(response) {
+        thePlayer.favoritesManager.reloadFavorites();
+      });
+    };
+  }
+}
+
+export class HistoryManager {
+  constructor(strHistoryListWrapperID) {
+    this.str_ActiveSegmentTitle = "";
+    this.str_ActiveSegmentURL = "";
+    this.n_ActiveSegmentEntryID = 0;
+    this.str_ActiveSegmentFullName = "";
+    this.a_ResumeItems = {};
+    this.str_HistoryListWrapperID = "#" + strHistoryListWrapperID;
+    this.str_ChannelName = "";
+    this.n_PackageID = 0;
+    this.arrayHistoryItems = {};
+    this.objCurrentHistoryItem = { url: "", title: "", name: "", channel: "" };
+
+    this.clearHistory = function() {
+      this.arrayHistoryItems = [];
+
+      $("#historyList li").remove();
+      historyString =
+        "<li class='sidebar-list-item'><span>No recently watched items are available.</span></li>";
+      $("#historyList").html(historyString);
+      $("#clearHistoryButton").toggle(true);
+    };
+
+    this.reset = function() {
+      $(str_HistoryListWrapperID).empty();
+    };
+
+    this.addHistoryItem = function(
+      strPackageID,
+      strSegmentID,
+      strPackageTitle,
+      strPackageChannel,
+      strSegmentTitle,
+      strType
+    ) {
+      //console.log("Attempting to add history item");
+      aHistoryItems = JSON.parse(localStorage.getItem("proPlayerHistory"));
+      if (aHistoryItems === null) {
+        aHistoryItems = [];
+      }
+
+      var bMatchFound = false;
+      var nMatchIndex = 0;
+      for (let i = 0; i < aHistoryItems.length; i++) {
+        if (aHistoryItems[i].packageID == strPackageID) {
+          bMatchFound = true;
+          nMatchIndex = i;
+          break;
+        }
+      }
+
+      if (bMatchFound) {
+        aHistoryItems.splice(nMatchIndex, 1);
+      }
+      var newHistoryItem = {
+        packageTitle: strPackageTitle,
+        packageChannel: strPackageChannel,
+        segmentTitle: strSegmentTitle,
+        packageID: strPackageID,
+        segmentID: strSegmentID,
+        type: strType
+      };
+
+      aHistoryItems.unshift(newHistoryItem);
+
+      localStorage.setItem("proPlayerHistory", JSON.stringify(aHistoryItems));
+    };
+
+    /*
+      this.reloadHistory = function()
+      {
+        var historyVersion = Cookies.get('historyVersion');
+        if(history == undefined)
+        {
+          Cookies.remove('recentlyViewed');
+        }
+        else
+        {
+          this.arrayHistoryItems = Cookies.getJSON('recentlyViewed');
+          if(this.arrayHistoryItems == undefined)
+          {
+              this.arrayHistoryItems = [];
+          }
+          
+          //populate current item object
+          this.objCurrentHistoryItem['url'] = this.str_ActiveSegmentURL;
+          this.objCurrentHistoryItem['packageID'] = this.str_ActiveSegmentURL;
+          this.objCurrentHistoryItem['title'] = this.str_ActiveSegmentTitle;
+          this.objCurrentHistoryItem['name'] = this.str_ActiveSegmentFullName;
+          if(	this.str_ChannelName  == 'Pro Player Packages' )
+          {
+            
+            this.objCurrentHistoryItem['channel'] = "Courses";
+          }
+          else
+          {
+            this.objCurrentHistoryItem['channel'] = this.str_ChannelName;
+          }
+          
+    
+            var historyString = "";
+          if( this.arrayHistoryItems.length > 0)
+          {
+            $('#clearHistoryButton').toggle(true);
+            for(let  var i = 0; i < this.arrayHistoryItems.length; i++)
+            {
+              if(this.arrayHistoryItems[i]['channel'] == "Pro Player Packages")
+              {
+                this.arrayHistoryItems[i]['channel'] = "Courses";
+              }
+              historyItem = this.arrayHistoryItems[i];
+              historyString += '<li class="sidebar-list-item history"><a href="/';
+              historyString += historyItem['url'] + '">';
+              
+              historyString += '<span class="channel">' + historyItem['channel'] + '</span>';
+              historyString += '<span class="title">' + historyItem['title'] + '</span>';
+              historyString += '<span class="name">' + historyItem['name'] + '</span>';
+              historyString += '</a></li>';
+            }
+            $('#historyList').html( historyString );
+            
+            if(this.n_ActiveSegmentEntryID != 0 && this.arrayHistoryItems[0]["url"] != this.objCurrentHistoryItem["url"])
+            {
+              this.arrayHistoryItems.unshift(this.objCurrentHistoryItem);
+              if(this.arrayHistoryItems.length > 10)
+              {
+                this.arrayHistoryItems.pop();
+              }
+              Cookies.set('recentlyViewed', this.arrayHistoryItems, { expires: 365 });
+            }
+          }
+          else
+          {
+            historyString = "<li class='sidebar-list-item'><span>No recently watched items are available.</span></li>";
+            $(str_HistoryListWrapperID).html( historyString );
+            
+            if(this.n_ActiveSegmentEntryID  != 0)
+            {
+              this.arrayHistoryItems = [];
+              this.arrayHistoryItems[0] = this.objCurrentHistoryItem;
+              Cookies.set('recentlyViewed', this.arrayHistoryItems, { expires: 365 });
+            }
+          }
+      }
+      
+      this.saveCookieValues = function()
+      {
+        if(this.n_ActiveSegmentEntryID != 0)
+        {
+          this.a_ResumeItems = Cookies.getJSON('savedResumeItems');
+          if(this.a_ResumeItems == undefined)
+          {
+            this.a_ResumeItems = {};
+          }
+          if( this.n_PackageID != 0)
+          {
+            this.a_ResumeItems[this.n_PackageID] = this.n_ActiveSegmentEntryID;
+            Cookies.set('savedResumeItems', this.a_ResumeItems, { expires: 365 });
+          }
+        }
+        
+      }
+      */
+    this.getLastHistoryItem = function() {
+      var historyItems = JSON.parse(localStorage.getItem("proPlayerHistory"));
+      if (historyItems !== null) {
+        //console.log("Returning last history item...");
+        return historyItems[0];
+      } else {
+        return null;
+      }
+    };
+  }
+}
+export class UserDataManager {
+  constructor() {
+    this.n_SegmentID = -1;
+    this.b_UserDataDirty = false;
+    this.setDirty = function ( bDirty ) {
+      this.b_UserDataDirty = bDirty;
+    };
+    this.isDirty = function () {
+      return this.b_UserDataDirty;
+    };
+    this.getSegmentID = function () {
+      return this.n_SegmentID;
+    };
+    this.setNewSegmentID = function ( nSegmentID ) {
+      this.resetAll();
+      this.n_SegmentID = nSegmentID;
+    };
+
+    this.resetAll = function () {
+      $( "#userSegmentDataFormWrapper" ).empty();
+      this.n_SegmentID = -1;
+      this.b_UserDataDirty = false;
+    };
+
+    this.reloadUserData = function () {
+      this.loadUserDataForm();
+    };
+    this.loadUserDataForm = function () {
+      var requestURL = gc_BranchPath + "/--ajax-load-user-data-form/?";
+      requestURL += "segmentID=" + this.getSegmentID();
+      //console.log("Loading user data from: " + requestURL);
+      $( "#userSegmentDataFormWrapper" ).load( requestURL, function () {
+        thePlayer.userDataManager.pushUserLoops();
+      } );
+    };
+
+    this.pushUserLoops = function () {
+      var loopsText = $( "textarea[name=cf_member_segment_data_loops]" ).val();
+      var validLoopsArray = this.validateJSON( loopsText );
+      if ( validLoopsArray ) {
+        //console.log("Found user loops, adding list.");
+        thePlayer.loopsManager.createNewCollection( "userLoopList", "user", true );
+        thePlayer.loopsManager.addListToCollectionFromArray(
+          validLoopsArray,
+          "user",
+          "Your Loops",
+          false
+        );
+      } else {
+        //console.log("Adding empty array for User list");
+        thePlayer.loopsManager.createNewCollection( "userLoopList", "user", true );
+      }
+
+      this.importAllSegmentLoops();
+    };
+
+    this.importAllSegmentLoops = function () {
+      $.get(
+        gc_BranchPath + "/--ajax-get-segment-user-loops/" + this.n_SegmentID,
+        function ( data ) {
+          thePlayer.userDataManager.processImportedSegmentLoops( data );
+        }
+      );
+    };
+
+    this.processImportedSegmentLoops = function ( arrImportedLoops ) {
+      if ( this.validateJSON( arrImportedLoops ) ) {
+        let theImportedLoopData = JSON.parse( arrImportedLoops );
+        thePlayer.loopsManager.createNewCollection(
+          "communityLoopList",
+          "community",
+          false
+        );
+        for ( let i = 0; i < theImportedLoopData.memberLoopCollections.length; i++ ) {
+          let theMemberLoops = theImportedLoopData.memberLoopCollections[i];
+          thePlayer.loopsManager.addListToCollectionFromArray(
+            theMemberLoops.memberLoops,
+            "community",
+            theMemberLoops.memberName,
+            false
+          );
+        }
+      }
+    };
+
+    this.updateUserDataForm = function () {
+      let userLoopsArray = thePlayer.loopsManager.getUserLoopsArray();
+      if ( userLoopsArray.length != 0 ) {
+        $( "textarea[name=cf_member_segment_data_loops]" ).val(
+          JSON.stringify( userLoopsArray )
+        );
+      } else {
+        $( "textarea[name=cf_member_segment_data_loops]" ).val( "" );
+      }
+    };
+
+    this.saveUserData = function () {
+      this.updateUserDataForm();
+      var theForm = $( "form#userSegmentDataForm" );
+      formData = $( theForm ).serialize();
+      //console.log(formData);
+      $.ajax( {
+        type: "POST",
+        url: $( theForm ).attr( "action" ),
+        data: formData
+      } ).done( function ( response ) {
+        thePlayer.userDataManager.reloadUserData();
+      } );
+    };
+    this.validateJSON = function ( jsonString ) {
+      try {
+        var o = JSON.parse( jsonString );
+
+        // Handle non-exception-throwing cases:
+        // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
+        // but... JSON.parse(null) returns null, and typeof null === "object",
+        // so we must check for that, too. Thankfully, null is falsey, so this suffices:
+        if ( o && typeof o === "object" ) {
+          return o;
+        }
+      } catch ( e ) { }
+
+      return false;
     };
   }
 }
