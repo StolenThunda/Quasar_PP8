@@ -51,26 +51,29 @@ export default {
     favs: null
   }),
   mounted() {
-    this.setFavs();
+    this.getFavs();
   },
   watch: {
     favorites() {
-      this.setFavs();
+      this.getFavs();
     }
   },
   computed: {
-    ...mapState("default", ["favorites"])
+    ...mapState("default", ["favorites"]),
+    ...mapState("watch", ["ProPlayer"])
   },
   methods: {
     link(fav) {
-      this.playSegment(fav.id).then(id => {
-        const route =
-          fav.src !== "Imported" ? `/watch/${id}` : `/watch/${id}/${id}`;
-        console.log("link_route", route);
-        this.$router.push({ path: `${route}` });
-      });
+      this.ProPlayer.openPackage(fav.id, true)
+      return false
+      // this.setCurrentSegmentSetup(fav.id).then(id => {
+      //   const route =
+      //     fav.src !== "Imported" ? `/watch/${id}` : `/watch/${id}/${id}`;
+      //   console.log("link_route", route);
+      //   this.$router.push({ path: `${route}` });
+      // });
     },
-    setFavs() {
+    getFavs() {
       this.favs = this.$store.getters["default/getFavsByType"];
     },
     ...mapActions("default", ["removeFavorite"]),
