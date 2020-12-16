@@ -86,7 +86,6 @@ export default {
     showCurrent() {
       return this.$store.state.browser.searching && !this.hideCurrent;
     },
-
     ...mapGetters("default", ["isFavorite"])
   },
   components: {
@@ -94,19 +93,16 @@ export default {
   },
   methods: {
     lnk(entry) {
-      // console.log("isYT", entry.avatar);
       const isYoutubeVid = entry.avatar.indexOf("youtube") >= 0;
       const lnk = isYoutubeVid
         ? `/watch/${entry.id}/${entry.id}`
         : `/watch/${entry.id}`;
-      // console.log("lnk", lnk);
       return lnk;
     },
     toggler(e) {
       console.log(e.currentTarget);
     },
     ...mapActions("default", ["toggleFavorite"]),
-    ...mapActions("watch", ["playSegment"])
   }
 };
 </script>
@@ -115,17 +111,11 @@ export default {
 .browser-result-wrapper {
   position: relative;
   width: 100%;
-  // float: left;
-  // padding: 0.5em 0.25em;
-  // border-bottom: 1px solid #444;
 }
 
 .browser-result-image {
-  // border: 1px solid #555;
   float: left;
   margin-left: 2.5rem;
-  // width: 6rem;
-  // position: relative;
 }
 
 .browser-result-image img {

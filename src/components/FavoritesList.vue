@@ -30,7 +30,6 @@
               <q-item-section :title="fav.title">
                 {{ fav.title }}
               </q-item-section>
-
               <q-item-section color="grey" @click="removeFavorite(fav)" side>
                 <q-btn icon="delete" color="red" size="xs" round />
               </q-item-section>

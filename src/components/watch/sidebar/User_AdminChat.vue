@@ -24,7 +24,7 @@
         <span class="q-pl-xs text-grey-4 text-caption">{{ message.user }}</span
         ><br />
         <q-icon name="mdi-clock-outline" />
-        <span class="q-pl-xs text-warning text-caption">
+        <span class="q-pl-xs text-warg text-caption">
           {{ message.relativeDate }}
         </span>
       </p>

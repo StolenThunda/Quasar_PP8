@@ -1,12 +1,16 @@
 <template>
   <div>
-    <q-tabs v-model="selectedTab" inline-label >
+    <q-tabs v-model="selectedTab" inline-label>
       <q-tab
         v-for="tab in this.tabList"
         :key="tab.name"
         :name="tab.name"
-        :icon="tab.icon"
+        :label="tab.iconOnly ? '' : tab.name"
+        :icon="tab.labelOnly  ? '' : tab.icon"
         @click.prevent="selectedTab = tab.name"
+        inline-label
+        outside-arrows
+        mobile-arrows
       >
         <q-menu v-if="tab.menu">
           <component :is="tab.menu"></component>
@@ -21,13 +25,14 @@
       keep-alive
       v-model="selectedTab"
     >
-      <q-tab-panel 
-      class="q-ma-none q-pa-sm"
-        v-for="tab in this.tabList" 
-        :key="tab.name" 
+      <q-tab-panel
+        class="q-ma-none q-pa-sm"
+        v-for="tab in this.tabList"
+        :key="tab.name"
         :name="tab.name"
-        >
-        <component :is="tab.cmp"></component>
+      >
+      <!-- {{ tab.props ? tab.props : ''}} -->
+        <component :is="tab.cmp" v-bind="tab.props"></component>
       </q-tab-panel>
     </q-tab-panels>
   </div>
@@ -40,11 +45,13 @@ export default {
     selectedTab: null
   }),
   props: {
-    tabList: Array,
-    default: () => []
+    tabList: {
+      type: Array,
+      default: () => []
+    }
   },
   mounted() {
-    this.getFirst();
+    this.sortedTabs();
   },
   watch: {
     tabList: function() {
@@ -52,6 +59,22 @@ export default {
     }
   },
   methods: {
+    sortedTabs() {
+      const tabOrder = [
+        "Segments",
+        "Chapters",
+        "Loops",
+        "Favorites",
+        "Comments"
+      ];
+      // console.log("orig", JSON.stringify(this.tabList));
+      this.tabList.sort(function(a, b) {
+        return tabOrder.indexOf(a.name) - tabOrder.indexOf(b.name);
+      });
+      // console.log("sorted", JSON.stringify(this.tabList));
+      // console.log("sorted", JSON.stringify(sorted));
+      this.getFirst();
+    },
     getFirst() {
       const tl = this.$options.propsData.tabList;
       if (!tl || tl.length === 0) return;

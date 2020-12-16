@@ -1,15 +1,13 @@
 <template>
   <div>
-    <q-toolbar >
+    <q-toolbar>
       <slot name="toggle"></slot>
       <slot>
         <q-btn round flat to="/" icon="home" />
         <q-btn round flat @click="toggleInfo" icon="info" />
-        <q-toolbar-title v-if="packageTitle">
-          <span class="absolute-center" v-html="packageTitle"></span>
+        <q-toolbar-title >
+          <span class="absolute-center text-capitalize" v-html="getTitle"></span>
         </q-toolbar-title>
-        <span class="absolute-center" v-else>No Course Data</span>
-        <!-- <span> -->
         <q-fab
           v-if="getHistory.length"
           :label="'History: ' + getHistory.length"
@@ -22,7 +20,7 @@
             v-for="course in getHistory"
             :key="course.id"
             color="primary"
-            :label="course.packageTitle"
+            :label="getTitle"
             :to="`/watch/${course.packageID}`"
           />
           <!-- color="primary" -->

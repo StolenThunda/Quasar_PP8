@@ -64,6 +64,7 @@ export default {
           name: "Favorites",
           componentName: "FavList",
           icon: "favorite",
+          iconOnly: true,
           cmp: () => import("components/FavoritesList")
         }
       ];
