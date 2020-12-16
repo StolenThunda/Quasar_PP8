@@ -1,18 +1,25 @@
 <template>
-  <div>
-    <q-card v-model="currentCourse" class="my-card" :set="(s = getCourseInfo)">
-      <div class="text-h6" v-html="s.title"></div>
-      <q-img :ratio="16 / 9" contain :src="s.image">
-        <div class="text-bold text-center" v-html="s.description"></div>
-        <div class="absolute-bottom">
-          <div class="text-body2" v-html="s.overview"></div>
-        </div>
+  <q-card v-model="currentCourse" class=" q-pa-xl" :set="(s = getCourseInfo)">
+    <div class="row">
+      <div class="col-12 text-h6 text-center" v-html="s.description" />
+    </div>
+    <div class="row">
+      <q-img
+        contain
+        class="col q-ma-md"
+        :ratio="4 / 3"
+        :src="s.image"
+      >
         <template v-slot:loading>
           <q-spinner-bars color="white" />
         </template>
       </q-img>
-    </q-card>
-  </div>
+      <div class="col" v-html="s.overview" />
+    </div>
+    <q-inner-loading>
+        <q-spinner-gears size="50px" color="primary" />
+      </q-inner-loading>
+  </q-card>
 </template>
 
 <script>
@@ -29,6 +36,11 @@ export default {
       };
     },
     ...mapState("watch", ["currentCourse"])
+  },
+  watch:{
+    currentCourse() {
+
+    }
   }
 };
 </script>

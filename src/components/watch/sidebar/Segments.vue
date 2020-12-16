@@ -27,11 +27,9 @@
             height="20px"
             active-class="secondary"
           >
-            <!-- @click="$router.push({path:`/watch/${$route.params.packageID}/${playSegment(seg.id)}`})" -->
             <q-item-section avatar>
               <q-icon :color="segmentIconInfo.color" :name="segmentIconInfo.icon" size="xs" />
             </q-item-section>
-
             <q-item-section>
               <q-item-label caption>{{ segment.segmentTitle }}</q-item-label>
             </q-item-section>
@@ -39,7 +37,11 @@
         </q-list>
       </q-expansion-item>
     </template>
-  </q-list>
+    <q-inner-loading>
+        <q-spinner-gears size="50px" color="primary" />
+      </q-inner-loading>
+        </q-list>
+   
 </template>
 
 <script>

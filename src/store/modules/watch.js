@@ -8,9 +8,11 @@ export default {
     // currentPackage: new Package(),
     // currentSegment: new Segment(),
     currentSetup: { sources: null },
-    currentLoops: null,
+    currentUserLoops: null,
     sections: null,
     courseHistory: [],
+    seekToTime: 0,
+    ProPlayer: new ProPlayer(),
     playerSettings: {
       speed: null,
       volume: null,
@@ -25,6 +27,7 @@ export default {
     // commentManager: new CommentsManager(),
   },
   mutations: {
+
     FLIP_PLAYER(ctx) {
       console.log("b4", ctx.playerSettings.flipped);
       ctx.playerSettings.flipped = !ctx.playerSettings.flipped;
@@ -37,8 +40,9 @@ export default {
         Object.assign({}, ctx.playerSettings, objSettings)
       );
     },
-    SET_PACKAGE_DATA(ctx, data) {
+    SET_CURRENT_COURSE(ctx, data) {
       if (!data) return;
+      console.log("currentCourse", data);
       if (ctx.currentCourse !== null) {
         // if (ctx.courseHistory.length > 4) ctx.courseHistory.shift();
         ctx.courseHistory.push(ctx.currentCourse);
@@ -62,7 +66,6 @@ export default {
         //   for (let [k, v] of Object.entries(data)) {
         //     Vue.set(ctx, k, v);
       }
-      // Object.assign({}, ctx, data);
     },
     SET_USER_LOOP_DATA(ctx, data) {
       console.log("Setting user Loops", data);
@@ -117,11 +120,23 @@ export default {
     },
     SET_CURRENT_SEGMENT_SETUP(ctx, data) {
       ctx.currentSetup = Object.assign({}, ctx.playerOpts, data);
+    },
+    SET_SEEK_TIME(ctx, data) {
+      ctx.seekToTime = data
+    },
+    SET_LOOP_SELECTED(ctx, {nCollectionID, nListIndex, nLoopIndex}){
+      ctx.loopManager.loopSelected(nCollectionID, nListIndex, nLoopIndex)
     }
   },
   actions: {
+    setLoopSelected({commit}, data) {
+      commit('SET_LOOP_SELECTED', data)
+    },
     flipPlayer({ commit }, bool) {
       commit("FLIP_PLAYER");
+    },
+    setSeekToTime({commit}, time){
+      commit('SET_SEEK_TIME', time)
     },
     loadPlayerSettings({ commit }, objSettings) {
       commit("LOAD_PLAYER_SETTINGS", objSettings);
@@ -135,17 +150,17 @@ export default {
       return comments;
     },
     async fetchUserLoopData(ctx, ID) {
-      return await ctx.rootState.TXBA_UTILS.getUserLoopData(ID)
+      return await ctx.rootState.TXBA_UTILS.getUserLoops(ID)
         .then(loopData => {
           console.log("loopData", loopData);
           return loopData;
         })
         .then(loopData => {
-          ctx.commit("SET_USER_LOOP_DATA", response);
+          ctx.commit("SET_USER_LOOP_DATA", loopData);
           return loopData;
         });
     },
-    fetchUserLoop: (ctx, ID) => ctx.dispatch("fetchUserLoopData", ID),
+    fetchUserLoops: (ctx, ID) => ctx.dispatch("fetchUserLoopData", ID),
     fetchPackage: (ctx, ID) => ctx.dispatch("fetchPackageData", ID),
     async fetchPackageData(ctx, ID) {
       return await ctx.rootState.TXBA_UTILS.getPackage(ID)
@@ -174,17 +189,27 @@ export default {
     fetchSegment: (ctx, ID) => ctx.dispatch("fetchSegmentData", ID),
     async fetchSegmentData(ctx, ID) {
       const response = await ctx.rootState.TXBA_UTILS.getSegment(ID);
-      // console.log("segData", response);
+      console.log("segData", response);
       ctx.commit("SET_CURRENT_SEGMENT", response);
+      return ID;
     },
-    playSegment(ctx, segmentId) {
+    setCurrentSegmentSetup(ctx, segmentId) {
+      var segmentData = null;
       if (ctx.state.playSections) {
-        const segmentData = ctx.state.playSections[0].segments.filter(
+        segmentData = ctx.state.playSections[0].segments.filter(
           itm => itm.id === segmentId
         )[0];
-        // console.log("seg-data", segmentData);
-        if (segmentData) ctx.commit("SET_CURRENT_SEGMENT_SETUP", segmentData);
+        console.log("seg-data", segmentData);
+      } else {
+        segmentData = ctx.dispatch("fetchPackage", segmentId).then(pkg => {
+          console.log("seg-id", segmentId);
+          segmentId = ctx.getters.getFirstSegment().id;
+          console.log("seg-id", segmentId);
+          ctx.dispatch("setCurrentSegmentSetup", segmentId);
+          return pkg;
+        });
       }
+      if (segmentData) ctx.commit("SET_CURRENT_SEGMENT_SETUP", segmentData);
       return segmentId;
     },
     openSegment(ctx, ID) {

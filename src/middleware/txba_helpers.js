@@ -78,6 +78,10 @@ export default class TXBA_Utilities {
     return this.getAsyncData(`${this.user_loops_slug}/${segID}`);
   }
 
+  getUserSegment(segID) {
+    return this.getAsyncData(`${this.segment_slug}/${segID}`);
+  }
+
   async getDefaultSearchEntries() {
     return this.getAsyncData(this.default_entries_slug).then(data =>
       this.parseSearchResults(data)
