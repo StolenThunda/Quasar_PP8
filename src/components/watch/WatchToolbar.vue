@@ -48,8 +48,9 @@ export default {
     visible: false
   }),
   computed: {
+    packageTitle() { return this.ProPlayer.thePackage.getTitle() },
     ...mapGetters(["getHistory"]),
-    ...mapState(["packageTitle"])
+    ...mapState([ "ProPlayer"])
   },
   methods: {
     showInfo(c) {

@@ -221,13 +221,13 @@ export class ProPlayer {
     this.waitForPackageAndSegmentData();
   }
   openSegmentWithinCurrentPackage(strSegmentID, bUpdateURL) {
-    //console.log("Opening segment: " + strSegmentID);
-    this.resetPackageOverview();
-    this.closeInfoPane();
+    console.log("Opening segment: " + strSegmentID);
+    // this.resetPackageOverview();
+    // this.closeInfoPane();
     this.resetSegment();
     this.resetLoadingFlags();
     this.b_UpdateURL = bUpdateURL;
-    this.beginFetchSegmentData(strSegmentID);
+    // this.beginFetchSegmentData(strSegmentID);
     this.waitForSegmentData();
   }
   openExternalYouTubeVideo(strYTCode, bUpdateURL) {
@@ -320,7 +320,7 @@ export class ProPlayer {
   }
   beginFetchSegmentData(strSegmentID) {
     //console.log("Beginning Fetch of segment data.");
-    this.showMediaLoading();
+    // this.showMediaLoading();
     this.pushSelectedSegmentState(strSegmentID);
     this.bSegmentDataLoadingStarted = true;
     $.get(gc_BranchPath + "/--ajax-get-segment-info/" + strSegmentID, function(
@@ -481,8 +481,8 @@ export class ProPlayer {
   processOnlyNewPackageData() {
     // This function should only be called when ONLY a new package is being
     // loaded.
-    //First, if this package has a default segment, begin opening that so the media
-    //can load while we're doing the rest.
+    // First, if this package has a default segment, begin opening that so the media
+    // can load while we're doing the rest.
     if (this.thePackage.getDefaultSegmentEntryID() !== "") {
       this.openSegmentWithinCurrentPackage(
         this.thePackage.getDefaultSegmentEntryID(),
@@ -493,27 +493,27 @@ export class ProPlayer {
       this.pushInfoPaneData();
       this.pushPackageOverviewData();
     }
-    this.pushPackageSectionList();
-    this.pushPackageTitle();
-    this.pushInfoPaneData();
+    // this.pushPackageSectionList();
+    // this.pushPackageTitle();
+    // this.pushInfoPaneData();
     //this function is called after package data has been loaded
     this.commentsManager.setNewPackageID(this.thePackage.getEntryID());
     this.favoritesManager.setNewPackageID(this.thePackage.getEntryID());
     this.favoritesManager.reloadFavorites();
     this.commentsManager.reloadComments();
-    this.openSectionsSidebar();
-    this.openFirstSection();
-    this.cleanUpLoading();
-    this.enableSidebarTabs();
+    // this.openSectionsSidebar();
+    // this.openFirstSection();
+    // this.cleanUpLoading();
+    // this.enableSidebarTabs();
     this.updateLocalHistory();
     this.updateURL();
-    this.reattachKeyboardEvents();
+    // this.reattachKeyboardEvents();
   }
   processOnlyNewSegmentData() {
     //console.log("Processing New Segment Data");
     this.processOnlyNewSegmentMedia();
     this.pushSelectedSegmentState();
-    this.pushSegmentChapters();
+    // this.pushSegmentChapters();
     this.extractSegmentLoops();
     this.pushSegmentTitle();
     this.pushSegmentDownloadsMenu();
@@ -536,7 +536,7 @@ export class ProPlayer {
     //First, start loading the media so that can process while we do the rest.
     this.processOnlyNewSegmentMedia();
     //Update interface elements related to Package.
-    this.pushPackageSectionList();
+    this.pushPackageSectionList(); 
     this.pushPackageTitle();
     this.pushInfoPaneData();
     //Deal with comments.
@@ -562,7 +562,7 @@ export class ProPlayer {
       this.userDataManager.loadUserDataForm();
     }
     this.cleanUpLoading();
-    this.enableSidebarTabs();
+    // this.enableSidebarTabs();
   }
   processNewYouTubeData() {
     //console.log("Processing new YouTube Data");
@@ -592,7 +592,7 @@ export class ProPlayer {
     this.enableSidebarTabs();
   }
   processOnlyNewSegmentMedia() {
-    this.resetPackageOverview();
+    // this.resetPackageOverview();
     let mediaType = this.theSegment.getPrimaryMediaType();
     //console.log("Processing new Segment Media:" + mediaType);
     switch (mediaType) {
@@ -751,7 +751,7 @@ export class ProPlayer {
     }
   }
   pushSelectedSegmentState(nForceSegment) {
-    this.resetSelectedSegment();
+    // this.resetSelectedSegment();
     if (!nForceSegment && !this.theSegment.isLoaded()) {
       return;
     }
@@ -761,13 +761,13 @@ export class ProPlayer {
     } else if (this.theSegment.isLoaded()) {
       newSegmentElementID += this.theSegment.getEntryID();
     }
-    //console.log("Setting active segment ID: " + newSegmentElementID);
-    $(newSegmentElementID).toggleClass("active", true);
-    var parentElement = $(newSegmentElementID).closest(".accordion-content");
-    var parentLink = $(newSegmentElementID).closest(".accordion-item");
-    if (parentElement.length !== 0 && !$(parentLink).hasClass("is-active")) {
-      $("#segmentListAccordion").foundation("toggle", parentElement);
-    }
+    console.log("Setting active segment ID: " + newSegmentElementID);
+    // $(newSegmentElementID).toggleClass("active", true);
+    // var parentElement = $(newSegmentElementID).closest(".accordion-content");
+    // var parentLink = $(newSegmentElementID).closest(".accordion-item");
+    // if (parentElement.length !== 0 && !$(parentLink).hasClass("is-active")) {
+    //   $("#segmentListAccordion").foundation("toggle", parentElement);
+    // }
   }
   pushSegmentDownloadsMenu() {
     $("#downloads-list").empty();
@@ -1124,8 +1124,9 @@ export class ProPlayer {
     let theTitle = "";
     let currentState = history.state;
     let bPushNewState = true;
+    debugger
     //First, check if we're pushing the same state that we already have loaded.
-    //console.log("Checking: " + JSON.stringify(currentState));
+    console.log("Checking: " + JSON.stringify(currentState));
     if (currentState !== null) {
       if (
         currentState.type == "package" &&
@@ -1295,7 +1296,7 @@ export class ProPlayer {
       this.theSegment.isLoaded() &&
       this.theSegment.getSegmentType() !== "other"
     ) {
-      //console.log('Updating history');
+      console.log('Updating history');
       this.historyManager.addHistoryItem(
         this.thePackage.getEntryID(),
         this.theSegment.getEntryID(),
@@ -2624,7 +2625,7 @@ export class LoopsManager {
       var theCollection = this.getCollectionByRole( strCollectionRole );
       if ( theCollection == null ) {
         var newCollectionID = this.a_Collections.length;
-        theCollection = new ProPlayerLoopsCollection(
+        theCollection = new LoopsCollection(
           newCollectionID,
           strUIParentID,
           strCollectionRole,
@@ -2918,8 +2919,8 @@ export class LoopsCollection {
     };
 
     this.rebuildLoopsUIList = function () {
-      thePlayer.spinner( this.str_UIWrapperID );
-      $( this.str_UIWrapperID + "Empty" ).toggle( false );
+      // thePlayer.spinner( this.str_UIWrapperID );
+      // $( this.str_UIWrapperID + "Empty" ).toggle( false );
 
       //this function assumes the loop list has already been reset
       let strListHTML = "";
@@ -3026,7 +3027,7 @@ export class LoopsCollection {
       //Clear this collection before calling this if you don't want the new
       // list appended.
       let theListIndex = this.a_Lists.length;
-      let theList = new ProPlayerLoopsList(
+      let theList = new LoopsList(
         this.getID(),
         theListIndex,
         strListTitle
@@ -3078,7 +3079,7 @@ export class LoopsCollection {
     this.addInstantLoop = function ( theLoop ) {
       let theList = this.getListAt( 0 );
       if ( theList == null ) {
-        theList = new ProPlayerLoopsList( this.getID(), 0 );
+        theList = new LoopsList( this.getID(), 0 );
         this.appendList( theList );
       }
 
@@ -4225,7 +4226,7 @@ export class HistoryManager {
       strType
     ) {
       //console.log("Attempting to add history item");
-      aHistoryItems = JSON.parse(localStorage.getItem("proPlayerHistory"));
+      aHistoryItems = JSON.parse(localStorage.getItem("History"));
       if (aHistoryItems === null) {
         aHistoryItems = [];
       }
@@ -4254,7 +4255,7 @@ export class HistoryManager {
 
       aHistoryItems.unshift(newHistoryItem);
 
-      localStorage.setItem("proPlayerHistory", JSON.stringify(aHistoryItems));
+      localStorage.setItem("History", JSON.stringify(aHistoryItems));
     };
 
     /*
@@ -4353,7 +4354,7 @@ export class HistoryManager {
       }
       */
     this.getLastHistoryItem = function() {
-      var historyItems = JSON.parse(localStorage.getItem("proPlayerHistory"));
+      var historyItems = JSON.parse(localStorage.getItem("History"));
       if (historyItems !== null) {
         //console.log("Returning last history item...");
         return historyItems[0];

@@ -1,13 +1,12 @@
 import Vue from "vue";
-import { 
-  LoopsManager,
-  CommentsManager } from "../../middleware/ProPlayerCore";
+import { ProPlayer } from "../../middleware/ProPlayerCore";
 export default {
   namespaced: true,
   state: {
     currentCourse: null,
+    ProPlayer: new ProPlayer(),
     // currentPackage: new Package(),
-    currentSegment: new Segment(),
+    // currentSegment: new Segment(),
     currentSetup: { sources: null },
     currentLoops: null,
     sections: null,
@@ -21,9 +20,9 @@ export default {
     },
     playerOpts: {
       controls: false
-    },
-    loopManager: new LoopsManager(),
-    commentManager: new CommentsManager(),
+    }
+    // loopManager: this.ProPlayer.loopManager,
+    // commentManager: new CommentsManager(),
   },
   mutations: {
     FLIP_PLAYER(ctx) {
@@ -44,29 +43,29 @@ export default {
         // if (ctx.courseHistory.length > 4) ctx.courseHistory.shift();
         ctx.courseHistory.push(ctx.currentCourse);
 
-    //     //TODO: Ensure no duplicates in courseHistory
+        //     //TODO: Ensure no duplicates in courseHistory
 
-    //     // console.log("pushed", ctx.courseHistory);
-    //     // const pushed = ctx.courseHistory.reduce((acc, current) => {
-    //     //   const x = acc.find(item => item.segmentEntryID === current.segmentEntryID);
-    //     //   if(!x) {
-    //     //     return acc.concat([current])
-    //     //   }else{
-    //     //     return acc
-    //     //   }
-    //     // }, [])
-    //     // Vue.set(ctx, "courseHistory", pushed); // to remove duplicates from array
-    //     // console.log("noDups", ctx.courseHistory);
-    //   }
-    //   ctx.currentCourse = data;
-    //   // map course to state
-    //   for (let [k, v] of Object.entries(data)) {
-    //     Vue.set(ctx, k, v);
+        //     // console.log("pushed", ctx.courseHistory);
+        //     // const pushed = ctx.courseHistory.reduce((acc, current) => {
+        //     //   const x = acc.find(item => item.segmentEntryID === current.segmentEntryID);
+        //     //   if(!x) {
+        //     //     return acc.concat([current])
+        //     //   }else{
+        //     //     return acc
+        //     //   }
+        //     // }, [])
+        //     // Vue.set(ctx, "courseHistory", pushed); // to remove duplicates from array
+        //     // console.log("noDups", ctx.courseHistory);
+        //   }
+        //   ctx.currentCourse = data;
+        //   // map course to state
+        //   for (let [k, v] of Object.entries(data)) {
+        //     Vue.set(ctx, k, v);
       }
       // Object.assign({}, ctx, data);
     },
     SET_USER_LOOP_DATA(ctx, data) {
-      console.log('Setting user Loops', data)
+      console.log("Setting user Loops", data);
       ctx.currentUserLoops = JSON.parse(JSON.stringify(data));
     },
     SET_CURRENT_PACKAGE(ctx, packageData) {
@@ -84,16 +83,16 @@ export default {
           .setSections(packageData.sections)
           .setTuning(packageData.packageTuning)
           .setLoaded(true);
-          ctx.ProPlayer.bPackageDataLoadingFinished = true
+        ctx.ProPlayer.bPackageDataLoadingFinished = true;
       } else {
         ctx.ProPlayer.thePackage
           .setLoaded(false)
-          .setErrorMessage(packageData.packageError)
+          .setErrorMessage(packageData.packageError);
       }
     },
     SET_CURRENT_SEGMENT(ctx, segmentData) {
       console.log("CurrentSegment", segmentData);
-      ctx.currentSegment
+      ctx.ProPlayer.theSegment
         .setEntryID(segmentData.segmentEntryID)
         .setSegmentType("entry")
         .setVimeoCode(segmentData.segmentVimeoCode)
@@ -114,6 +113,7 @@ export default {
         .setUserLoopsEntryIDsFromString(segmentData.userLoopEntryIDs)
         ?.setIsLoaded(true)
         .inferMediaType();
+      ctx.ProPlayer.bSegmentDataLoadingFinished = true;
     },
     SET_CURRENT_SEGMENT_SETUP(ctx, data) {
       ctx.currentSetup = Object.assign({}, ctx.playerOpts, data);
@@ -126,12 +126,14 @@ export default {
     loadPlayerSettings({ commit }, objSettings) {
       commit("LOAD_PLAYER_SETTINGS", objSettings);
     },
-    fetchComments({dispatch}, pID) { return dispatch("fetchCommentsData", pID)},
-    async fetchCommentsData(ctx, pID){
-      const comments = await ctx.rootState.TXBA_UTILS.getComments(pID, pID)
+    fetchComments({ dispatch }, pID) {
+      return dispatch("fetchCommentsData", pID);
+    },
+    async fetchCommentsData(ctx, pID) {
+      const comments = await ctx.rootState.TXBA_UTILS.getComments(pID, pID);
       // console.log('coms', comments)
       return comments;
-      },
+    },
     async fetchUserLoopData(ctx, ID) {
       return await ctx.rootState.TXBA_UTILS.getUserLoopData(ID)
         .then(loopData => {
@@ -156,9 +158,18 @@ export default {
         //   return packageData;
         // })
         .then(packageData => {
-          ctx.commit("SET_PACKAGE_DATA", packageData);
+          ctx.commit("SET_CURRENT_PACKAGE", packageData);
           return packageData;
-        });
+        })
+        .then(() => {
+          const defaultSegmentID = ctx.state.ProPlayer.thePackage.getDefaultSegmentEntryID();
+          if (defaultSegmentID) {
+            ctx.dispatch("fetchSegment", defaultSegmentID).then(() => {
+              ctx.ProPlayer.processBothNewPackageAndSegmentData();
+            });
+          }
+        })
+        .then();
     },
     fetchSegment: (ctx, ID) => ctx.dispatch("fetchSegmentData", ID),
     async fetchSegmentData(ctx, ID) {
@@ -175,14 +186,21 @@ export default {
         if (segmentData) ctx.commit("SET_CURRENT_SEGMENT_SETUP", segmentData);
       }
       return segmentId;
+    },
+    openSegment(ctx, ID) {
+      ctx.dispatch("fetchSegment", ID).then(() => {
+        ctx.state.ProPlayer.processOnlyNewSegmentData();
+      });
+      return ID
     }
   },
   getters: {
-    getHistory: ctx =>  { 
+    getHistory: ctx => {
       const histLength = ctx.courseHistory.length;
       if (histLength === 0) return [];
-      const numCourses = histLength < 5 ? histLength : 5
-      return ctx.courseHistory.slice(numCourses, -1)},
+      const numCourses = histLength < 5 ? histLength : 5;
+      return ctx.courseHistory.slice(numCourses, -1);
+    },
     getPlaySections: ctx => {
       return ctx.playSections;
     }

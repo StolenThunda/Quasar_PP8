@@ -60,11 +60,10 @@ export default {
   },
   computed: {
     ...mapState("default", ["favorites"]),
-    ...mapState("watch", ["ProPlayer"])
   },
   methods: {
     link(fav) {
-      this.ProPlayer.openPackage(fav.id, true)
+      this.fetchPackage(fav.id)
       return false
       // this.setCurrentSegmentSetup(fav.id).then(id => {
       //   const route =
@@ -77,7 +76,7 @@ export default {
       this.favs = this.$store.getters["default/getFavsByType"];
     },
     ...mapActions("default", ["removeFavorite"]),
-    ...mapActions("watch", ["playSegment"])
+    ...mapActions("watch", ["playSegment", "fetchPackage"])
   }
 };
 </script>
