@@ -62,8 +62,9 @@ export default class TXBA_Utilities {
         return response;
       });
   }
-  getFavs() {
-    return this.getAsyncData(this.favorites_slug).then(data =>
+  getFavs(id) {
+    let url = this.favorites_slug + '/' + id ? id : '' 
+    return this.getAsyncData(url).then(data =>
       this.parseFavoriteHtml(data)
     );
   }
@@ -135,6 +136,16 @@ export default class TXBA_Utilities {
     return finalComments;
   }
 
+  loadMedia(slug){
+    return this.getAsyncData(`${slug}`)
+      .then((html) => {
+        const $ = cheerio.load(html);
+        const text = $('script').html()
+        
+        const matchX = text.match(/var videoData = (.*);/)
+        return matchX[1]
+      });
+  }
   parseCommentHtml(strComments, lvl = null) {
     const $ = cheerio.load(strComments);
     // console.log("cHTML", $("body").html());

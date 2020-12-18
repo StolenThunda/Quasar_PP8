@@ -1,6 +1,6 @@
 <template>
   <q-list>
-    <template v-for="section in ProPlayer.thePackage.getSections()">
+    <template v-for="section in sections">
       <q-expansion-item
         :key="section.sectionID"
         v-if="section.segments"
@@ -18,17 +18,21 @@
         <q-list class="q-py-sm rounded-borders" keep-alive bordered dense>
           <q-item
             v-for="segment in section.segments"
-            :key="segment.id"
+            :key="segment.segmentID"
             :set="(segmentIconInfo = getSegIco(segment))"
-            :id="segment.id"
+            :id="segment.segmentID"
             ripple
             clickable
-            @click="openSegmentWithinCurrentPackage(segment.id)"
+            @click="openSegmentWithinCurrentPackage(segment.segmentID)"
             height="20px"
             active-class="secondary"
           >
             <q-item-section avatar>
-              <q-icon :color="segmentIconInfo.color" :name="segmentIconInfo.icon" size="xs" />
+              <q-icon
+                :color="segmentIconInfo.color"
+                :name="segmentIconInfo.icon"
+                size="xs"
+              />
             </q-item-section>
             <q-item-section>
               <q-item-label caption>{{ segment.segmentTitle }}</q-item-label>
@@ -38,10 +42,9 @@
       </q-expansion-item>
     </template>
     <q-inner-loading>
-        <q-spinner-gears size="50px" color="primary" />
-      </q-inner-loading>
-        </q-list>
-   
+      <q-spinner-gears size="50px" color="primary" />
+    </q-inner-loading>
+  </q-list>
 </template>
 
 <script>
@@ -49,10 +52,13 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "Segments",
   computed: {
-    ...mapState("watch", ["playSections", "ProPlayer"]),
+    sections() {
+      return this.ProPlayer.thePackage.getSections();
+    },
     packID() {
       return this.$route.params.packageID;
-    }
+    },
+    ...mapState("watch", ["playSections", "ProPlayer"])
   },
   methods: {
     openSegmentWithinCurrentPackage(id) {
@@ -69,37 +75,37 @@ export default {
         case "audio":
           ico = {
             icon: "mdi-volume-high",
-            color: 'accent'
+            color: "accent"
           };
           break;
         case "video":
           ico = {
             icon: "mdi-video-vintage",
-            color: 'secondary'
+            color: "secondary"
           };
           break;
         case "url":
           ico = {
             icon: "mdi-youtube",
-            color: 'negative'
+            color: "negative"
           };
           break;
         case "pdf":
           ico = {
             icon: "mdi-file-pdf",
-            color: 'white'
+            color: "white"
           };
           break;
         case "tablature":
           ico = {
             icon: "mdi-file-music",
-            color: 'green-5'
+            color: "green-5"
           };
           break;
         case "gpx":
           ico = {
             icon: "mdi-folder-music",
-            color: 'yellow-3'
+            color: "yellow-3"
           };
           break;
         default:
@@ -108,7 +114,7 @@ export default {
           };
           break;
       }
-      console.log("SEGINFO", seg, ico);
+      // console.log("SEGINFO", seg, ico);
       return ico;
     },
     ...mapActions("watch", ["openSegment"])

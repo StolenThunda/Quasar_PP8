@@ -1,18 +1,16 @@
 import Vue from "vue";
-import { ProPlayer } from "../../middleware/ProPlayerCore";
+import { ProPlayer, Engine } from "../../middleware/ProPlayerCore";
 export default {
   namespaced: true,
   state: {
     currentCourse: null,
     ProPlayer: new ProPlayer(),
-    // currentPackage: new Package(),
-    // currentSegment: new Segment(),
     currentSetup: { sources: null },
     currentUserLoops: null,
     sections: null,
     courseHistory: [],
     seekToTime: 0,
-    ProPlayer: new ProPlayer(),
+    mediaSources: null,
     playerSettings: {
       speed: null,
       volume: null,
@@ -27,7 +25,6 @@ export default {
     // commentManager: new CommentsManager(),
   },
   mutations: {
-
     FLIP_PLAYER(ctx) {
       console.log("b4", ctx.playerSettings.flipped);
       ctx.playerSettings.flipped = !ctx.playerSettings.flipped;
@@ -114,7 +111,7 @@ export default {
         .setHTMLContent(segmentData.segmentHTML)
         .setDescription(segmentData.segmentShortDescription)
         .setUserLoopsEntryIDsFromString(segmentData.userLoopEntryIDs)
-        ?.setIsLoaded(true)
+        .setIsLoaded(true)
         .inferMediaType();
       ctx.ProPlayer.bSegmentDataLoadingFinished = true;
     },
@@ -122,21 +119,25 @@ export default {
       ctx.currentSetup = Object.assign({}, ctx.playerOpts, data);
     },
     SET_SEEK_TIME(ctx, data) {
-      ctx.seekToTime = data
+      ctx.seekToTime = data;
     },
-    SET_LOOP_SELECTED(ctx, {nCollectionID, nListIndex, nLoopIndex}){
-      ctx.loopManager.loopSelected(nCollectionID, nListIndex, nLoopIndex)
+    SET_MEDIA_SOURCES(ctx, data){ 
+      console.log('media', typeof data)
+      ctx.mediaSources = JSON.parse(JSON.stringify(data))
+    },
+    SET_LOOP_SELECTED(ctx, { nCollectionID, nListIndex, nLoopIndex }) {
+      ctx.loopManager.loopSelected(nCollectionID, nListIndex, nLoopIndex);
     }
   },
   actions: {
-    setLoopSelected({commit}, data) {
-      commit('SET_LOOP_SELECTED', data)
+    setLoopSelected({ commit }, data) {
+      commit("SET_LOOP_SELECTED", data);
     },
     flipPlayer({ commit }, bool) {
       commit("FLIP_PLAYER");
     },
-    setSeekToTime({commit}, time){
-      commit('SET_SEEK_TIME', time)
+    setSeekToTime({ commit }, time) {
+      commit("SET_SEEK_TIME", time);
     },
     loadPlayerSettings({ commit }, objSettings) {
       commit("LOAD_PLAYER_SETTINGS", objSettings);
@@ -164,14 +165,6 @@ export default {
     fetchPackage: (ctx, ID) => ctx.dispatch("fetchPackageData", ID),
     async fetchPackageData(ctx, ID) {
       return await ctx.rootState.TXBA_UTILS.getPackage(ID)
-        // .then(packageData => {
-        // console.log("PackageData", packageData);
-        //   return packageData;
-        // })
-        // .then(packageData => {
-        //   ctx.commit("SET_CURRENT_COURSE", packageData);
-        //   return packageData;
-        // })
         .then(packageData => {
           ctx.commit("SET_CURRENT_PACKAGE", packageData);
           return packageData;
@@ -179,9 +172,29 @@ export default {
         .then(() => {
           const defaultSegmentID = ctx.state.ProPlayer.thePackage.getDefaultSegmentEntryID();
           if (defaultSegmentID) {
-            ctx.dispatch("fetchSegment", defaultSegmentID).then(() => {
-              ctx.ProPlayer.processBothNewPackageAndSegmentData();
-            });
+            ctx
+              .dispatch("fetchSegment", defaultSegmentID)
+              .then(() => ctx.dispatch("getMediaInfo"))
+              .then(videoData => {
+              console.log("media", typeof videoData);
+
+                ctx.commit('SET_MEDIA_SOURCES', videoData)
+                // ctx.state.ProPlayer.theEngine = new Engine();
+                // let segmentClass = ctx.state.ProPlayer.theSegment.getCodeByType();
+                // if (segmentClass) {
+                //   ctx.state.ProPlayer.theEngine.initializeProPlayerEngine(
+                //     segmentClass.type,
+                //     segmentClass.code,
+                //     0,
+                //     videoData.thumbnail,
+                //     videoData.videoSources,
+                //     ctx.state.ProPlayer.theSegment.getChaptersArray()
+                //   );
+                // }
+              })
+              .then(() => {
+                ctx.state.ProPlayer.processBothNewPackageAndSegmentData();
+              });
           }
         })
         .then();
@@ -189,7 +202,7 @@ export default {
     fetchSegment: (ctx, ID) => ctx.dispatch("fetchSegmentData", ID),
     async fetchSegmentData(ctx, ID) {
       const response = await ctx.rootState.TXBA_UTILS.getSegment(ID);
-      console.log("segData", response);
+      // console.log("segData", response);
       ctx.commit("SET_CURRENT_SEGMENT", response);
       return ID;
     },
@@ -216,7 +229,59 @@ export default {
       ctx.dispatch("fetchSegment", ID).then(() => {
         ctx.state.ProPlayer.processOnlyNewSegmentData();
       });
-      return ID
+      return ID;
+    },
+    async getMediaInfo(ctx) {
+      let segment = ctx.state.ProPlayer.theSegment;
+      let mediaType = segment.getPrimaryMediaType();
+      let slug = "/--ajax-load-media";
+      switch (mediaType) {
+        case "vimeo":
+          slug += `/${mediaType}/${segment.getVimeoCode()}`;
+          // this.mediaLoadVimeo();
+          break;
+        case "youtube":
+          slug += `/${mediaType}/${segment.getYouTubeCode()}`;
+          // this.mediaLoadYouTube(this.theS);
+          break;
+        case "mp3":
+          slug += `/${mediaType}/${segment.getMP3Filename()}`;
+
+          // this.mediaLoadMP3(this.theSegment.);
+          break;
+        case "soundslice":
+          slug = `/--ajax-load-soundslice/${mediaType}/${segment.getSoundSliceCode()}`;
+          // this.mediaLoadSoundSlice(this.the);
+          break;
+        case "pdf":
+          slug = `/--ajax-load-pdf/${segment.getPDFFilename()}`;
+          // this.mediaLoadPDFViewer(this.theS);
+          break;
+        case "url":
+          return `<iframe id='content-frame' src='${decodeURIComponent(
+            theURL
+          )}' frameBorder='0'></iframe>`;
+
+          // this.mediaLoadURL(this.theSegment.getMediaURL());
+          break;
+        case "facebook":
+          this.mediaLoadFacebook(
+            this.theSegment.getFacebookUser(),
+            this.theSegment.getFacebookVideoCode()
+          );
+          break;
+        case "instagram":
+          slug += `/${mediaType}/${segment.getInstagramID()}`;
+
+          // this.mediaLoadInstagram(this.theSegment.getInstagramID());
+          break;
+        case "html":
+          return `<div class='media-content-wrapper'>${this.theSegment.getHTMLContent()}</div>`;
+
+          // this.mediaLoadHTML();
+          break;
+      }
+      return await ctx.rootState.TXBA_UTILS.loadMedia(slug);
     }
   },
   getters: {

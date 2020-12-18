@@ -61,10 +61,10 @@ export default {
     loopData() {
       return {
         altMessage: this.altMessage,
-        loopsArray: this.currentSegment.getLoopsArray()
+        loopsArray: this.ProPlayer.theSegment.getLoopsArray()
       };
     },
-    ...mapState("watch", ["currentSegment"])
+    ...mapState("watch", ["ProPlayer"])
   },
   methods: {
     toggleAdd({status}) { 
