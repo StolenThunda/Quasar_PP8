@@ -23,7 +23,7 @@
             :id="segment.segmentID"
             ripple
             clickable
-            @click="openSegmentWithinCurrentPackage(segment.segmentID)"
+            @click="openSegment(segment.segmentID)"
             height="20px"
             active-class="secondary"
           >
@@ -61,8 +61,8 @@ export default {
     ...mapState("watch", ["playSections", "ProPlayer"])
   },
   methods: {
-    openSegmentWithinCurrentPackage(id) {
-      this.openSegment(id).then(id => {
+    openSegment(id) {
+      this.fetchSegment(id).then(id => {
         const route = `/watch/${this.packID}/${id}`;
         console.log("openSegmentWithinCurrentPackage_route", route);
         this.$router.push({ path: `${route}` });
@@ -117,7 +117,7 @@ export default {
       // console.log("SEGINFO", seg, ico);
       return ico;
     },
-    ...mapActions("watch", ["openSegment"])
+    ...mapActions("watch", ["fetchSegment"])
   }
 };
 </script>

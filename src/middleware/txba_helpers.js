@@ -62,17 +62,15 @@ export default class TXBA_Utilities {
         return response;
       });
   }
-  getFavs(id) {
-    let url = this.favorites_slug + '/' + id ? id : '' 
-    return this.getAsyncData(url).then(data =>
-      this.parseFavoriteHtml(data)
-    );
+  async getFavs(id) {
+    let url = this.favorites_slug + "/" + id ? id : "";
+    const data = await this.getAsyncData( url );
+    return this.parseFavoriteHtml( data );
   }
 
-  getNotification() {
-    return this.getAsyncData(this.notification_slug).then(data =>
-      this.parseNotificationHtml(data)
-    );
+  async getNotification() {
+    const data = await this.getAsyncData( this.notification_slug );
+    return this.parseNotificationHtml( data );
   }
 
   getUserLoops(segID) {
@@ -136,15 +134,31 @@ export default class TXBA_Utilities {
     return finalComments;
   }
 
-  loadMedia(slug){
-    return this.getAsyncData(`${slug}`)
-      .then((html) => {
-        const $ = cheerio.load(html);
-        const text = $('script').html()
-        
-        const matchX = text.match(/var videoData = (.*);/)
-        return matchX[1]
-      });
+  async loadMedia(slug) {
+    const html = await this.getAsyncData( `${slug}` );
+    const $ = cheerio.load( html );
+    const text = $( "script" ).html();
+    return html
+    const matchX = text.match( /var videoData = (.*);/ );
+    let strVidData = matchX[1];
+    // replace single with double quotes
+    strVidData = strVidData.replace( /'/g, '"' );
+    //match any variables (alphanumeric) that end with a colon :, but will ingore any matches that are found between quotes (i.e. data string values)
+    strVidData = strVidData.replace( /([^"]+)|("[^"]+")/g, function (
+      $0,
+      $1,
+      $2
+    ) {
+      if ( $1 ) {
+        // Replace property names with quotes
+        return $1.replace( /([a-zA-Z0-9]+?):/g, '"$1":' );
+      } else {
+        return $2;
+      }
+    } );
+    strVidData = strVidData.replace( "},]", "}]" );
+    console.log( "json", strVidData );
+    return JSON.parse( strVidData );
   }
   parseCommentHtml(strComments, lvl = null) {
     const $ = cheerio.load(strComments);

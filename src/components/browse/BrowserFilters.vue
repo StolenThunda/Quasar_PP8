@@ -25,7 +25,6 @@
         </template>
         </q-input>
       </p>
-
     <q-list bordered class="rounded-borders">
       <q-expansion-item
         v-for="criterion in this.search.criteria"

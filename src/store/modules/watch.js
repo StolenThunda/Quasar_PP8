@@ -6,7 +6,7 @@ export default {
     currentCourse: null,
     ProPlayer: new ProPlayer(),
     currentSetup: { sources: null },
-    currentUserLoops: null,
+    userLoops: null,
     sections: null,
     courseHistory: [],
     seekToTime: 0,
@@ -66,7 +66,7 @@ export default {
     },
     SET_USER_LOOP_DATA(ctx, data) {
       console.log("Setting user Loops", data);
-      ctx.currentUserLoops = JSON.parse(JSON.stringify(data));
+      ctx.userLoops = JSON.parse(JSON.stringify(data));
     },
     SET_CURRENT_PACKAGE(ctx, packageData) {
       if (packageData.packageError === "") {
@@ -121,9 +121,9 @@ export default {
     SET_SEEK_TIME(ctx, data) {
       ctx.seekToTime = data;
     },
-    SET_MEDIA_SOURCES(ctx, data){ 
-      console.log('media', typeof data)
-      ctx.mediaSources = JSON.parse(JSON.stringify(data))
+    SET_MEDIA_SOURCES(ctx, data) {
+      console.log("media", typeof data);
+      ctx.mediaSources = data;
     },
     SET_LOOP_SELECTED(ctx, { nCollectionID, nListIndex, nLoopIndex }) {
       ctx.loopManager.loopSelected(nCollectionID, nListIndex, nLoopIndex);
@@ -153,8 +153,10 @@ export default {
     async fetchUserLoopData(ctx, ID) {
       return await ctx.rootState.TXBA_UTILS.getUserLoops(ID)
         .then(loopData => {
-          console.log("loopData", loopData);
-          return loopData;
+          // handle malformed JSON
+          return JSON.parse(
+            loopData.replaceAll('"memberLoops": \n\t\t\t', '"memberLoops" : []')
+          );
         })
         .then(loopData => {
           ctx.commit("SET_USER_LOOP_DATA", loopData);
@@ -164,40 +166,19 @@ export default {
     fetchUserLoops: (ctx, ID) => ctx.dispatch("fetchUserLoopData", ID),
     fetchPackage: (ctx, ID) => ctx.dispatch("fetchPackageData", ID),
     async fetchPackageData(ctx, ID) {
-      return await ctx.rootState.TXBA_UTILS.getPackage(ID)
-        .then(packageData => {
-          ctx.commit("SET_CURRENT_PACKAGE", packageData);
-          return packageData;
-        })
+      return await ctx.rootState.TXBA_UTILS.getPackage(ID).then(packageData => {
+        ctx.commit("SET_CURRENT_PACKAGE", packageData);
+        return packageData;
+      });
+    },
+    async fetchMedia(ctx) {
+      const defaultSegmentID = ctx.state.ProPlayer.thePackage.getDefaultSegmentEntryID();
+      return await ctx
+        .dispatch("fetchSegment", defaultSegmentID)
+        .then(ID => ctx.dispatch("fetchUserLoops", ID))
         .then(() => {
-          const defaultSegmentID = ctx.state.ProPlayer.thePackage.getDefaultSegmentEntryID();
-          if (defaultSegmentID) {
-            ctx
-              .dispatch("fetchSegment", defaultSegmentID)
-              .then(() => ctx.dispatch("getMediaInfo"))
-              .then(videoData => {
-              console.log("media", typeof videoData);
-
-                ctx.commit('SET_MEDIA_SOURCES', videoData)
-                // ctx.state.ProPlayer.theEngine = new Engine();
-                // let segmentClass = ctx.state.ProPlayer.theSegment.getCodeByType();
-                // if (segmentClass) {
-                //   ctx.state.ProPlayer.theEngine.initializeProPlayerEngine(
-                //     segmentClass.type,
-                //     segmentClass.code,
-                //     0,
-                //     videoData.thumbnail,
-                //     videoData.videoSources,
-                //     ctx.state.ProPlayer.theSegment.getChaptersArray()
-                //   );
-                // }
-              })
-              .then(() => {
-                ctx.state.ProPlayer.processBothNewPackageAndSegmentData();
-              });
-          }
-        })
-        .then();
+          return ctx.dispatch("getMediaInfo");
+        });
     },
     fetchSegment: (ctx, ID) => ctx.dispatch("fetchSegmentData", ID),
     async fetchSegmentData(ctx, ID) {
@@ -226,12 +207,13 @@ export default {
       return segmentId;
     },
     openSegment(ctx, ID) {
-      ctx.dispatch("fetchSegment", ID).then(() => {
-        ctx.state.ProPlayer.processOnlyNewSegmentData();
-      });
-      return ID;
+      return ctx.dispatch("fetchMedia");
+      // ctx.dispatch("fetchSegment", ID).then(() => {
+      //   ctx.state.ProPlayer.processOnlyNewSegmentData();
+      // });
+      // return ID;
     },
-    async getMediaInfo(ctx) {
+    getMediaInfo(ctx) {
       let segment = ctx.state.ProPlayer.theSegment;
       let mediaType = segment.getPrimaryMediaType();
       let slug = "/--ajax-load-media";
@@ -262,8 +244,6 @@ export default {
             theURL
           )}' frameBorder='0'></iframe>`;
 
-          // this.mediaLoadURL(this.theSegment.getMediaURL());
-          break;
         case "facebook":
           this.mediaLoadFacebook(
             this.theSegment.getFacebookUser(),
@@ -276,12 +256,11 @@ export default {
           // this.mediaLoadInstagram(this.theSegment.getInstagramID());
           break;
         case "html":
-          return `<div class='media-content-wrapper'>${this.theSegment.getHTMLContent()}</div>`;
-
-          // this.mediaLoadHTML();
-          break;
+          return `<div class='media-content-wrapper'>${this.ProPlayer?.theSegment.getHTMLContent() ||
+            ""}</div>`;
       }
-      return await ctx.rootState.TXBA_UTILS.loadMedia(slug);
+      console.log("loading Media", slug);
+      return ctx.rootState.TXBA_UTILS.loadMedia(slug);
     }
   },
   getters: {

@@ -46,7 +46,7 @@ export default {
     collectionID: {
       type: Number,
       default: () => 0
-    }
+    },
   },
   data: () => ({ activeList: {}, componentKey: 0 }),
   created() {
@@ -61,7 +61,7 @@ export default {
   methods: {
     active(loop) {
       const loopStatus = this.activeList[this.getActiveItemName(loop)];
-      console.log("lstat", loopStatus);
+      // console.log("lstat", loopStatus);
       return loopStatus;
     },
     toggleActive(loop, i) {
@@ -79,7 +79,7 @@ export default {
     getItemName(val) {
       if (!val) return val;
       const name = val[0].replace(/\s/g, "") || "";
-      console.log("getIName", name);
+      // console.log("getIName", name);
       return name;
     }
   }

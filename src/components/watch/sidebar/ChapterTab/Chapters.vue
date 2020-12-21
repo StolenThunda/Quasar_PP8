@@ -21,10 +21,10 @@ export default {
     chapterData() {
       return {
         altMessage: "This segment does not have any chapter markers.",
-        chapterArray: this.currentSegment.getChaptersArray() || []
+        chapterArray: this.ProPlayer.theSegment.getChaptersArray() || []
       };
     },
-    ...mapState("watch", ["currentSegment"])
+    ...mapState("watch", ["ProPlayer"])
   }
 };
 </script>
