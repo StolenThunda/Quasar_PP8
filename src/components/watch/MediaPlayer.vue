@@ -14,7 +14,7 @@ export default {
     inner : null
   }),
   async mounted() {
-    console.log('get it')
+    // console.log('get it')
     const inner = await this.fetchMedia() 
     this.inner = inner
   },

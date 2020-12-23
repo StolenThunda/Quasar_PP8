@@ -24,7 +24,7 @@
         :limits="[65, 100]"
         style="height: 92vh"
       >
-        <template v-slot:before v-bind:tabs="tabs">
+        <template v-slot:before v:tabs="tabs">
           <q-scroll-area :thumb-style="thumbStyle" class="fit">
             <dynamic-tab :tabList="tabs" class="q-item" />
           </q-scroll-area>
@@ -84,14 +84,6 @@ export default {
     this.getPackageData();
     this.addSidebarTabs([
       {
-        name: "Comments",
-        componentName: "CommentsManager",
-        icon: "mdi-comment-multiple-outline",
-        iconOnly: true, 
-        cmp: () => import("components/watch/sidebar/Comments")
-        // menu: () => import("components/watch/sidebar/WatchSettings")
-      },
-      {
         name: "Segments",
         componentName: "SegmentsManager",
         icon: "mdi-segment",
@@ -100,19 +92,12 @@ export default {
         menu: () => import("components/watch/settings/WatchSettings")
       },
       {
-        name: "Loops",
-        componentName: "InstantLoopsManager",
-        icon: "mdi-sync",
-        iconOnly: true,
-        cmp: () => import("components/watch/sidebar/LoopTab/InstantLoops")
-      },
-      {
-        name: "Chapters",
-        componentName: "ChaptersManager",
-        icon: "mdi-bookmark",
-        iconOnly: true,
-        cmp: () => import("components/watch/sidebar/ChapterTab/Chapters")
-      }
+        name: "Comments",
+        componentName: "CommentsManager",
+        icon: "mdi-comment-multiple-outline",
+        iconOnly: true, 
+        cmp: () => import("components/watch/sidebar/Comments")
+      }, 
     ]);
   },
   computed: {
@@ -135,7 +120,7 @@ export default {
     async getPackageData() {
       return await this.fetchPackage(this.$route.params.packageID);
     },
-    ...mapActions("default", ["addSidebarTabs"]),
+    ...mapActions(["addSidebarTabs"]),
     ...mapActions("watch", ["fetchPackage"])
   }
 };

@@ -20,15 +20,15 @@ export default {
   components: { LoopList, MemberLoopList },
   computed: {
     loopData() {
-      console.log("setting loopdata");
       const msg = this.TXBALoops
         ? "This item does not have any instant loops."
         : "There are no community loops for this item.";
       const loops = this.TXBALoops
         ? this.ProPlayer.theSegment.getLoopsArray() || []
-        : this.userLoops.memberLoopCollections
-        ? this.userLoops.memberLoopCollections
+        : this.userLoops?.memberLoopCollections
+        ? this.userLoops.memberLoopCollections.filter((objLoop) => objLoop.memberLoops.length) // no empty list
         : [];
+      // console.log("setting loopdata", loops);
       return {
         altMessage: msg,
         loopArray: loops,

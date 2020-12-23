@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { ProPlayer, Engine } from "../../middleware/ProPlayerCore";
+import { ProPlayer } from "../../middleware/ProPlayerCore";
 export default {
   namespaced: true,
   state: {
@@ -21,8 +21,6 @@ export default {
     playerOpts: {
       controls: false
     }
-    // loopManager: this.ProPlayer.loopManager,
-    // commentManager: new CommentsManager(),
   },
   mutations: {
     FLIP_PLAYER(ctx) {
@@ -91,7 +89,7 @@ export default {
       }
     },
     SET_CURRENT_SEGMENT(ctx, segmentData) {
-      console.log("CurrentSegment", segmentData);
+      // console.log("CurrentSegment", segmentData);
       ctx.ProPlayer.theSegment
         .setEntryID(segmentData.segmentEntryID)
         .setSegmentType("entry")
@@ -154,8 +152,14 @@ export default {
       return await ctx.rootState.TXBA_UTILS.getUserLoops(ID)
         .then(loopData => {
           // handle malformed JSON
-          return JSON.parse(
-            loopData.replaceAll('"memberLoops": \n\t\t\t', '"memberLoops" : []')
+          if (typeof loopData === 'object') return loopData
+          return (
+            JSON.parse(
+              loopData.replaceAll(
+                '"memberLoops": \n\t\t\t',
+                '"memberLoops" : []'
+              )
+            ) || ""
           );
         })
         .then(loopData => {
@@ -164,7 +168,15 @@ export default {
         });
     },
     fetchUserLoops: (ctx, ID) => ctx.dispatch("fetchUserLoopData", ID),
-    fetchPackage: (ctx, ID) => ctx.dispatch("fetchPackageData", ID),
+    fetchPackage: ({dispatch}, ID) => {
+      const newId = dispatch("fetchPackageData", ID)
+        .then((id) => {
+          const tabs = ['Loops', 'Chapters']
+          dispatch("removeSidebarTabs", tabs , { root: true });
+          return id
+    })
+    return newId
+    },
     async fetchPackageData(ctx, ID) {
       return await ctx.rootState.TXBA_UTILS.getPackage(ID).then(packageData => {
         ctx.commit("SET_CURRENT_PACKAGE", packageData);
@@ -180,7 +192,29 @@ export default {
           return ctx.dispatch("getMediaInfo");
         });
     },
-    fetchSegment: (ctx, ID) => ctx.dispatch("fetchSegmentData", ID),
+    fetchSegment: ({dispatch}, ID) => {
+      return dispatch("fetchSegmentData", ID)
+      .then((ID) => {
+        const loopTabs = [
+          {
+            name: "Loops",
+            componentName: "InstantLoopsManager",
+            icon: "mdi-sync",
+            iconOnly: true,
+            cmp: () => import("components/watch/sidebar/LoopTab/InstantLoops")
+          },
+          {
+            name: "Chapters",
+            componentName: "ChaptersManager",
+            icon: "mdi-bookmark",
+            iconOnly: true,
+            cmp: () => import("components/watch/sidebar/ChapterTab/Chapters")
+          }
+        ];
+        dispatch("addSidebarTabs", loopTabs, {root:true});
+        return ID
+      });
+    },
     async fetchSegmentData(ctx, ID) {
       const response = await ctx.rootState.TXBA_UTILS.getSegment(ID);
       // console.log("segData", response);
@@ -272,6 +306,8 @@ export default {
     },
     getPlaySections: ctx => {
       return ctx.playSections;
-    }
+    },
+    hasDefaultSegment: ctx =>
+      ctx.ProPlayer.thePackage.getDefaultSegmentEntryID() !== ""
   }
 };

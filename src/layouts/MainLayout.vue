@@ -32,7 +32,7 @@
       :width="350"
       :breakpoint="500"
     >
-      <dynamic-tab :tabList="sidebarTabs" />
+      <dynamic-tab :tabList="tabs" />
     </q-drawer>
 
     <q-page-container>
@@ -57,7 +57,7 @@ export default {
       leftDrawerOpen: false
   }),
   computed: {
-    ...mapState(["sidebarTabs"])
+    ...mapState({tabs: "sidebarTabs"})
   },
   mounted() {
     this.resetSideBar();
