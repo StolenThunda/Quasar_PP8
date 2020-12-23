@@ -19,7 +19,8 @@ module.exports = function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
-      'auth0',
+      'router-auth',
+      'firebase',
       'axios',
       'panzoom',
     ],
@@ -32,7 +33,7 @@ module.exports = function (/* ctx */) {
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
-      'mdi-v5',
+      // 'mdi-v5',
       'fontawesome-v5',
       // 'eva-icons',
       // 'themify',
@@ -78,8 +79,11 @@ cfg.module.rules.push({
     devServer: {
       // host: '10.0.0.81',
       host: 'localhost',
-      https: true,
+      https: false,
       port: 3000,
+       watchOptions: {
+        poll: 1000
+      },
       open: true, // opens browser window automatically
       // vueDevtools: true
     },
@@ -110,6 +114,8 @@ cfg.module.rules.push({
       // Quasar plugins
       plugins: [
         'Notify',
+        'Dialog',
+        'LocalStorage'
       ],
       // config: {
       //   notify: {

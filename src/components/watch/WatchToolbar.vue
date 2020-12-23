@@ -120,7 +120,7 @@ export default {
       this.$root.$emit("showTab", "favorites");
       this.$root.$emit("toggleSidebar");
     },
-    goto: lnk => this.$router.push(lnk)
+    goto: lnk => this.$router.push(lnk).catch(err => {})
   }
 };
 </script>

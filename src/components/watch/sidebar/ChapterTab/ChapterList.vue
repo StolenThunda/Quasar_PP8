@@ -68,7 +68,7 @@ export default {
     },
     getItemName(val) {
       const name = val[0].replace(/\s/g, "") || "";
-      console.log("getIName", name);
+      // console.log("getIName", name);
       return name;
     },
     ...mapActions("watch", ["setSeekToTime", "setLoopSelected"])

@@ -2,7 +2,7 @@
   <div>
     <q-tabs v-model="selectedTab" inline-label>
       <q-tab
-        v-for="tab in this.tabList"
+        v-for="tab in myTabs"
         :key="tab.name"
         :name="tab.name"
         :label="tab.iconOnly ? '' : tab.name"
@@ -27,7 +27,7 @@
     >
       <q-tab-panel
         class="q-ma-none q-pa-sm"
-        v-for="tab in this.tabList"
+        v-for="tab in myTabs"
         :key="tab.name"
         :name="tab.name"
       >
@@ -42,7 +42,8 @@
 export default {
   name: "DynamicTabs",
   data: () => ({
-    selectedTab: null
+    selectedTab: null,
+      myTabs: []
   }),
   props: {
     tabList: {
@@ -51,15 +52,10 @@ export default {
     }
   },
   mounted() {
-    this.sortedTabs();
-  },
-  watch: {
-    tabList: function() {
-      this.getFirst();
-    }
+    this.myTabs = this.sortedTabs(this.tabList);
   },
   methods: {
-    sortedTabs() {
+    sortedTabs(list) {
       const tabOrder = [
         "Segments",
         "Chapters",
@@ -68,12 +64,13 @@ export default {
         "Comments"
       ];
       // console.log("orig", JSON.stringify(this.tabList));
-      this.tabList.sort(function(a, b) {
+      list.sort(function(a, b) {
         return tabOrder.indexOf(a.name) - tabOrder.indexOf(b.name);
       });
       // console.log("sorted", JSON.stringify(this.tabList));
       // console.log("sorted", JSON.stringify(sorted));
       this.getFirst();
+      return list
     },
     getFirst() {
       const tl = this.$options.propsData.tabList;

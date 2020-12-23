@@ -65,7 +65,7 @@ export default {
       this.fetchSegment(id).then(id => {
         const route = `/watch/${this.packID}/${id}`;
         console.log("openSegmentWithinCurrentPackage_route", route);
-        this.$router.push({ path: `${route}` });
+        this.$router.push({ path: `${route}` }).catch(err => {});
       });
     },
     getSegIco(seg) {

@@ -11,16 +11,23 @@
 
 <script>
 import  Error  from "./components/index/Error"
+import { mapActions } from "vuex";
 export default {
   // name: "App",
   components: {
     Error
+  },
+  mounted() {
+    this.handleAuthStateChange()
+  },
+  methods: {
+    ...mapActions('auth', ['handleAuthStateChange'])
   }
 };
 </script>
 
 <style>
 * {
-    font-family: Oswald,"Open Sans","Lucida Grande","Lucida Sans Unicode",Helvetica,Sans-Serif ;
+    font-family: "Oswald","Open Sans","Lucida Grande","Lucida Sans Unicode",Helvetica,Sans-Serif ;
 }
 </style>

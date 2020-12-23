@@ -102,7 +102,7 @@ export default {
     },
     go(dest) {
       if (dest !== "refresh")
-        this.$router.push(`https://texasbluesalley.com/${dest}`);
+        this.$router.push(`https://texasbluesalley.com/${dest}`).catch(err => {});
       this.refresh();
     }
   }

@@ -525,6 +525,7 @@ export class ProPlayer {
     this.cleanUpLoading();
     this.commentsManager.setNewSegmentID(this.theSegment.getEntryID());
     this.commentsManager.reloadComments();
+    console.log('allowUserData')
     if (this.theSegment.allowUserData()) {
       this.userDataManager.setNewSegmentID(this.theSegment.getEntryID());
       this.userDataManager.loadUserDataForm();
@@ -4370,6 +4371,7 @@ export class LoopsManager {
       strCollectionRole,
       bEditable
     ) {
+      debugger
       var theCollection = this.getCollectionByRole(strCollectionRole);
       if (theCollection == null) {
         var newCollectionID = this.a_Collections.length;

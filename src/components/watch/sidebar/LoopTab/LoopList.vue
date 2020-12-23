@@ -1,37 +1,46 @@
 <template>
   <div>
-    <q-list v-if="loopArray.length" bordered separator dense>
-      <template v-for="(item, i) in Object.entries(loopArray)">
-        <q-item
-          clickable
-          v-ripple
-          active-class="text-orange"
-          :set="(loop = loopArray[i])"
-          :id="getItemName(loop) + collectionID + i"
-          :key="getItemName(loop) + collectionID + i"
-          @click="toggleActive(loop, i)"
-          :active="active(loop)"
-        >
-          <q-item-section avatar>
-            <q-icon name="mdi-autorenew" />
-          </q-item-section>
-          <q-item-section class="text-center">
-            <q-item-label>
-              {{ loop[0] }}
-            </q-item-label>
-          </q-item-section>
-          <q-item-section side avatar>
-            <q-icon name="mdi-plus-circle" v-show="!active(loop)" />
-            <q-icon name="mdi-check-circle" v-show="active(loop)" />
-          </q-item-section>
-        </q-item>
-      </template>
+    <q-list bordered separator dense>
+      <q-item
+        clickable
+        v-ripple
+        active-class="text-orange"
+        v-for="(item, i) in Object.entries(loopArray)"
+        :set="loop = loopArray[i]"
+        :id="getItemID(loop, i)"
+        :key="getItemID(loop,i)"
+        @click="toggleActive(loop, i)"
+        :active="active(loop)"
+      >
+        <!-- <pre> {{ loop }} </pre> -->
+        <q-item-section avatar>
+          <q-icon name="mdi-autorenew" />
+        </q-item-section>
+        <q-item-section class="text-center">
+          <q-item-label>
+            {{ loop[0] }}
+          </q-item-label>
+        </q-item-section>
+        <q-item-section side avatar>
+          <q-icon
+            name="mdi-plus-circle"
+            v-show="!activeList[getActiveItemName(loop)]"
+          />
+          <q-icon
+            name="mdi-check-circle"
+            v-show="activeList[getActiveItemName(loop)]"
+          />
+        </q-item-section>
+      </q-item>
+      <!-- </template> -->
     </q-list>
-    <p v-else>{{ altMessage }}</p>
+    <!-- <p v-else>{{ altMessage }}</p> -->
   </div>
 </template>
 
 <script>
+import { loop_funcs } from "../../../../mixins/loop_funcs.js"
+import Vue from "vue";
 export default {
   name: "LoopList",
   props: {
@@ -46,42 +55,9 @@ export default {
     collectionID: {
       type: Number,
       default: () => 0
-    },
+    }
   },
   data: () => ({ activeList: {}, componentKey: 0 }),
-  created() {
-    if (this.loopArray.length) {
-      this.loopArray.map(loop => {
-        const key = this.getActiveItemName(loop);
-        this.activeList[key] = false;
-        Object.assign({}, this, this.activeList);
-      });
-    }
-  },
-  methods: {
-    active(loop) {
-      const loopStatus = this.activeList[this.getActiveItemName(loop)];
-      // console.log("lstat", loopStatus);
-      return loopStatus;
-    },
-    toggleActive(loop, i) {
-      this.$nextTick(() => {
-        const itm = this.getActiveItemName(loop);
-        console.log("toggle from", itm, this.activeList[itm]);
-        this.activeList[itm] = !this.activeList[itm];
-        console.log("toggle to", itm, this.activeList[itm]);
-      });
-      this.componentKey++;
-    },
-    getActiveItemName(val) {
-      return this.getItemName(val) + "_active";
-    },
-    getItemName(val) {
-      if (!val) return val;
-      const name = val[0].replace(/\s/g, "") || "";
-      // console.log("getIName", name);
-      return name;
-    }
-  }
+ mixins: [ loop_funcs ]
 };
 </script>
