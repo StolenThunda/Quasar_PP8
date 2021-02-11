@@ -2,12 +2,12 @@
     <!-- v-if="loggedIn" -->
   <q-btn
     v-bind="authBtnProps"
-    @click.prevent="login"
     glossy
     push
     ripple
     icon="account_circle"
   >
+    <!-- @click.prevent="login" -->
     <!-- <q-avatar size="42px" v-if="loggedIn"> -->
     <!-- <img :src="this.$auth.user.picture" /> -->
     <!-- </q-avatar> -->
@@ -78,8 +78,6 @@ export default {
     },
     ...mapState("auth", ["loggedIn"])
   },
-  methods: {
-    ...mapActions("auth", ["login_user", "logout_user"])
-  }
+  methods: mapActions("auth", ["login_user", "logout_user"])
 };
 </script>
