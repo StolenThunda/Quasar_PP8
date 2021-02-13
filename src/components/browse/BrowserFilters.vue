@@ -103,10 +103,11 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped>
-.truncate-chip-labels > .q-chip
+<style lang="scss" scoped>
+.truncate-chip-labels > .q-chip{
   max-width: 50px;
-
-.filtered
-  display: none
+}
+.filtered{
+  display: none;
+}
 </style>

@@ -109,15 +109,18 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped>
-.section-heading
+<style lang="scss" scoped>
+.section-heading {
     text-transform: uppercase !important;
     font-weight: 900 !important;
     background: #777 !important;
     line-height: 1.25em !important;
     font-size: .8em !important;
-.q-link
-  background-color: #000000 !important
-.q-item
-  background-color: #424242
+}
+.q-link{
+  background-color: #000000 !important;
+}
+.q-item{
+  background-color: #424242;
+}
 </style>

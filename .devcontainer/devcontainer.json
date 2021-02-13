@@ -10,7 +10,8 @@
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": { 
-		"terminal.integrated.shell.linux": "/usr/bin/zsh"
+		"terminal.integrated.shell.linux": "/usr/bin/zsh",
+		"workbench.colorTheme": "Cobalt3"
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
@@ -24,7 +25,10 @@
 		"dariofuzinato.vue-peek",
 		"peakchen90.vue-beautify",
 		"dannyconnell.split-html-attributes",
-		"formulahendry.terminal"
+		"formulahendry.terminal",
+		"alex-pattison.theme-cobalt3",
+		"mhutchie.git-graph",
+		"vector-of-bool.gitflow"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

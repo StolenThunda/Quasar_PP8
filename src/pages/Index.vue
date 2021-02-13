@@ -54,10 +54,10 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped>
-  .q-carousel__slide 
+<style lang="scss" scoped>
+  .q-carousel__slide {
     background-repeat: no-repeat;
     background-size: auto;
     // filter: blur(1px) sepia()
-  
+  }
 </style>
