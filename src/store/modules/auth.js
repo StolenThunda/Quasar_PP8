@@ -38,8 +38,8 @@ login_user({ commit }, payload) {
     .then(userCredential => {
       // Signed in
       var user = userCredential.user;
-      console.log("Login Successful", user);
-      this.$router.replace("/");
+      // console.log("Login Successful", user);
+      this.$router.replace("/").catch(err => {});
     })
     .catch(error => {
       commit("SET_LOGGED_IN", false);
@@ -60,13 +60,13 @@ logout_user({ commit }) {
   firebaseAuth.onAuthStateChanged(user => {
     Loading.hide();
     if (user) {
-      console.log('logged in')
+      // console.log('logged in')
       commit("SET_LOGGED_IN", true);
       LocalStorage.set("loggedIn", true);
       this.$router.push("/").catch(err => {});
       // dispatch("Tasks/fbReadData", null, { root: true });
     } else {
-      console.log('logged out')
+      // console.log('logged out')
       commit("SET_LOGGED_IN", false);
       LocalStorage.set("loggedIn", false);
       this.$router.replace("/auth").catch(err => {});

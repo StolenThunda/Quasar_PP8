@@ -22,7 +22,7 @@ export default {
       if (notes) ctx.notifications = notes;
     },
     ADD_SB_TABS(ctx, tabs) {
-      console.log(`Before adding tab: \n${JSON.stringify(ctx.sidebarTabs, null, 2)}`);
+      // console.log(`Before adding tab: \n${JSON.stringify(ctx.sidebarTabs, null, 2)}`);
       if (tabs) {
         tabs.forEach((tab, idx) => {
           // console.log(`InspTab ${JSON.stringify(tab)}`);
@@ -32,29 +32,29 @@ export default {
             tab.id = idx;
             // console.log(`adding new: ${JSON.stringify(tab)}`);
             ctx.sidebarTabs.unshift(tab);
-            console.log(`After adding tab: \n${JSON.stringify(ctx.sidebarTabs, null, 2)}`);
+            // console.log(`After adding tab: \n${JSON.stringify(ctx.sidebarTabs, null, 2)}`);
             console.log();
           }
         }, ctx);
       }
     },
     DELETE_SIDEBAR_TABS(state, arr_str_name) {
-      console.log(`Before Removing tab: \n${JSON.stringify(state.sidebarTabs, null, 2)}`);
+      // console.log(`Before Removing tab: \n${JSON.stringify(state.sidebarTabs, null, 2)}`);
       if (Array.isArray(arr_str_name)) {
         for (let i = 0; i < arr_str_name.length; i++) {
           let el = arr_str_name[i];
           let filterTabs = state.sidebarTabs.filter(tab => tab.name !== el);
-          console.log(`filtered ${el}`);
+          // console.log(`filtered ${el}`);
           Vue.set(state, "sidebarTabs", filterTabs);
         }
       } else {
         let filterTabs = state.sidebarTabs.filter(
           tab => tab.name !== arr_str_name
         );
-        console.log("filtered", filterTabs);
+        // console.log("filtered", filterTabs);
         Vue.set(state, "sidebarTabs", filterTabs);
       }
-      console.log(`After Removing tab: \n${JSON.stringify(state.sidebarTabs, null, 2)}`);
+      // console.log(`After Removing tab: \n${JSON.stringify(state.sidebarTabs, null, 2)}`);
 
     },
     FAVORITE(state, objFav) {

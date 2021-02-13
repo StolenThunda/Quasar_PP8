@@ -63,9 +63,6 @@ export default {
   computed: {
     ...mapState('auth', ["loggedIn"] ),
     ...mapState('default', {tabs: state => state.sidebarTabs}),
-    tabs() {
-      return this.sidebarTabs
-    }
   },
   mounted() {
     this.resetSideBar();
