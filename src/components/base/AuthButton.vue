@@ -1,5 +1,4 @@
 <template>
-    <!-- v-if="loggedIn" -->
   <q-btn
     v-bind="authBtnProps"
     glossy
@@ -7,10 +6,6 @@
     ripple
     icon="account_circle"
   >
-    <!-- @click.prevent="login" -->
-    <!-- <q-avatar size="42px" v-if="loggedIn"> -->
-    <!-- <img :src="this.$auth.user.picture" /> -->
-    <!-- </q-avatar> -->
     <q-menu>
       <div class="row q-pa-lg no-wrap ">
         <div class="column ">
@@ -50,9 +45,10 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "AuthButton",
   components: {
-    ToolList: () => import("components/base/DefaultToolList")
+    ToolList: () => require("components/base/DefaultToolList").default
   },
   computed: {
+    ...mapState("auth", ["loggedIn"]),
     authBtnProps() {
       const props = !this.loggedIn
         ? {
@@ -76,8 +72,9 @@ export default {
     userEmail() {
       return firebaseAuth.currenUser?.email ?? "Default@email.com";
     },
-    ...mapState("auth", ["loggedIn"])
   },
-  methods: mapActions("auth", ["login_user", "logout_user"])
+  methods: {
+    ...mapActions("auth", ["login_user", "logout_user"])
+  }
 };
 </script>

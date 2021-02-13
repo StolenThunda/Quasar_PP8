@@ -37,7 +37,6 @@
             text-color="white"
             icon="drag_indicator"
             @dblclick="leftDrawer = !leftDrawer"
-            @hover.native="doStuff"
           />
         </template>
         <template v-slot:after>
@@ -108,9 +107,6 @@ export default {
     })
   },
   methods: {
-    doStuff(val) {
-      console.log("val", val.type);
-    },
     showTab(tab) {
       this.currentTab = tab;
     },
