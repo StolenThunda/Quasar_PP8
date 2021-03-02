@@ -11,7 +11,7 @@
 	// Set *default* container specific settings.json values on container create.
 	"settings": { 
 		"terminal.integrated.shell.linux": "/usr/bin/zsh",
-		"workbench.colorTheme": "Cobalt3"
+		"workbench.colorTheme": "SynthWave '84"
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
@@ -28,7 +28,9 @@
 		"formulahendry.terminal",
 		"alex-pattison.theme-cobalt3",
 		"mhutchie.git-graph",
-		"vector-of-bool.gitflow"
+		"vector-of-bool.gitflow",
+		"robbowen.synthwave-vscode",
+		"ms-azuretools.vscode-docker"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
