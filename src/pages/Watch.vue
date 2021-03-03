@@ -1,18 +1,32 @@
 <template>
-  <div width="100%" height="100%">
-    <q-card v-model="currentCourse" class="my-card" :set="(s = getCourseInfo)">
-      <div class="text-h6" v-html="s.title"></div>
-      <q-img :ratio="16 / 9" contain :src="s.image">
-        <div class="text-bold text-center" v-html="s.description"></div>
-        <div class="absolute-bottom">
-          <div class="text-body2" v-html="s.overview"></div>
-        </div>
+  <q-card v-model="ProPlayer.thePackage" class=" q-pa-md">
+    <div class="row item-start ">
+      <q-img  class="col fit" :src="image">
         <template v-slot:loading>
-          <q-spinner-gears color="white" />
+          <q-spinner-bars color="white" />
         </template>
       </q-img>
-    </q-card>
-  </div>
+      <div
+        class="col text-h6 text-center q-pa-md"
+        v-html="overview"
+        v-if="overview !== ''"
+      >
+        Tuning: {{ tuning }}
+      </div>
+      <div class="col text-h6 text-center" v-else>
+        <p>Tuning: {{ tuning }}</p>
+        <p>
+          <!-- <q-avatar icon="mdi-arrow-left-bold" />  -->
+          <q-avatar color="secondary" icon="mdi-chevron-left" />
+          Choose a segment to the left
+        </p>
+      </div>
+    </div>
+
+    <q-inner-loading>
+      <q-spinner-gears size="50px" color="primary" />
+    </q-inner-loading>
+  </q-card>
 </template>
 
 <script>
@@ -20,15 +34,22 @@ import { mapState } from "vuex";
 export default {
   name: "PackageInfo",
   computed: {
-    getCourseInfo() {
-      return {
-        title: this.currentCourse?.packageTitle,
-        image: this.currentCourse?.packageImage,
-        overview: this.currentCourse?.packageOverview,
-        description: this.currentCourse?.packageDescription
-      };
+    title() {
+      return this.ProPlayer.thePackage.getTitle();
     },
-    ...mapState("watch", ["currentCourse"])
+    image() {
+      return this.ProPlayer.thePackage.getImageURL();
+    },
+    tuning() {
+      return this.ProPlayer.thePackage.getTuning();
+    },
+    description() {
+      return this.ProPlayer.thePackage.getDescription();
+    },
+    overview() {
+      return this.ProPlayer.thePackage.getOverview();
+    },
+    ...mapState("watch", ["ProPlayer"])
   }
 };
 </script>

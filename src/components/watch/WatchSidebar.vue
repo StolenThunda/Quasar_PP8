@@ -6,30 +6,21 @@
   </q-list>
 </template>
 
-<script>
+<script> 
+import Segments from "components/watch/Segments"
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapGetters } = createNamespacedHelpers("watch");
 export default {
   name: "PlayerSideBarTabs",
   data: () => ({
-    tab: true,
-    sections: null
+    // tab: true,
+    // sections: null
   }),
-  mounted() {
-    this.fetchSections();
-  },
   computed: {
     ...mapState(["playSections"])
   },
   components: {
-    segments: () => import("components/watch/Segments")
+    Segments
   },
-
-  methods: {
-    fetchSections() {
-      this.sections = this.getPlaySections();
-    },
-    ...mapGetters(["getPlaySections"])
-  }
 };
 </script>

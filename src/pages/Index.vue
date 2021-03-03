@@ -1,13 +1,13 @@
 <template>
   <q-page class="column no-wrap justify-start justify-start">
-    <div v-if="$auth.isAuthenticated">
+    <div v-if="loggedIn">
       <welcome-panel @toggle-drawer="$emit('toggle-drawer')" />
       <resume-panel />
       <notification-panel />
     </div>
     <div class="q-pa-md" v-else> 
-      <span class="text-bold text-h4" >Welcome</span>
-    <q-carousel
+      <span class="text-bold text-h4" >Welcome </span>
+    <!-- <q-carousel
       v-model="slide"
       transition-prev="fade"
       transition-next="fade"
@@ -24,32 +24,36 @@
       <q-carousel-slide :name="2" img-src="https://cdn.texasbluesalley.com/misc/locals-page/AllCourses-1600px.jpg" />
       <q-carousel-slide :name="3" img-src="https://txba-media.s3.amazonaws.com/woodshed/course-type-images/SRV-800.jpg" />
       <q-carousel-slide :name="4" img-src="https://txba-media.s3.amazonaws.com/woodshed/course-type-images/Influences-800.jpg" />
-    </q-carousel>
+    </q-carousel> -->
+
   </div>  
   </q-page>
 </template>
 
 <script>
+import WelcomePanel from "components/index/Welcome.vue"
+import ResumePanel from "components/index/Resume.vue"
+import NotificationPanel from "components/index/Notifications.vue"
+import { mapState } from "vuex";
 export default {
   name: "Index",
-  components: {
-    "welcome-panel": () => import("../components/index/Welcome"),
-    "resume-panel": () => import("../components/index/Resume"),
-    "notification-panel": () => import("../components/index/Notifications")
-  },
-  data () {
-    return {
+  components: { WelcomePanel, ResumePanel, NotificationPanel },
+  data: () => ({
+      card: true,
+      stars: 3,
       slide: 1,
       autoplay: true
-    }
+    }),
+  computed: {
+    ...mapState('auth', ['loggedIn'])
   }
 };
 </script>
 
-<style lang="sass" scoped>
-  .q-carousel__slide 
+<style lang="scss" scoped>
+  .q-carousel__slide {
     background-repeat: no-repeat;
     background-size: auto;
     // filter: blur(1px) sepia()
-  
+  }
 </style>

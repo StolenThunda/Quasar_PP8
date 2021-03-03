@@ -4,12 +4,13 @@
       "path": "."
     },
     {
-      "path": "..\\ProPlayer_v8\\src"
+      "path": "..\\ProPlayer_v8\\src\\legacy\\proplayer74"
     }
   ],
   "settings": {
     "vetur.validation.template": false,
     "vetur.format.enable": false,
-    "vetur.experimental.templateInterpolationService": true
+    "vetur.experimental.templateInterpolationService": true,
+    "npm-scripts.showStartNotification": false
   }
 }

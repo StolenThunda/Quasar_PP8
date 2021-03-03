@@ -1,11 +1,7 @@
 <template>
-    <q-layout view="hHh Lpr lff" container style="height: 100vh" class="shadow-2 rounded-borders">
-  <!-- <q-layout view="lHh Lpr lff"> -->
-    <!-- Be sure to play with the Layout demo on docs -->
-
-    <!-- (Optional) The Header -->
-    <q-header reveal elevated>
-      <watch-tool-bar>
+  <q-layout view="lHh LpR lFf">
+    <q-header>
+      <watch-toolbar>
         <template #toggle>
           <q-btn
             flat
@@ -16,49 +12,60 @@
           />
         </template>
         <template #auth>
-          <auth-button></auth-button>
+          <auth-button />
         </template>
-      </watch-tool-bar>
+      </watch-toolbar>
     </q-header>
 
-    <q-drawer 
-      v-model="leftDrawer" 
-      bordered
-      :width="300"
-      :breakpoint="500"    
-      show-if-above>
-      <!-- QScrollArea is optional -->
-      <!-- <q-scroll-area  style="height: 200px; max-width: 300px;"> -->
-      <q-scroll-area
-        :delay="1200"
-        :thumb-style="thumbStyle"
-        style="height: 90vh; max-width: 300px;"
-      >
-        <!-- :bar-style="barStyle" -->
-        <!-- Content here -->
-        <dynamic-tab :tabList="this.tabs" />
-      </q-scroll-area>
-    </q-drawer>
-
     <q-page-container>
-      <router-view :key="$route.fullPath" />
+      <q-splitter
+        v-model="splitterModel"
+        reverse
+        :limits="[65, 100]"
+        style="height: 92vh"
+      >
+        <template v-slot:before v:tabs="tabs">
+          <q-scroll-area :thumb-style="thumbStyle" class="fit">
+            <dynamic-tab :tabList="tabs" class="q-item" />
+          </q-scroll-area>
+        </template>
+
+        <template v-slot:separator>
+          <!-- size="140px" -->
+          <q-avatar
+            color="secondary"
+            text-color="white"
+            icon="drag_indicator"
+            @dblclick="leftDrawer = !leftDrawer"
+          />
+        </template>
+        <template v-slot:after>
+          <router-view :key="$route.fullPath" />
+        </template>
+      </q-splitter>
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
+
+import DynamicTab from "components/base/DynamicTab"
+import DrawerToggle from "components/base/DrawerToggle"
+import AuthButton from "components/base/AuthButton"
+import WatchToolbar from "components/watch/WatchToolbar"
 import { mapState, mapActions } from "vuex";
 export default {
   name: "WatchLayout",
   components: {
-    DynamicTab: () => import("components/base/DynamicTab"),
-    WatchToolBar: () => import("components/watch/WatchToolbar"),
-    AuthButton: () => import("components/base/AuthButton")
+    DynamicTab,
+    WatchToolbar,
+    AuthButton
   },
   data: () => ({
-    leftDrawer: false,
+    leftDrawer: true,
     currentTab: null,
     favs: false,
+    splitterModel: 80,
     thumbStyle: {
       right: "5px",
       borderRadius: "5px",
@@ -67,16 +74,34 @@ export default {
       opacity: 0.35
     }
   }),
+  computed: {
+    getTabs() {
+      return this.tabs;
+    }
+  },
+  watch: {
+    leftDrawer(val) {
+      this.splitterModel = val ? 80 : 100;
+    }
+  },
   created() {
-    this.getSegmentData();
+    this.getPackageData();
     this.addSidebarTabs([
       {
         name: "Segments",
-        componentName: "Segments",
+        componentName: "SegmentsManager",
         icon: "mdi-segment",
-        cmp: () => import("components/watch/WatchSidebar"),
-        menu: () => import("components/watch/WatchSettings")
-      }
+        iconOnly: true,
+        cmp: () => import("components/watch/sidebar/Segments"),
+        menu: () => import("components/watch/settings/WatchSettings")
+      },
+      {
+        name: "Comments",
+        componentName: "CommentsManager",
+        icon: "mdi-comment-multiple-outline",
+        iconOnly: true, 
+        cmp: () => import("components/watch/sidebar/Comments")
+      }, 
     ]);
   },
   computed: {
@@ -91,13 +116,17 @@ export default {
       this.currentTab = tab;
     },
     goBack() {
-      window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/");
+      window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/").catch(err => {});
     },
-    async getSegmentData() {
+    async getPackageData() {
       return await this.fetchPackage(this.$route.params.packageID);
     },
-    ...mapActions("default", ["addSidebarTabs"]),
+    ...mapActions(["addSidebarTabs"]),
     ...mapActions("watch", ["fetchPackage"])
   }
 };
 </script>
+<style lang="sass" scoped>
+.menu-list .q-item
+  border-radius: 0 32px 32px 0
+</style>

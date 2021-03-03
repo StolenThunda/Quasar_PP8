@@ -1,5 +1,23 @@
 {
     "configurations": [
+      {
+        "name": "Attach to Edge",
+        "port": 9222,
+        "request": "attach",
+        "type": "pwa-msedge",
+        "webRoot": "${workspaceFolder}/src",
+        "sourceMaps": true
+      },
+      {
+        "name": "Vue: Attach to Chrome",
+        "port": 9222,
+        "request": "attach",
+        "type": "chrome",
+        "url": "http://localhost:3000",
+        "webRoot": "${workspaceFolder}/src",
+        "sourceMaps": true
+
+      },
     {
       "type": "chrome",
       "request": "launch",
@@ -7,9 +25,9 @@
       "url": "https://localhost:3000",
       "webRoot": "${workspaceFolder}/src",
       "breakOnLoad": true,
-      // "sourceMapPathOverrides": {
-      //   "webpack:///./src/*": "${webRoot}/*"
-      // },
+      "sourceMapPathOverrides": {
+        "webpack:///./src/*": "${webRoot}/*"
+      },
       "trace": "verbose"
     }
     ]
