@@ -3,14 +3,20 @@
     <span class="text-h6">{{ title }}</span>
     <slot name="header-pages"></slot>
     <q-list v-model="resultList">
+
       <q-intersection
         v-for="entry in resultList"
         :key="entry.id"
         transition="slide-right"
       >
         <q-card class="q-mb-xs" bordered flat>
-          <q-item class="browser-result-wrapper">
-            <q-item-section v-model="entry.avatar" @hover="toggler" avatar>
+
+          <q-item class="browser-result-wrapper"  >
+            <q-item-section             
+              v-model="entry.avatar"
+              @hover="toggler"
+              avatar
+            >
               <q-btn
                 class="browser-result-fav-wrapper q-ml-lg"
                 :color="isFavorite(entry) ? 'negative' : 'primary'"
@@ -19,6 +25,7 @@
                 @click="toggleFavorite(entry)"
                 round
                 push
+               @click="toggleFavorite(entry)"
               />
             </q-item-section>
             <q-item :to="lnk(entry)" clickable v-ripple style="width:100%">
@@ -36,6 +43,7 @@
                 </q-img>
               </q-item-section>
               <q-item-section class="browser-result-text-wrapper">
+
                 <q-item-label
                   text-color="secondary"
                   class="text-weight-bolder text-body2 browser-result-title"
@@ -131,6 +139,7 @@ export default {
   margin-right: 1rem;
   margin-left: 4rem;
 }
+
 
 .browser-result-title {
   font-size: 1.1rem;
