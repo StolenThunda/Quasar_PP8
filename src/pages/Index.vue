@@ -31,23 +31,19 @@
 </template>
 
 <script>
+import WelcomePanel from "components/index/Welcome.vue"
+import ResumePanel from "components/index/Resume.vue"
+import NotificationPanel from "components/index/Notifications.vue"
 import { mapState } from "vuex";
 export default {
   name: "Index",
-  components: {
-    "welcome-panel": () => import("../components/index/Welcome"),
-    "resume-panel": () => import("../components/index/Resume"),
-    "notification-panel": () => import("../components/index/Notifications"),
-  },
-  data ()
-     {
-    return {
+  components: { WelcomePanel, ResumePanel, NotificationPanel },
+  data: () => ({
       card: true,
       stars: 3,
       slide: 1,
       autoplay: true
-    }
-  },
+    }),
   computed: {
     ...mapState('auth', ['loggedIn'])
   }

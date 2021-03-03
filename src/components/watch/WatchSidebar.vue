@@ -6,7 +6,8 @@
   </q-list>
 </template>
 
-<script>
+<script> 
+import Segments from "components/watch/Segments"
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapGetters } = createNamespacedHelpers("watch");
 export default {
@@ -19,7 +20,7 @@ export default {
     ...mapState(["playSections"])
   },
   components: {
-    segments: () => import("components/watch/Segments")
+    Segments
   },
 };
 </script>

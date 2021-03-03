@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh LpR lFf">
     <q-header>
-      <watch-tool-bar>
+      <watch-toolbar>
         <template #toggle>
           <q-btn
             flat
@@ -14,7 +14,7 @@
         <template #auth>
           <auth-button />
         </template>
-      </watch-tool-bar>
+      </watch-toolbar>
     </q-header>
 
     <q-page-container>
@@ -48,13 +48,18 @@
 </template>
 
 <script>
+
+import DynamicTab from "components/base/DynamicTab"
+import DrawerToggle from "components/base/DrawerToggle"
+import AuthButton from "components/base/AuthButton"
+import WatchToolbar from "components/watch/WatchToolbar"
 import { mapState, mapActions } from "vuex";
 export default {
   name: "WatchLayout",
   components: {
-    DynamicTab: () => import("components/base/DynamicTab"),
-    WatchToolBar: () => import("components/watch/WatchToolbar"),
-    AuthButton: () => import("components/base/AuthButton")
+    DynamicTab,
+    WatchToolbar,
+    AuthButton
   },
   data: () => ({
     leftDrawer: true,

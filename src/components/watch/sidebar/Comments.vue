@@ -108,7 +108,7 @@ export default {
     this.loadComments();
   },
   components: {
-    addComment: () => import("./AddComment"),
+    AddComment,
     UserAdminChat
   },
   methods: {

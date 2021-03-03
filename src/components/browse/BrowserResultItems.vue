@@ -74,6 +74,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 export default {
+  name: "ResultList",
   props: {
     resultList: Array,
     title: String,

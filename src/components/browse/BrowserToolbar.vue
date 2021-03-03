@@ -5,7 +5,7 @@
       <q-toolbar-title class="text-capitalize text-center text-subvalue2">
         Browser
         
-        <q-breadcrumbs-el v-model="activeCategory"> {{ entitleCategory(activeCategory) }}</q-breadcrumbs-el>
+        <q-breadcrumbs-el v-model="activeCategory"> {{ entitleCategory() }}</q-breadcrumbs-el>
       </q-toolbar-title>
       <q-btn label="Close" color="secondary" icon="close" to="/" />
     </q-toolbar>

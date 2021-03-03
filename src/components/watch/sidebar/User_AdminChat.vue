@@ -56,6 +56,7 @@
 </template>
 
 <script>
+import AddComment from "./AddComment"
 export default {
   name: "UserAdminChatMessage",
   props: {
@@ -66,7 +67,7 @@ export default {
     }
   },
   components: {
-    AddComment: () => import("./AddComment")
+    AddComment
   },
   data: () => ({
     reply: false,

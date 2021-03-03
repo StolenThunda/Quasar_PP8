@@ -58,24 +58,27 @@ export default {
     }
   },
   computed: {
-    ...mapState("default", ["favorites"]),
+    ...mapState("default", ["favorites"])
   },
   methods: {
     link(fav) {
-      this.fetchPackage(fav.id)
-      return false
+      // // this.fetchPackage(fav.id)
+      // this.fetchPackage(fav.id).then(() =>
+      // this.fetchDefaultMedia())
+      // return false
       // this.setCurrentSegmentSetup(fav.id).then(id => {
-      //   const route =
-      //     fav.src !== "Imported" ? `/watch/${id}` : `/watch/${id}/${id}`;
-      //   console.log("link_route", route);
-      //   this.$router.push({ path: `${route}` });
+      if (fav.src !== "Imported") {
+        this.$router.push(`/watch/${fav.id}`);
+      } else {
+        this.$router.push(`/watch/${fav.id}/${fav.id}`);
+      }
       // });
     },
     getFavs() {
       this.favs = this.$store.getters["default/getFavsByType"];
     },
     ...mapActions("default", ["removeFavorite"]),
-    ...mapActions("watch", ["playSegment", "fetchPackage"])
+    ...mapActions("watch", ["playSegment", "fetchPackage", "fetchDefaultMedia"])
   }
 };
 </script>

@@ -6,7 +6,7 @@
     class="shadow-2 rounded-borders"
   >
     <q-header reveal elevated>
-      <watch-tool-bar>
+      <watch-toolbar>
         <template #toggle>
           <q-btn
             flat
@@ -19,7 +19,7 @@
         <template #auth>
           <auth-button></auth-button>
         </template>
-      </watch-tool-bar>
+      </watch-toolbar>
     </q-header>
 
       <!-- :width="300"
@@ -41,13 +41,16 @@
 </template>
 
 <script>
+import DynamicTab from "components/base/DynamicTab"
+import WatchToolbar from "components/watch/WatchToolbar"
+import AuthButton from "components/base/AuthButton"
 import { mapState, mapActions } from "vuex";
 export default {
   name: "WatchLayout",
   components: {
-    DynamicTab: () => import("components/base/DynamicTab"),
-    WatchToolBar: () => import("components/watch/WatchToolbar"),
-    AuthButton: () => import("components/base/AuthButton")
+    DynamicTab,
+    WatchToolBar,
+    AuthButton
   },
   data: () => ({
     leftDrawer: false,
