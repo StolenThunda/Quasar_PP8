@@ -62,20 +62,23 @@ export default class TXBA_Utilities {
         return response;
       });
   }
-  getFavs() {
-    return this.getAsyncData(this.favorites_slug).then(data =>
-      this.parseFavoriteHtml(data)
-    );
+  async getFavs(id) {
+    let url = this.favorites_slug + "/" + id ? id : "";
+    const data = await this.getAsyncData( url );
+    return this.parseFavoriteHtml( data );
   }
 
-  getNotification() {
-    return this.getAsyncData(this.notification_slug).then(data =>
-      this.parseNotificationHtml(data)
-    );
+  async getNotification() {
+    const data = await this.getAsyncData( this.notification_slug );
+    return this.parseNotificationHtml( data );
   }
 
   getUserLoops(segID) {
     return this.getAsyncData(`${this.user_loops_slug}/${segID}`);
+  }
+
+  getUserSegment(segID) {
+    return this.getAsyncData(`${this.segment_slug}/${segID}`);
   }
 
   async getDefaultSearchEntries() {
@@ -115,7 +118,9 @@ export default class TXBA_Utilities {
   }
 
   async getSegment(ID) {
-    return this.getAsyncData(`${this.segment_slug}/${ID}`);
+    let slug = `${this.segment_slug}/${ID}`
+    console.log('getSeg', slug)
+    return this.getAsyncData(slug);
   }
 
   async getComments(packageID, segmentID) {
@@ -131,6 +136,36 @@ export default class TXBA_Utilities {
     return finalComments;
   }
 
+  async loadMedia(slug, info) {
+    const html = await this.getAsyncData( `${slug}` );
+  
+    const $ = cheerio.load( html );
+    const text = $( "script" ).html();
+    // return html
+    const matchX = text.match( /var videoData = (.*);/ );
+    if (!matchX) return info
+    let strVidData = matchX[1];
+    // replace single with double quotes
+    strVidData = strVidData.replace( /'/g, '"' );
+    //match any variables (alphanumeric) that end with a colon :, but will ingore any matches that are found between quotes (i.e. data string values)
+    strVidData = strVidData.replace( /([^"]+)|("[^"]+")/g, function (
+      $0,
+      $1,
+      $2
+    ) {
+      if ( $1 ) {
+        // Replace property names with quotes
+        return $1.replace( /([a-zA-Z0-9]+?):/g, '"$1":' );
+      } else {
+        return $2;
+      }
+    } );
+    strVidData = strVidData.replace( "},]", "}]" );
+    console.dir(JSON.parse(strVidData), info);
+    var objReturn = JSON.parse( strVidData );
+    if (typeof(info.data) !== 'undefined') objReturn = Object.assign({}, info, objReturn, info) 
+    return objReturn
+  }
   parseCommentHtml(strComments, lvl = null) {
     const $ = cheerio.load(strComments);
     // console.log("cHTML", $("body").html());

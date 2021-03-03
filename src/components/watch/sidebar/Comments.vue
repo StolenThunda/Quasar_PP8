@@ -1,7 +1,8 @@
 <template>
   <div class="fit">
-    <div class="bg-grey-7 row no-wrap">
-      <q-toolbar-title class="q-pl-sm">Questions</q-toolbar-title>
+    
+    <div class="bg-primary text-capitalize  shadow-2 tab-title row no-wrap">
+      <q-toolbar-title class="q-pl-sm text-caption ">Questions</q-toolbar-title>
       <q-space />
       <q-btn
         dense
@@ -13,7 +14,7 @@
         @click="ask = !ask"
       />
     </div>
-    <div class="bg-grey-9 row no-wrap">
+    <div class="bg-grey-9 row no-wrap tab-title">
       <q-checkbox
         v-model="notify"
         label="Notify"
@@ -107,7 +108,7 @@ export default {
     this.loadComments();
   },
   components: {
-    addComment: () => import("./AddComment"),
+    AddComment,
     UserAdminChat
   },
   methods: {
@@ -145,4 +146,8 @@ export default {
   background-color: #bb8c59;
   color: #000;
 }
+.tab-title {
+  min-height: 25px !important;
+}
+
 </style>

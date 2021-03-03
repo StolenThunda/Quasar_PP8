@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import NotificationItem from "components/index/NotificationItem"
 import { createNamespacedHelpers } from "vuex";
 const { mapState } = createNamespacedHelpers("default");
 
@@ -47,7 +48,7 @@ export default {
     };
   },
   components: {
-    NotificationItem: () => import("components/index/NotificationItem")
+    NotificationItem
   },
   computed: {
     ...mapState(["notifications"])

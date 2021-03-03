@@ -1,5 +1,5 @@
 <template>
-  <div id="mediaControlsWrapper" >
+  <div id="mediaControlsWrapper">
     <slot name="slider" />
     <!-- <div id="progressSliderWrapper">
       <div id="current-time">0.00</div>
@@ -26,7 +26,7 @@
             id="playback-beginning"
             class="transport-button"
             @click="restartPlayback"
-            icon='mdi-skip-backward'
+            icon="mdi-skip-backward"
             title="Back to the beginning."
             :disable="this.currentTime === 0"
           />
@@ -38,7 +38,7 @@
             @click="seek('back')"
             title="Rewind 5 Seconds."
             icon-right="mdi-rewind-5"
-            >
+          >
           </q-btn>
         </li>
         <li class="">
@@ -48,7 +48,7 @@
             @click="seek('forward')"
             title="Forward 5 Seconds."
             icon="mdi-fast-forward-5"
-           >
+          >
           </q-btn>
         </li>
         <li class="">
@@ -60,8 +60,9 @@
             :color="typeof loopStart === 'number' ? 'green' : 'white'"
             icon="mdi-arrow-collapse-left"
             flat
-          ><span class="text-weight-bold text-body1 q-px-xs">A</span></q-btn>
-            <!-- icon="mdi-format-horizontal-align-left" -->
+          >
+            <span class="text-weight-bold text-body1 q-px-xs">A</span>
+          </q-btn>
         </li>
         <li class="">
           <q-btn
@@ -73,22 +74,38 @@
             :disable="stopDisabled"
             icon-right="mdi-arrow-collapse-right"
             flat
-          ><span class="text-weight-bold text-body1 q-px-xs">B</span></q-btn>
+          >
+            <span class="text-weight-bold text-body1 q-px-xs">B</span>
+          </q-btn>
         </li>
         <li class="">
-          <q-btn
+          <q-btn-dropdown
             id="looping-toggle"
+            split
+            fab-mini
             title="Begin/End Looping."
             class="transport-button"
+            icon="mdi-autorenew"
+            :class="{ rotate: looping }"
             :color="!isLoopDefined ? 'grey' : 'green'"
             :disable="!isLoopDefined"
             @click="toggleLooping"
           >
-            <q-icon name="mdi-autorenew" :class="{ rotate: looping }"></q-icon>
-          </q-btn>
+            <!-- <q-icon name="mdi-autorenew" ></q-icon> -->
+              <q-list>
+        <q-item clickable v-close-popup @click="$root.$emit('clear-loop')">
+          <q-item-section avatar>
+            <q-avatar icon="mdi-minus-circle-off" color="primary" text-color="white" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Clear Loop</q-item-label>
+          </q-item-section>
+        </q-item>
+              </q-list>
+          </q-btn-dropdown>
         </li>
-        <li>         
-            <video-settings-menu />
+        <li>
+          <video-settings-menu />
         </li>
       </ul>
     </div>
@@ -100,13 +117,13 @@ import MediaProgressSlider from "./MediaProgressSlider.vue";
 export default {
   name: "PlayerControls",
   components: {
-    'videoSettingsMenu' : () => import('components/watch/settings/VideoSettings')
+    videoSettingsMenu: () => import("components/watch/settings/VideoSettings")
   },
   props: ["isPlaying", "loopStart", "loopStop", "currentTime", "isLoopDefined"],
   data: () => ({ looping: false }),
-  computed:{
-    stopDisabled(){
-      return !(typeof this.loopStart === 'number')
+  computed: {
+    stopDisabled() {
+      return !(typeof this.loopStart === "number");
     }
   },
   methods: {
@@ -152,18 +169,18 @@ export default {
 }
 #mediaWrapper {
   position: absolute;
-  top: 2.75rem;
+  // top: 2.75rem;
   left: 0;
   right: 0;
   bottom: 0;
 }
 #mediaPlayerWrapper {
-  bottom: 4.9rem;
+  // bottom: 4.9rem;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 7.5rem;
+  // bottom: 7.5rem;
   background: black;
   overflow: hidden;
   border: none;
@@ -171,7 +188,7 @@ export default {
   margin: 0;
 }
 #mediaControlsWrapper {
-  // position: absolute;
+  position: absolute;
   bottom: 0;
   height: auto;
   width: 100%;
@@ -187,8 +204,8 @@ export default {
     rgba(50, 50, 50, 1) 100%
   );
   z-index: 100;
-  padding-top: 0.25em;
-  padding-bottom: 0.25em;
+  // padding-top: 0.25em;
+  // padding-bottom: 0.25em;
 }
 ul#transportButtonsList {
   float: left;

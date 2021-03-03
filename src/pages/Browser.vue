@@ -24,12 +24,14 @@
 </template>
 
 <script>
+import ResultPanel from "components/browse/BrowserResultItems"
+import Pagination from "components/browse/BrowserPagination"
 import { mapState } from "vuex";
 export default {
   name: "Browser",
   components: {
-    ResultPanel: () => import("components/browse/BrowserResultItems"),
-    Pagination: () => import("components/browse/BrowserPagination")
+    ResultPanel,
+    Pagination
   },
   computed: {
     ...mapState("browser", [

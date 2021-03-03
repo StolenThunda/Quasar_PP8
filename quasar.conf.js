@@ -19,9 +19,11 @@ module.exports = function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
-      'auth0',
+      'router-auth',
+      'firebase',
       'axios',
       'panzoom',
+      'vue-plyr'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -56,7 +58,7 @@ module.exports = function (/* ctx */) {
 
       // rtl: false, // https://quasar.dev/options/rtl-support
       preloadChunks: true,
-      showProgress: false,
+      showProgress: true,
       gzip: true,
       analyze: true,
 
@@ -76,17 +78,20 @@ cfg.module.rules.push({
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      // host: '10.0.0.81',
+      // host: '172.17.0.3',
       host: 'localhost',
-      https: true,
+      https: false,
       port: 3000,
+       watchOptions: {
+        poll: 1000
+      },
       open: true, // opens browser window automatically
       // vueDevtools: true
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
-      // iconSet: 'material-icons', // Quasar icon set
+      iconSet: 'material-icons', // Quasar icon set
       lang: 'en-us', // Quasar language pack
       config: {
         dark: true,
@@ -110,6 +115,8 @@ cfg.module.rules.push({
       // Quasar plugins
       plugins: [
         'Notify',
+        'Dialog',
+        'LocalStorage'
       ],
       // config: {
       //   notify: {

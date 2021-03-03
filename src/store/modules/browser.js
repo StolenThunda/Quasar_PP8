@@ -56,7 +56,7 @@ export default {
       if (data) ctx.default_browser_entries = data;
     },
     SET_SEARCH_ENTRIES(ctx, data) {
-      console.log("SettingEntries:", data);
+      // console.log("SettingEntries:", data);
       if (data) ctx.search_entries = data;
     },
     SET_SEARCH(ctx, data) {

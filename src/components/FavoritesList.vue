@@ -30,7 +30,6 @@
               <q-item-section :title="fav.title">
                 {{ fav.title }}
               </q-item-section>
-
               <q-item-section color="grey" @click="removeFavorite(fav)" side>
                 <q-btn icon="delete" color="red" size="xs" round />
               </q-item-section>
@@ -51,11 +50,11 @@ export default {
     favs: null
   }),
   mounted() {
-    this.setFavs();
+    this.getFavs();
   },
   watch: {
     favorites() {
-      this.setFavs();
+      this.getFavs();
     }
   },
   computed: {
@@ -63,18 +62,23 @@ export default {
   },
   methods: {
     link(fav) {
-      this.playSegment(fav.id).then(id => {
-        const route =
-          fav.src !== "Imported" ? `/watch/${id}` : `/watch/${id}/${id}`;
-        console.log("link_route", route);
-        this.$router.push({ path: `${route}` });
-      });
+      // // this.fetchPackage(fav.id)
+      // this.fetchPackage(fav.id).then(() =>
+      // this.fetchDefaultMedia())
+      // return false
+      // this.setCurrentSegmentSetup(fav.id).then(id => {
+      if (fav.src !== "Imported") {
+        this.$router.push(`/watch/${fav.id}`);
+      } else {
+        this.$router.push(`/watch/${fav.id}/${fav.id}`);
+      }
+      // });
     },
-    setFavs() {
+    getFavs() {
       this.favs = this.$store.getters["default/getFavsByType"];
     },
     ...mapActions("default", ["removeFavorite"]),
-    ...mapActions("watch", ["playSegment"])
+    ...mapActions("watch", ["playSegment", "fetchPackage", "fetchDefaultMedia"])
   }
 };
 </script>

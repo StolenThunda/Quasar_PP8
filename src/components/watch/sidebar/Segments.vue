@@ -1,9 +1,9 @@
 <template>
   <q-list>
-    <template v-for="i in playSections">
+    <template v-for="section in sections">
       <q-expansion-item
-        :key="i.sectionID"
-        v-if="i.segments"
+        :key="section.sectionID"
+        v-if="section.segments"
         group="somegroup"
         default-opened
         style="max-width: 350px"
@@ -12,33 +12,38 @@
         switch-toggle-side
       >
         <template #header>
-          {{ i.sectionTitle }}
+          {{ section.sectionTitle }}
           <q-space />
         </template>
         <q-list class="q-py-sm rounded-borders" keep-alive bordered dense>
           <q-item
-            v-for="seg in i.segments"
-            :key="seg.id"
-            :set="(s = getSegIco(seg))"
-            :id="seg.id"
+            v-for="segment in section.segments"
+            :key="segment.segmentID"
+            :set="(segmentIconInfo = getSegIco(segment))"
+            :id="segment.segmentID"
             ripple
             clickable
-            @click="link(seg.id)"
+            @click="openSegment(segment.segmentID)"
             height="20px"
             active-class="secondary"
           >
-            <!-- @click="$router.push({path:`/watch/${$route.params.packageID}/${playSegment(seg.id)}`})" -->
             <q-item-section avatar>
-              <q-icon :color="seg.color" :name="s.icon" size="xs" />
+              <q-icon
+                :color="segmentIconInfo.color"
+                :name="segmentIconInfo.icon"
+                size="xs"
+              />
             </q-item-section>
-
             <q-item-section>
-              <q-item-label caption>{{ seg.title }}</q-item-label>
+              <q-item-label caption>{{ segment.segmentTitle }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
       </q-expansion-item>
     </template>
+    <q-inner-loading>
+      <q-spinner-gears size="50px" color="primary" />
+    </q-inner-loading>
   </q-list>
 </template>
 
@@ -47,62 +52,72 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "Segments",
   computed: {
-    ...mapState("watch", ["playSections"]),
+    sections() {
+      return this.ProPlayer.thePackage.getSections();
+    },
     packID() {
       return this.$route.params.packageID;
-    }
+    },
+    ...mapState("watch", ["playSections", "ProPlayer"])
   },
   methods: {
-    link(id) {
-      this.playSegment(id).then(id => {
+    openSegment(id) {
+      this.fetchSegment(id).then(id => {
         const route = `/watch/${this.packID}/${id}`;
-        console.log("link_route", route);
-        this.$router.push({ path: `${route}` });
+        console.log("openSegmentWithinCurrentPackage_route", route);
+        this.$router.push({ path: `${route}` }).catch(err => {});
       });
     },
     getSegIco(seg) {
       var ico = {};
-      switch (seg.sources[0].type) {
+      // switch (seg.sources[0].type) {
+      switch (this.ProPlayer.getSegmentClass(seg)) {
         case "audio":
           ico = {
-            icon: "mdi-volume-high"
+            icon: "mdi-volume-high",
+            color: "accent"
           };
           break;
-        case "vimeo":
+        case "video":
           ico = {
-            icon: "mdi-video-vintage"
+            icon: "mdi-video-vintage",
+            color: "secondary"
           };
           break;
-        case "youtube":
+        case "url":
           ico = {
-            icon: "mdi-youtube"
+            icon: "mdi-youtube",
+            color: "negative"
           };
           break;
         case "pdf":
           ico = {
-            icon: "mdi-file-pdf"
+            icon: "mdi-file-pdf",
+            color: "white"
           };
           break;
-        case "soundslice":
+        case "tablature":
           ico = {
-            icon: "mdi-file-music"
+            icon: "mdi-file-music",
+            color: "green-5"
           };
           break;
         case "gpx":
           ico = {
-            icon: "mdi-folder-music"
+            icon: "mdi-folder-music",
+            color: "yellow-3"
           };
           break;
         default:
           ico = {
-            icon: "mdi-video"
+            icon: "mdi-information"
           };
           break;
       }
       // console.log("SEGINFO", seg, ico);
       return ico;
     },
-    ...mapActions("watch", ["playSegment"])
+    ...mapActions("watch", ["fetchSegment"])
   }
 };
 </script>

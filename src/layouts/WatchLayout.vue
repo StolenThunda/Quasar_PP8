@@ -1,12 +1,7 @@
 <template>
-  <q-layout
-    view="lHh LpR lFf"
-    container
-    style="height: 100vh"
-    class="shadow-2 rounded-borders"
-  >
-    <q-header reveal elevated>
-      <watch-tool-bar>
+  <q-layout view="lHh LpR lFf">
+    <q-header>
+      <watch-toolbar>
         <template #toggle>
           <q-btn
             flat
@@ -17,46 +12,32 @@
           />
         </template>
         <template #auth>
-          <auth-button></auth-button>
+          <auth-button />
         </template>
-      </watch-tool-bar>
+      </watch-toolbar>
     </q-header>
-
-    <!-- :width="300"
-      :breakpoint="500" -->
-    <!-- <q-drawer -->
-    >
-    <!-- v-model="leftDrawer"
-      show-if-above
-      elevated -->
-    <!-- <q-scroll-area :delay="1200" :thumb-style="thumbStyle" class="fit">
-        <dynamic-tab :tabList="this.tabs" class="q-item" />
-      </q-scroll-area> -->
-    <!-- </q-drawer> -->
 
     <q-page-container>
       <q-splitter
         v-model="splitterModel"
         reverse
         :limits="[65, 100]"
-        style="height: 87vh"
+        style="height: 92vh"
       >
-        <template v-slot:before v-bind:tabs="tabs">
+        <template v-slot:before v:tabs="tabs">
           <q-scroll-area :thumb-style="thumbStyle" class="fit">
             <dynamic-tab :tabList="tabs" class="q-item" />
           </q-scroll-area>
         </template>
 
         <template v-slot:separator>
+          <!-- size="140px" -->
           <q-avatar
-            color="primary"
+            color="secondary"
             text-color="white"
-            size="40px"
             icon="drag_indicator"
             @dblclick="leftDrawer = !leftDrawer"
-            @hover.native="doStuff"
           />
-
         </template>
         <template v-slot:after>
           <router-view :key="$route.fullPath" />
@@ -67,13 +48,18 @@
 </template>
 
 <script>
+
+import DynamicTab from "components/base/DynamicTab"
+import DrawerToggle from "components/base/DrawerToggle"
+import AuthButton from "components/base/AuthButton"
+import WatchToolbar from "components/watch/WatchToolbar"
 import { mapState, mapActions } from "vuex";
 export default {
   name: "WatchLayout",
   components: {
-    DynamicTab: () => import("components/base/DynamicTab"),
-    WatchToolBar: () => import("components/watch/WatchToolbar"),
-    AuthButton: () => import("components/base/AuthButton")
+    DynamicTab,
+    WatchToolbar,
+    AuthButton
   },
   data: () => ({
     leftDrawer: true,
@@ -102,19 +88,20 @@ export default {
     this.getPackageData();
     this.addSidebarTabs([
       {
-        name: "Comments",
-        componentName: "Comments",
-        icon: "mdi-comment-multiple-outline",
-        cmp: () => import("components/watch/sidebar/Comments")
-        // menu: () => import("components/watch/sidebar/WatchSettings")
-      },
-      {
         name: "Segments",
-        componentName: "Segments",
+        componentName: "SegmentsManager",
         icon: "mdi-segment",
+        iconOnly: true,
         cmp: () => import("components/watch/sidebar/Segments"),
         menu: () => import("components/watch/settings/WatchSettings")
       },
+      {
+        name: "Comments",
+        componentName: "CommentsManager",
+        icon: "mdi-comment-multiple-outline",
+        iconOnly: true, 
+        cmp: () => import("components/watch/sidebar/Comments")
+      }, 
     ]);
   },
   computed: {
@@ -125,17 +112,16 @@ export default {
     })
   },
   methods: {
-    doStuff(val) { console.log('val', val.type)},
     showTab(tab) {
       this.currentTab = tab;
     },
     goBack() {
-      window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/");
+      window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/").catch(err => {});
     },
     async getPackageData() {
       return await this.fetchPackage(this.$route.params.packageID);
     },
-    ...mapActions("default", ["addSidebarTabs"]),
+    ...mapActions(["addSidebarTabs"]),
     ...mapActions("watch", ["fetchPackage"])
   }
 };
