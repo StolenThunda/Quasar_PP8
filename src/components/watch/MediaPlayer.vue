@@ -1,25 +1,30 @@
 <template>
-  <div v-if="media" class="container">
-    <!-- {{ media.mediaType }} -->
-    <vue-plyr v-if="media.mediaType == 'vimeo'" class="no-margin full-height">
-      <video controls crossorigin playsinline data-poster="media.thumbnail">
-        <source
-          v-for="(source, i) in media.videoSources"
-          :key="i"
-          :size="source.resolution"
-          :src="source.url"
-          type="video/mp4"
-        />
-      </video>
-    </vue-plyr>
-    <vue-plyr ref="plyr" v-if="media.mediaType == 'youtube'">
-      <div data-plyr-provider="youtube" :data-plyr-embed-id="media.data"></div>
-    </vue-plyr>
-    <div v-else>
-      no yt data
+  <q-page class="no-scroll">
+    <div v-if="media" class="container">
+      <!-- {{ media.mediaType }} -->
+      <vue-plyr v-if="media.mediaType == 'vimeo'" class="no-margin full-height">
+        <video controls crossorigin playsinline data-poster="media.thumbnail">
+          <source
+            v-for="(source, i) in media.videoSources"
+            :key="i"
+            :size="source.resolution"
+            :src="source.url"
+            type="video/mp4"
+          />
+        </video>
+      </vue-plyr>
+      <vue-plyr ref="plyr" v-if="media.mediaType == 'youtube'">
+        <div
+          data-plyr-provider="youtube"
+          :data-plyr-embed-id="media.data"
+        ></div>
+      </vue-plyr>
+      <div v-else>
+        no yt data
+      </div>
+      <q-resize-observer @resize="onResize" />
     </div>
-     <q-resize-observer @resize="onResize" />
-  </div>
+  </q-page>
 </template>
 
 <script>
@@ -31,26 +36,25 @@ export default {
   }),
   mounted() {
     // console.log('get it')
-    this.media = this.fetchPackage(this.$route.params.packageID).then(() =>
-      this.fetchDefaultMedia(), 
+    this.media = this.fetchPackage(this.$route.params.packageID).then(
+      () => this.fetchDefaultMedia(),
       error => {
-      console.error("Something ain't right")
-    });
+        console.error("Something ain't right");
+      }
+    );
   },
   computed: {
     ...mapState("watch", ["currentSetup"])
   },
   watch: {
     currentSetup() {
-      this.media = this.currentSetup
-    },
-    methods: {
-      onResize(size){
-        console.error(size)
-      }
+      this.media = this.currentSetup;
     }
   },
-  methods: {
+    methods: {
+      onResize(size) {
+        console.error(size);
+      },   
     ...mapActions("watch", ["fetchPackage", "fetchDefaultMedia"])
   }
 };
