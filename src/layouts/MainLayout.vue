@@ -48,14 +48,17 @@
   </q-layout>
 </template>
 
-<script>
+<script> 
+import DynamicTab from "components/base/DynamicTab"
+import DrawerToggle from "components/base/DrawerToggle"
+import AuthButton from "components/base/AuthButton"
 import { mapState, mapActions } from "vuex";
 export default {
   name: "MainLayout",
   components: {
-    DynamicTab: () => import("components/base/DynamicTab"),
-    DrawerToggle: () => import("components/base/DrawerToggle"),
-    AuthButton: () => import("components/base/AuthButton")
+    DynamicTab,
+    DrawerToggle,
+    AuthButton
   },
   data: () => ({
     leftDrawerOpen: false

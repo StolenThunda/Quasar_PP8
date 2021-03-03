@@ -1,46 +1,20 @@
 <template>
   <div>
-    <q-list bordered separator dense>
-      <q-item
-        clickable
-        v-ripple
-        active-class="text-orange"
-        v-for="(item, i) in Object.entries(loopArray)"
-        :set="loop = loopArray[i]"
-        :id="getItemID(loop, i)"
-        :key="getItemID(loop,i)"
-        @click="toggleActive(loop, i)"
-        :active="active(loop)"
-      >
-        <!-- <pre> {{ loop }} </pre> -->
-        <q-item-section avatar>
-          <q-icon name="mdi-autorenew" />
-        </q-item-section>
-        <q-item-section class="text-center">
-          <q-item-label>
-            {{ loop[0] }}
-          </q-item-label>
-        </q-item-section>
-        <q-item-section side avatar>
-          <q-icon
-            name="mdi-plus-circle"
-            v-show="!activeList[getActiveItemName(loop)]"
-          />
-          <q-icon
-            name="mdi-check-circle"
-            v-show="activeList[getActiveItemName(loop)]"
-          />
-        </q-item-section>
-      </q-item>
-      <!-- </template> -->
+    <q-list>
+      <LoopListItem 
+      v-for="(item, i) in Object.entries(loopArray)"
+       :loop="loopArray[i]" 
+       :key="i"
+       >
+
+      </LoopListItem>
+       
     </q-list>
-    <!-- <p v-else>{{ altMessage }}</p> -->
   </div>
 </template>
 
 <script>
-import { loop_funcs } from "../../../../mixins/loop_funcs.js"
-import Vue from "vue";
+import LoopListItem from "./LoopListItem.vue"
 export default {
   name: "LoopList",
   props: {
@@ -58,6 +32,32 @@ export default {
     }
   },
   data: () => ({ activeList: {}, componentKey: 0 }),
- mixins: [ loop_funcs ]
+  components: {
+    LoopListItem
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  }
 };
 </script>

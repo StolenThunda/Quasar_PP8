@@ -50,9 +50,6 @@ export default {
       return this.ProPlayer.thePackage.getOverview();
     },
     ...mapState("watch", ["ProPlayer"])
-  },
-  watch: {
-    currentCourse() {}
   }
 };
 </script>

@@ -118,7 +118,9 @@ export default class TXBA_Utilities {
   }
 
   async getSegment(ID) {
-    return this.getAsyncData(`${this.segment_slug}/${ID}`);
+    let slug = `${this.segment_slug}/${ID}`
+    console.log('getSeg', slug)
+    return this.getAsyncData(slug);
   }
 
   async getComments(packageID, segmentID) {
@@ -134,12 +136,14 @@ export default class TXBA_Utilities {
     return finalComments;
   }
 
-  async loadMedia(slug) {
+  async loadMedia(slug, info) {
     const html = await this.getAsyncData( `${slug}` );
+  
     const $ = cheerio.load( html );
     const text = $( "script" ).html();
-    return html
+    // return html
     const matchX = text.match( /var videoData = (.*);/ );
+    if (!matchX) return info
     let strVidData = matchX[1];
     // replace single with double quotes
     strVidData = strVidData.replace( /'/g, '"' );
@@ -157,8 +161,10 @@ export default class TXBA_Utilities {
       }
     } );
     strVidData = strVidData.replace( "},]", "}]" );
-    console.log( "json", strVidData );
-    return JSON.parse( strVidData );
+    console.dir(JSON.parse(strVidData), info);
+    var objReturn = JSON.parse( strVidData );
+    if (typeof(info.data) !== 'undefined') objReturn = Object.assign({}, info, objReturn, info) 
+    return objReturn
   }
   parseCommentHtml(strComments, lvl = null) {
     const $ = cheerio.load(strComments);
