@@ -124,6 +124,7 @@ export default {
       } else {
         console.log("fav", fav);
         commit("FAVORITE", fav);
+
       }
     },
     addFavorite({ commit }, fav) {

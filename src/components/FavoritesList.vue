@@ -79,6 +79,7 @@ export default {
     },
     ...mapActions("default", ["removeFavorite"]),
     ...mapActions("watch", ["playSegment", "fetchPackage", "fetchDefaultMedia"])
+
   }
 };
 </script>

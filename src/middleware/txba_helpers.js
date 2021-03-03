@@ -574,7 +574,7 @@ export default class TXBA_Utilities {
         }
       }
     });
-    // console.log("col", collection);
+    console.log("col", collection);
     return collection;
   }
   parseCriteria(html) {
