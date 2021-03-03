@@ -14,7 +14,7 @@
     "@capacitor/android": "^2.4.1",
     "@capacitor/core": "^2.4.1",
     "@quasar/extras": "^1.9.5",
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.3",
     "cordova": "^10.0.0",
     "core-js": "^3.6.5",
