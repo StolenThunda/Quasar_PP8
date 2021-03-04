@@ -60,7 +60,7 @@ const routes = [
       {
         name: "player",
         path: "/watch/:packageID/:segmentID",
-        component: () => import("components/watch/MediaPlayer")
+        component: () => import("components/watch/PlayerWrapper")
       },
       {
         name: "package",
