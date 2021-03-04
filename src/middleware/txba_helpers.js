@@ -119,7 +119,7 @@ export default class TXBA_Utilities {
 
   async getSegment(ID) {
     let slug = `${this.segment_slug}/${ID}`
-    console.log('getSeg', slug)
+    // console.log('getSeg', slug)
     return this.getAsyncData(slug);
   }
 
@@ -137,8 +137,7 @@ export default class TXBA_Utilities {
   }
 
   async loadMedia(slug, info) {
-    const html = await this.getAsyncData( `${slug}` );
-  
+    const html = await this.getAsyncData( `${slug}` );  
     const $ = cheerio.load( html );
     const text = $( "script" ).html();
     // return html
@@ -161,7 +160,7 @@ export default class TXBA_Utilities {
       }
     } );
     strVidData = strVidData.replace( "},]", "}]" );
-    console.dir(JSON.parse(strVidData), info);
+    console.dir("loadingMedia", JSON.parse(strVidData), info);
     var objReturn = JSON.parse( strVidData );
     if (typeof(info.data) !== 'undefined') objReturn = Object.assign({}, info, objReturn, info) 
     return objReturn
@@ -574,7 +573,7 @@ export default class TXBA_Utilities {
         }
       }
     });
-    console.log("col", collection);
+    // console.log("col", collection);
     return collection;
   }
   parseCriteria(html) {

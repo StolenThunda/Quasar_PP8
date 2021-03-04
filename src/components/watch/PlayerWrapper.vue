@@ -19,14 +19,14 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 export default {
   name: "MediaPlayerWrapper",
   components: {
     "pdf-renderer": () => import("components/watch/renderers/PDF"),
     "soundslice-renderer": () =>
       import("components/watch/renderers/SoundSlice"),
-    "media-player": () => import("components/watch/MediaPlayer")
+    "media-player": () => import("components/watch/MediaPlayer_old")
   },
   data: () => ({
     componentKey: 0,
@@ -35,6 +35,14 @@ export default {
   created() {
     this.$root.$on("flip-player", this.flipper);
   },
+  mounted() {
+    const media = this.fetchPackage(this.$route.params.packageID).then(
+      () => this.fetchDefaultMedia(),
+      error => {
+        console.error("Something ain't right");
+      }
+    );
+  }, 
   computed: {
     ...mapState("watch", ["currentSetup"])
   },
@@ -45,6 +53,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions("watch", ["fetchPackage", "fetchDefaultMedia"]),
     isRenderer(type) {
       console.log("type", type);
       return this.renderers.includes(type);

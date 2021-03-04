@@ -24,16 +24,33 @@
       </div>
       <q-resize-observer @resize="onResize" />
     </div>
+     <player-controls
+    >
+      <!-- :currentTime="ctime"
+      :isPlaying="playing"
+      :isLoopDefined="validLoop"
+      :loopStart="loopStart"
+      :loopStop="loopStop" -->
+      <template #slider>
+        <media-progress-slider /> <!--:remaining="duration" :ctime="ctime" :activeLoop="loopObj" />-->
+      </template>
+    </player-controls>
   </q-page>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import MediaProgressSlider from "components/watch/MediaProgressSlider"
+import PlayerControls from "components/watch/PlayerControls"
+import { mapActions, mapState } from "vuex"
 export default {
   name: "MediaPlayerWrapper",
   data: () => ({
     media: null
   }),
+  components: {
+    MediaProgressSlider,
+    PlayerControls
+  },
   mounted() {
     // console.log('get it')
     this.media = this.fetchPackage(this.$route.params.packageID).then(
@@ -51,10 +68,10 @@ export default {
       this.media = this.currentSetup;
     }
   },
-    methods: {
-      onResize(size) {
-        console.error(size);
-      },   
+  methods: {
+    onResize(size) {
+      console.error(size);
+    },
     ...mapActions("watch", ["fetchPackage", "fetchDefaultMedia"])
   }
 };
