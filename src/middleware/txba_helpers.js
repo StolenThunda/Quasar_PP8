@@ -160,7 +160,7 @@ export default class TXBA_Utilities {
       }
     } );
     strVidData = strVidData.replace( "},]", "}]" );
-    // console.dir("loadingMedia", JSON.parse(strVidData), info);
+    console.dir("loadingMedia", JSON.parse(strVidData), info);
     var objReturn = JSON.parse( strVidData );
     // if (typeof(info.data) !== 'undefined') objReturn = Object.assign({}, info, objReturn, info) 
     return objReturn
