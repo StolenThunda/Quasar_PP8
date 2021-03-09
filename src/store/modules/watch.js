@@ -12,15 +12,16 @@ export default {
     seekToTime: 0,
     mediaSources: null,
     playerSettings: {
-      speed: null,
-      volume: null,
+      speed: 1,
+      volume: 0.5,
       zoomEnabled: false,
       zoom: 1,
       flipped: false
     },
     playerOpts: {
       controls: false
-    }
+    },
+    playSections: []
   },
   mutations: {
     FLIP_PLAYER ( ctx ) {
@@ -114,7 +115,19 @@ export default {
       ctx.ProPlayer.bSegmentDataLoadingFinished = true;
     },
     SET_CURRENT_SEGMENT_SETUP ( ctx, data ) {
-      ctx.currentSetup = Object.assign( {}, ctx.currentSetup, ctx.playerOpts, data );
+      console.log( "currentSetup", ctx.currentSetup );
+      console.log( "playerOpts", ctx.playerOpts );
+      console.log( "playerSettings", ctx.playerSettings );
+      console.log( 'New data', data )
+      ctx.currentSetup = Object.assign(
+        {},
+        ctx.currentSetup,
+        ctx.playerOpts,
+        ctx.playerSettings,
+        data );
+    },
+    SET_PLAY_SECTIONS(ctx, data){
+      ctx.playSections = data?.playSections
     },
     SET_SEEK_TIME ( ctx, data ) {
       ctx.seekToTime = data;
@@ -180,17 +193,18 @@ export default {
     async fetchPackageData ( ctx, ID ) {
       return await ctx.rootState.TXBA_UTILS.getPackage( ID ).then( packageData => {
         ctx.commit( "SET_CURRENT_PACKAGE", packageData );
+        ctx.commit( "SET_PLAY_SECTIONS", packageData );
+        
         return packageData;
-      }, error => console.error(`Problem fetching package data, ${error}`) );
+      }, error => console.error( `Problem fetching package data, ${error}` ) );
     },
     fetchDefaultMedia: ctx => ctx.dispatch( "fetchMediaData", ctx.state.ProPlayer.thePackage.getDefaultSegmentEntryID() ),
     async fetchMediaData ( { dispatch }, segID ) {
       const response = await dispatch( "fetchSegment", segID )
+        .then( id => dispatch("setCurrentSegmentSetup", id))
         .then( ID => dispatch( "fetchUserLoops", ID ) )
-        .then( () => {
-          return dispatch( "getMediaInfo" );
-        } );
-        return response
+        .then( () => dispatch( "getMediaInfo"))
+      return response
     },
     fetchSegment: ( { dispatch }, ID ) => {
       return dispatch( "fetchSegmentData", ID )
@@ -213,11 +227,11 @@ export default {
           ];
           dispatch( "addSidebarTabs", loopTabs, { root: true } );
           return ID
-        });
+        } );
     },
     async fetchSegmentData ( ctx, ID ) {
       const response = await ctx.rootState.TXBA_UTILS.getSegment( ID );
-      console.log("segData", response);
+      console.log( "segData", response );
       ctx.commit( "SET_CURRENT_SEGMENT", response );
       return ID;
     },
@@ -230,13 +244,14 @@ export default {
         console.log( "seg-data", segmentData );
       } else {
         segmentData = ctx.dispatch( "fetchPackage", segmentId ).then( pkg => {
-          console.log( "seg-id", segmentId );
+          // console.log( "seg-id", segmentId );
           segmentId = ctx.getters.getFirstSegment().id;
           console.log( "seg-id", segmentId );
           ctx.dispatch( "setCurrentSegmentSetup", segmentId );
           return pkg;
         } );
       }
+      console.log('segmentData', segmentData);
       if ( segmentData ) ctx.commit( "SET_CURRENT_SEGMENT_SETUP", segmentData );
       return segmentId;
     },
@@ -306,7 +321,7 @@ export default {
       console.log( "loading Media", slug, info );
 
       // TODO: Fix hokey workaround
-      ctx.commit('SET_CURRENT_SEGMENT_SETUP', info)
+      ctx.commit( 'SET_CURRENT_SEGMENT_SETUP', info )
       return ctx.rootState.TXBA_UTILS.loadMedia( slug, info );
     }
   },
