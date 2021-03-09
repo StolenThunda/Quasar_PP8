@@ -79,21 +79,21 @@
           </q-btn>
         </li>
         <li class="">
+            <!-- <q-icon name="mdi-autorenew" ></q-icon> -->
           <q-btn-dropdown
             id="looping-toggle"
             split
-            fab-mini
+            :disable-dropdown="!isLoopDefined"
             title="Begin/End Looping."
-            class="transport-button"
-            icon="mdi-autorenew"
-            :class="{ rotate: looping }"
+            class="transport-button"            
             :color="!isLoopDefined ? 'grey' : 'green'"
             :disable="!isLoopDefined"
+            icon="mdi-autorenew"
+            :class="{ rotate: looping }"
             @click="toggleLooping"
           >
-            <!-- <q-icon name="mdi-autorenew" ></q-icon> -->
               <q-list>
-        <q-item clickable v-close-popup @click="$root.$emit('clear-loop')">
+        <q-item clickable v-close-popup @click="clearLoop">
           <q-item-section avatar>
             <q-avatar icon="mdi-minus-circle-off" color="primary" text-color="white" />
           </q-item-section>
@@ -130,6 +130,10 @@ export default {
     togglePlay(val) {
       this.$root.$emit("togglePlay", val);
     },
+    clearLoop(){
+      this.looping = false
+      this.$root.$emit('clear-loop')
+    },
     setLoop(loop) {
       // console.log('setloop', loop)
       this.$root.$emit(loop, loop);
@@ -153,10 +157,10 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.rotate {
-  display: inline-block;
-  animation: rotation 2s infinite linear;
+<style scoped>
+div.rotate >>> i.mdi-autorenew {
+  display: inline-block !important;
+  animation: rotation 2s infinite linear !important;
 }
 
 @keyframes rotation {
@@ -169,18 +173,18 @@ export default {
 }
 #mediaWrapper {
   position: absolute;
-  // top: 2.75rem;
+  /* // top: 2.75rem; */
   left: 0;
   right: 0;
   bottom: 0;
 }
 #mediaPlayerWrapper {
-  // bottom: 4.9rem;
+  /* // bottom: 4.9rem; */
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  // bottom: 7.5rem;
+  /* // bottom: 7.5rem; */
   background: black;
   overflow: hidden;
   border: none;
@@ -204,8 +208,8 @@ export default {
     rgba(50, 50, 50, 1) 100%
   );
   z-index: 100;
-  // padding-top: 0.25em;
-  // padding-bottom: 0.25em;
+  /* // padding-top: 0.25em; */
+  /* // padding-bottom: 0.25em; */
 }
 ul#transportButtonsList {
   float: left;
@@ -221,14 +225,14 @@ ul#transportButtonsList li {
 }
 .transport-button {
   width: 100%;
-  // line-height: 2.5em;
+  /* // line-height: 2.5em; */
   background: none;
   border: none;
-  // font-size: 1rem;
+  /* // font-size: 1rem; */
   -webkit-font-smoothing: antialiased;
   color: white;
   text-align: center;
-  // font-weight: 600;
+  /* // font-weight: 600; */
   background: rgb(86, 86, 86);
   background: -moz-linear-gradient(
     top,
