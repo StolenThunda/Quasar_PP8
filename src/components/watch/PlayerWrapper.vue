@@ -4,7 +4,7 @@
     v-if="currentSetup.sources"
     :set="(s = currentSetup.sources[0])"
   >
-    <template v-if="renderers.includes(s.type)">
+    <template v-if="renderers.includes(s.mediaType)">
       <pdf-renderer v-if="s.type === 'pdf'" :src="s.src" />
       <soundslice-renderer v-if="s.type === 'soundslice'" :src="s.src" />
     </template>
@@ -26,7 +26,7 @@ export default {
     "pdf-renderer": () => import("components/watch/renderers/PDF"),
     "soundslice-renderer": () =>
       import("components/watch/renderers/SoundSlice"),
-    "media-player": () => import("components/watch/MediaPlayer_old")
+    "media-player": () => import("components/watch/MediaPlayer")
   },
   data: () => ({
     componentKey: 0,
@@ -48,7 +48,7 @@ export default {
   },
   watch: {
     currentSetup() {
-      // console.info("setup changed");
+      console.info("setup changed",this.currentSetup);
       this.forceRerender();
     }
   },

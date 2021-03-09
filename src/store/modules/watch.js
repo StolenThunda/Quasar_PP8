@@ -12,8 +12,8 @@ export default {
     seekToTime: 0,
     mediaSources: null,
     playerSettings: {
-      speed: null,
-      volume: null,
+      speed: 1,
+      volume: 0.5,
       zoomEnabled: false,
       zoom: 1,
       flipped: false

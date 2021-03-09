@@ -1,573 +1,380 @@
 <template>
-  <q-page class="no-scroll">
-    <div v-if="media" class="container">
-      <!-- {{ media.mediaType }} -->
-      <vue-plyr v-if="media.mediaType == 'vimeo'" class="no-margin full-height">
-        <video controls crossorigin playsinline data-poster="media.thumbnail">
-          <source
-            v-for="(source, i) in media.videoSources"
-            :key="i"
-            :size="source.resolution"
-            :src="source.url"
-            type="video/mp4"
-          />
-        </video>
-      </vue-plyr>
-      <vue-plyr ref="plyr" v-if="media.mediaType == 'youtube'">
-        <div
-          data-plyr-provider="youtube"
-          :data-plyr-embed-id="media.data"
-        ></div>
-      </vue-plyr>
-      <div v-else>
-        no yt data
-      </div>
-      <q-resize-observer @resize="onResize" />
-    </div>
-     <player-controls
+  <div>
+    <vue-plyr
+      name="plyr"
+      v-if="divPlayer"
+      ref="mediaPlayer"
+      v-on="$attrs"
+      data-plyr-config='{ "debug": true, "controls": false }'
     >
-      <!-- :currentTime="ctime"
+      <!-- <panZoom
+      :options="pzOptions"
+      @init="pzInit"
+    > -->
+      <div
+        class="videoWrapper"
+        id="mediaPlayer"
+        :class="{ flipped: playerSettings.flipped }"
+      >
+        <iframe
+          v-if="type === 'youtube'"
+          :src="youtubePlayer"
+          allowfullscreen
+          allowtransparency
+        />
+
+        <iframe
+          v-if="type === 'vimeo'"
+          :src="vimeoPlayer"
+          allowfullscreen
+          allowtransparency
+          allow="autoplay"
+        />
+      </div>
+      <!-- </panZoom> -->
+    </vue-plyr>
+
+    <!-- <pan-zoom> -->
+    <vue-plyr v-if="!divPlayer" ref="mediaPlayer">
+      <video
+        v-if="this.type == 'audio'"
+        id="mediaPlayer"
+        ref="mediaPlayer"
+        :playsinline="playsinline"
+        :controls="controls"
+        :data-poster="poster"
+      >
+        <source
+          v-for="source in sources"
+          :key="source.src"
+          :src="cdn_url + '/' + id"
+          :type="source.type"
+        />
+      </video>
+    </vue-plyr>
+    <!-- </pan-zoom> -->
+    <player-controls
+      :currentTime="ctime"
       :isPlaying="playing"
       :isLoopDefined="validLoop"
       :loopStart="loopStart"
-      :loopStop="loopStop" -->
+      :loopStop="loopStop"
+    >
       <template #slider>
-        <media-progress-slider /> <!--:remaining="duration" :ctime="ctime" :activeLoop="loopObj" />-->
+        <media-progress-slider :remaining="duration" :ctime="ctime" :activeLoop="loopObj" />
       </template>
     </player-controls>
-  </q-page>
+  </div>
 </template>
 
 <script>
-import MediaProgressSlider from "components/watch/MediaProgressSlider"
-import PlayerControls from "components/watch/PlayerControls"
-import { mapActions, mapState } from "vuex"
+import { utilities } from "../../mixins/utilities";
+import { mapState, mapActions } from "vuex";
+// Vue.use(panZoom);
 export default {
-  name: "MediaPlayerWrapper",
+  name: "PlyerMediaPlayer",
+  inheritAttrs: false,
+  mixins: [utilities],
+  props: {
+    controls: Boolean,
+    poster: String,
+    sources: Array,
+    allowfullscreen: Boolean,
+    color: String,
+    title: String,
+    id: String,
+    to: String,
+    type: String,
+    playsinline: Boolean,
+    "webkit-playsinline": Boolean,
+    preload: [String, Boolean],
+    cdn_url: String
+  },
   data: () => ({
-    media: null
+    duration: 1000,
+    ctime: 0,
+    loopStart: null,
+    loopStop: null,
+    pzOptions: {
+      minZoom: 1,
+      maxZoom: 4,
+      bounds: true,
+      boundsPadding: 0.1
+    },
+    zoom: null,
+    playing: false,
+    loopActive: false,
+    loopObj: null
   }),
-  components: {
-    MediaProgressSlider,
-    PlayerControls
+  created() {
+    this.$root.$on("slider-change", this.seekTo);
+    this.$root.$on("togglePlay", this.togglePlay);
+    this.$root.$on("restart", this.restart);
+    this.$root.$on("seek5", this.seekTo);
+    this.$root.$on("seek-5", this.seekTo);
+    this.$root.$on("loopStart", this.setloopStart);
+    this.$root.$on("loopStop", this.setloopStop);
+    this.$root.$on("toggleLooping", this.toggleLooping);
+    this.$root.$on("speed", this.speedChange);
+    this.$root.$on("volume", this.volumeChange);
+    this.$root.$on("zoom", this.toggleZoom);
+    this.$root.$on("resetZoom", this.resetZoom);
+    this.$root.$on("clear-loop", this.clearLoop);
   },
   mounted() {
-    // console.log('get it')
-    this.media = this.fetchPackage(this.$route.params.packageID).then(
-      () => this.fetchDefaultMedia(),
-      error => {
-        console.error("Something ain't right");
-      }
-    );
+    this.player.on("ready", e => {
+      this.duration = e.detail.plyr.duration;
+      this.loadDefaultSettings();
+      this.player.toggleControls(false);
+    });
+    this.player.on("timeupdate", this.timeUpdated);
+    this.player.on("clear-loop", this.clearLoop);
+    this.player.on("playing play pause", this.stateChange);
   },
-  computed: {
-    ...mapState("watch", ["currentSetup"])
+  components: {
+    "media-progress-slider": () =>
+      import("components/watch/MediaProgressSlider"),
+    "player-controls": () => import("components/watch/PlayerControls")
   },
   watch: {
-    currentSetup() {
-      this.media = this.currentSetup;
+    seekToTime() { this.seekTo(this.seekToTime);},
+    playing(e) {
+      this.playing = e;
+    },
+    validLoop: function(valid) {
+      this.loopObj = this.loopActive ? { min: this.loopStart, max: this.loopStop} : null
+      if (valid){
+        this.$root.$emit('valid-loop', {status: this.validLoop, loop: this.loopObj })
+      } else {
+        this.$root.$emit('valid-loop', {status: this.validLoop })
+      }
+    }
+  },
+  computed: {
+    ...mapState("watch", ["playerSettings", 'seekToTime']),
+    player() {
+      return this.$refs.mediaPlayer.player;
+    },
+    vimeoPlayer() {
+      return `https://player.vimeo.com/video/${this.sources[0].src}?loop=false&amp;byline=false&amp;portrait=false&amp;title=false&amp;speed=true&amp;transparent=0&amp;gesture=media`;
+    },
+    youtubePlayer() {
+      // return `http://www.youtube.com/embed/${this.sources[0].src}?rel=0&hd=1 `;
+      return `https://www.youtube.com/embed/${this.sources[0].src}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&controls=0&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1`;
+    },
+    validLoop() {
+      return (
+        typeof this.loopStart === "number" &&
+        typeof this.loopStop === "number" &&
+        this.loopStart !== this.loopStop &&
+        this.loopStop - this.loopStart > 1
+      );
     }
   },
   methods: {
-    onResize(size) {
-      console.error(size);
+    ...mapActions("watch", ["flipPlayer", "loadPlayerSettings"]),
+    setCurrentTime(val){
+      this.player.currentTime = val
     },
-    ...mapActions("watch", ["fetchPackage", "fetchDefaultMedia"])
+    clearLoop(){
+      this.loopStart = null
+      this.loopStop = null
+      this.loopObj = null
+      this.loopActive = false
+      console.log('loop cleared')
+    },
+    pzInit(pz_instance) {
+      console.log("pz", pz_instance);
+      this.pz = pz_instance;
+      this.pz.originalScale = this.pz.getTransform();
+      this.pz.pause();
+      this.pz.on("panstart", e => {
+        console.log(e);
+      });
+    },
+    toggleZoom(e) {
+      if (this.pz.isPaused()) {
+        this.pz.resume();
+      } else {
+        this.pz.pause();
+      }
+      console.log(`pz is: ${this.pz.isPaused() ? "paused" : "unpaused"}`);
+    },
+    resetZoom(e) {
+      this.pz.smoothMoveTo(0, 0, 1);
+      this.pz.smoothZoomAbs(0, 0, 1);
+    },
+    loadDefaultSettings() {
+      const settings = {
+        speed: this.player.speed * 100,
+        volume: this.player.volume * 100
+      };
+      this.loadPlayerSettings(settings);
+    },
+    volumeChange(val) {
+      this.player.volume = val / 100;
+    },
+    speedChange(val) {
+      this.player.speed = val / 100;
+    },
+    timeUpdated: function(e) {
+      this.duration = this.player.duration;
+      this.ctime = this.player.currentTime;
+      if (this.loopActive) {
+        if (this.ctime >= this.loopStop) {
+          this.seekTo(this.loopStart);
+          this.showMessage({
+            message: "Loop Rewound",
+            caption:
+              this.secondsToMinutes(this.ctime) +
+              " >> " +
+              this.secondsToMinutes(this.loopStop)
+          });
+        }
+      }
+    },
+    divPlayer() {
+      const isDivPlayer = this.titletype in ["youtube", "vimeo"];
+      console.log("isDivPlay", isDivPlayer);
+      return isDivPlayer;
+    },
+    seekTo(time) {
+      console.log("Seek to time ", time);
+      if (!this.player) return;
+      let val = time >= 0 ? time : 0
+      this.ctime = this.setCurrentTime(val);
+    },
+    restart() {
+      this.seekTo(0);
+    },
+    stateChange(e) {
+      const state = e.type;
+      this.playing = state !== "pause";
+      // console.log(state, this.playing);
+    },
+    togglePlay(val) {
+      if (!this.player) return;
+      if (this.player.playing || !val) {
+        this.pausePlayer();
+      } else {
+        this.playPlayer();
+      }
+      console.log('player status: ', this.player.playing)
+    },
+    pausePlayer() { this.player.pause() },
+    playPlayer() { this.player.play() },
+    setloopStart() {
+      if (!this.player) return;
+      const current = this.player.currentTime;
+      this.loopStart = current;
+      if (this.loopStop <= current) this.loopStop = null;
+      this.showMessage(
+        Object.assign({}, this.cfgLoopIcon, {
+          type: "positive",
+          message: "Loop Start Set",
+          caption: this.secondsToMinutes(this.loopStart)
+        })
+      );
+    },
+    setloopStop() {
+      if (this.player.currentTime === "NaN") return;
+      const current = this.player.currentTime;
+      console.log("curr", this.secondsToMinutes(current));
+      if (typeof this.loopStart === "number") {
+        if (this.loopStart !== current) {
+          if (this.loopStart < current) {
+            this.loopStop = current;
+            this.showMessage(
+              Object.assign({}, this.cfgLoopIcon, {
+                type: "positive",
+                message: "Loop End Set",
+                caption: this.secondsToMinutes(this.loopStop)
+              })
+            );
+          } else {
+            this.showMessage(
+              Object.assign({}, this.cfgLoopInfo, {
+                type: "negative",
+                message: "Loop end must be greater the loop start!"
+              })
+            );
+          }
+        } else {
+          this.showMessage(
+            Object.assign({}, this.cfgLoopInfo, {
+              type: "negative",
+              message: "Loop Start and End cannot be equal"
+            })
+          );
+        }
+      } else {
+        this.showMessage(
+          Object.assign({}, this.cfgLoopWarning, {
+            type: "info",
+            message: "Must set loop start first"
+          })
+        );
+      }
+    },
+    toggleLooping() {
+      console.log("looptoggle");
+      if (this.validLoop) this.setCurrentTime(this.loopStart);
+      this.loopActive = !this.loopActive;
+      
+      this.player.togglePlay(this.loopActive);
+      this.showMessage({
+        type: "info",
+        caption: this.loopActive
+          ? `Start: ${this.secondsToMinutes(
+              this.loopStart
+            )} -> End: ${this.secondsToMinutes(this.loopStop)}`
+          : this.secondsToMinutes(this.player.currentTime),
+        message: this.loopActive ? "Loop Active" : "Loop Stopped",
+        icon: this.loopIcon
+      });
+    }
+    // resizeIFrameToFitContent( iFrame ) {
+    //   console.log('b-iframe', iFrame)
+    //   iFrame.width  = iFrame.contentWindow.parent.document.body.scrollWidth + 'px';
+    // iFrame.height = iFrame.contentWindow.parent.document.body.scrollHeight  * .9 + 'px';
+    //   console.log('a-iframe', iFrame)
+    // }
   }
 };
 </script>
-
 <style>
-#mediaWrapper {
-  position: absolute;
-  top: 2.75rem;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
+@import "https://cdn.plyr.io/3.6.2/plyr.css";
 
-#mediaPlayerWrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 7.5rem;
-  background: black;
-  overflow: hidden;
-  border: none;
-  padding: 0;
-  margin: 0;
-}
-
-.media-content-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
+.container {
+  position: relative;
   width: 100%;
-  bottom: 0;
-  padding: 1rem;
-  background: #222;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
+  height: 0;
+  /* padding-bottom: 39%; */
 }
 
-#mediaPlayerWrapper.no-controls {
-  top: 2.5rem;
-  bottom: 0 !important;
-}
-#mediaPlayerWrapper iframe,
-#mediaWrapper iframe#ssembed {
+.videoWrapper {
+  position: relative;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
 }
 
-#zoomIndicator {
-  position: absolute;
-  border: 5px solid #0099ff;
-  left: 0;
-  right: 0;
+.videoWrapper iframe {
+  position: relative;
   top: 0;
-  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding-bottom: calc(var(--aspect-ratio, 0.35) * 100%); 
+}
+.flipped {
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
+}
+.plyr__controls {
+  opacity: 0;
   pointer-events: none;
   display: none;
-}
-
-#mediaPlayerWrapper.zoomed #zoomIndicator {
-  display: inherit;
-}
-
-#mediaPlayerWrapper video {
-  height: 100%;
-}
-#proPlayerWrapper #content-frame {
-  position: absolute;
-  top: 2.5rem;
-  left: 0;
-  width: 100%;
-  bottom: 0;
-  height: 100%;
-}
-
-/*****************************************
-*************  Video Page   ************
-*****************************************/
-
-#mediaPanZoomWrapper {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  padding: 0;
-  margin: 0;
-}
-
-#mediaControlsWrapper {
-  position: absolute;
-  bottom: 0;
-  height: auto;
-  width: 100%;
-  background: #555;
-  border-top: 1px solid #777;
-}
-
-#transportButtonsWrapper {
-  float: left;
-  width: 100%;
-  background: linear-gradient(
-    to bottom,
-    rgba(40, 40, 40, 1) 0%,
-    rgba(50, 50, 50, 1) 100%
-  );
-  z-index: 100;
-  padding-top: 0.25em;
-  padding-bottom: 0.25em;
-}
-
-ul#transportButtonsList {
-  float: left;
-  width: 100%;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-ul#transportButtonsList li {
-  width: 25%;
-  float: left;
-  padding: 0.1rem;
-}
-/*****************************************
-*************   Player Timeline  ************
-*****************************************/
-
-#current-time,
-#time-left {
-  margin-top: -2rem;
-  font-size: 0.7rem;
-  font-family: Arial;
-  font-weight: bold;
-}
-#current-time {
-  float: left;
-  margin-left: 0.5rem;
-}
-#time-left {
-  float: right;
-  margin-right: 0.5rem;
-}
-
-/*****************************************
-*************   Transport  ************
-*****************************************/
-#loop-display-wrapper {
-  float: left;
-  width: 100%;
-  background: #222;
-}
-.transport-button {
-  width: 100%;
-  line-height: 2.5em;
-  background: none;
-  border: none;
-  font-size: 1rem;
-  -webkit-font-smoothing: antialiased;
-  color: white;
-  text-align: center;
-  font-weight: 600;
-  background: rgb(86, 86, 86);
-  background: -moz-linear-gradient(
-    top,
-    rgba(86, 86, 86, 1) 0%,
-    rgba(51, 51, 51, 1) 100%
-  );
-  background: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    color-stop(0%, rgba(86, 86, 86, 1)),
-    color-stop(100%, rgba(51, 51, 51, 1))
-  );
-  background: -webkit-linear-gradient(
-    top,
-    rgba(86, 86, 86, 1) 0%,
-    rgba(51, 51, 51, 1) 100%
-  );
-  background: linear-gradient(
-    to bottom,
-    rgba(86, 86, 86, 1) 0%,
-    rgba(51, 51, 51, 1) 100%
-  );
-  white-space: nowrap;
-  border-radius: 3px;
-  box-shadow: 0px 0px 3px #111;
-}
-
-.transport-button.set,
-.transport-button.set:hover {
-  color: lime;
-}
-
-.transport-button:hover {
-  color: white;
-  background: rgb(117, 117, 117);
-  background: -moz-linear-gradient(
-    top,
-    rgba(117, 117, 117, 1) 0%,
-    rgba(66, 66, 66, 1) 100%
-  );
-  background: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    color-stop(0%, rgba(117, 117, 117, 1)),
-    color-stop(100%, rgba(66, 66, 66, 1))
-  );
-  background: -webkit-linear-gradient(
-    top,
-    rgba(117, 117, 117, 1) 0%,
-    rgba(66, 66, 66, 1) 100%
-  );
-  background: -o-linear-gradient(
-    top,
-    rgba(117, 117, 117, 1) 0%,
-    rgba(66, 66, 66, 1) 100%
-  );
-  background: -ms-linear-gradient(
-    top,
-    rgba(117, 117, 117, 1) 0%,
-    rgba(66, 66, 66, 1) 100%
-  );
-  background: linear-gradient(
-    to bottom,
-    rgba(117, 117, 117, 1) 0%,
-    rgba(66, 66, 66, 1) 100%
-  );
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#757575', endColorstr='#424242',GradientType=0 );
-}
-.transport-button:focus {
-  outline: none;
-}
-.transport-button:active {
-  background: #111;
-  border-color: #777;
-}
-.transport-button.disabled,
-.transport-button:disabled {
-  pointer-events: none;
-  background: #444;
-  color: #606060;
-  border-color: #777;
-}
-
-.transport-button.engaged {
-  background: rgb(204, 108, 108);
-  background: -moz-linear-gradient(
-    top,
-    rgba(204, 108, 108, 1) 0%,
-    rgba(204, 0, 0, 1) 100%
-  );
-  background: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    color-stop(0%, rgba(204, 108, 108, 1)),
-    color-stop(100%, rgba(204, 0, 0, 1))
-  );
-  background: -webkit-linear-gradient(
-    top,
-    rgba(204, 108, 108, 1) 0%,
-    rgba(204, 0, 0, 1) 100%
-  );
-  background: -o-linear-gradient(
-    top,
-    rgba(204, 108, 108, 1) 0%,
-    rgba(204, 0, 0, 1) 100%
-  );
-  background: -ms-linear-gradient(
-    top,
-    rgba(204, 108, 108, 1) 0%,
-    rgba(204, 0, 0, 1) 100%
-  );
-  background: linear-gradient(
-    to bottom,
-    rgba(204, 108, 108, 1) 0%,
-    rgba(204, 0, 0, 1) 100%
-  );
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cc6c6c', endColorstr='#cc0000',GradientType=0 );
-}
-
-button.control-button {
-  width: 100%;
-  background: none;
-  border: none;
-  color: #ccc;
-  outline: none;
-  font-size: 1.2rem;
-}
-
-button.control-button:hover {
-  color: white;
-}
-
-.form-button:disabled {
-  background: #555;
-  color: #777;
-}
-
-#playback-play.transport-button {
-  background: #5dcc94;
-  background: -moz-linear-gradient(top, #5dcc94 0%, #02cc67 100%);
-  background: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    color-stop(0%, #5dcc94),
-    color-stop(100%, #02cc67)
-  );
-  background: -webkit-linear-gradient(top, #5dcc94 0%, #02cc67 100%);
-  background: -o-linear-gradient(top, #5dcc94 0%, #02cc67 100%);
-  background: -ms-linear-gradient(top, #5dcc94 0%, #02cc67 100%);
-  background: linear-gradient(to bottom, #5dcc94 0%, #02cc67 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5dcc94', endColorstr='#02cc67',GradientType=0 );
-  border-color: transparent;
-}
-
-/*****************************************
-*********   Progress And Looping  ********
-*****************************************/
-
-div#playhead {
-  background: white;
-  position: absolute;
-  height: 0.75rem;
-  width: 0.75rem;
-  top: 0.125rem;
-  border-radius: 0.5em;
-  margin-left: -0.25em;
-}
-
-#loop-display {
-  float: left;
-  width: 100%;
-  height: 1rem;
-  background: #333;
-  cursor: pointer;
-}
-
-#loop-region {
-  display: block;
-  margin-bottom: -1rem;
-  background: #777;
-  height: 100%;
-  position: absolute;
-}
-
-#progressSlider {
-  margin: 0 1rem;
-  font-size: 1.5rem;
-  box-sizing: content-box;
-}
-
-#progressSlider.looping {
-}
-
-#progressSlider.looping #loop-region {
-  background: white;
-}
-
-#progressSlider.looping .noUi-handle {
-  background: #0099ff;
-  opacity: 0.8;
-}
-
-/*****************************************
-*************   Chapter Markers  ************
-*****************************************/
-
-#chapters-wrapper {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-}
-
-.chapter-marker {
-  position: absolute;
-  width: 1px;
-  height: 100%;
-  border-left: 1px solid #555;
-}
-/*****************************************
-*************   Settings Panel  ************
-*****************************************/
-#videoControlsMenu {
-  line-height: 1rem;
-  color: white;
-  position: absolute;
-  text-align: left;
-  display: none;
-  top: 0;
-  bottom: 3rem;
-  background: #222;
-  right: 0;
-  width: 300px;
-  color: #ccc;
-  border: 1px solid #555;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  font-size: 0.9rem;
-  z-index: 2;
-}
-
-#videoControlsMenu .widget-inner {
-  margin: 1rem 0;
-}
-
-#videoControlsMenu .widgetTitle {
-  font-size: 0.7rem;
-  font-weight: bold;
-  color: white;
-  margin-bottom: 0.75rem;
-  margin-top: 0 !important;
-}
-
-#videoControlsMenu ul.widget-list {
-  padding: 0;
-  color: #bbb;
-  margin: 0;
-  list-style: none;
-}
-
-#videoControlsMenu ul.widget-list li {
-  border-bottom: 1px solid #555;
-}
-
-#videoControlsMenu ul.widget-list li a {
-  line-height: 1.8em;
-  font-size: 0.8rem !important;
-  font-weight: 600;
-  padding: 0;
-  margin: 0;
-}
-
-#videoControlsMenu ul.widget-list li.selected a {
-  background: white;
-  color: #222;
-}
-
-#videoControlsMenu .widget-section {
-  margin-bottom: 0.75rem;
-}
-
-.widget-column-heading {
-  white-space: nowrap;
-  font-family: Oswald, "Lucida Sans Unicode", "Lucida Grande", Helvetica, Arial,
-    sans-serif;
-  letter-spacing: 0.03em;
-  font-size: 1rem;
-  text-transform: uppercase;
-  font-size: 0.9em;
-  font-weight: 900;
-  line-height: 1em;
-  margin-bottom: 0.25rem;
-  color: white;
-}
-.widget-column-heading .slider-indicator {
-  display: inline-block;
-  margin-left: 0.25rem;
-  color: #999;
-}
-.slider-unity-indicator {
-  width: 1px;
-  background: #ccc;
-  z-index: 1;
-  position: absolute;
-  top: 2px;
-  bottom: 2px;
-  pointer-events: none;
-}
-
-.slider-unity-indicator.vimeo {
-  left: 58.1%;
-}
-
-.slider-unity-indicator.youtube {
-  left: 60%;
-}
-
-.widget-column-heading.list-heading {
-  border-bottom: 1px solid #555;
-  padding-bottom: 0.25rem;
-}
-
-.small-text-center {
-  text-align: center;
-}
-
-.small-text-right {
-  text-align: right;
-}
-
-.small-text-left {
-  text-align: left;
 }
 </style>

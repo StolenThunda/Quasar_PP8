@@ -142,7 +142,7 @@ export default class TXBA_Utilities {
     const text = $( "script" ).html();
     // return html
     const matchX = text.match( /var videoData = (.*);/ );
-    // if (!matchX) return info
+    if (!matchX) return info
     let strVidData = matchX[1];
     // replace single with double quotes
     strVidData = strVidData.replace( /'/g, '"' );
