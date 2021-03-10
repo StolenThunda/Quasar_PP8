@@ -126,7 +126,7 @@ export default {
         ctx.playerSettings,
         data );
     },
-    SET_PLAY_SECTIONS(ctx, data){
+    SET_PLAY_SECTIONS ( ctx, data ) {
       ctx.playSections = data?.playSections
     },
     SET_SEEK_TIME ( ctx, data ) {
@@ -194,16 +194,16 @@ export default {
       return await ctx.rootState.TXBA_UTILS.getPackage( ID ).then( packageData => {
         ctx.commit( "SET_CURRENT_PACKAGE", packageData );
         ctx.commit( "SET_PLAY_SECTIONS", packageData );
-        
+
         return packageData;
       }, error => console.error( `Problem fetching package data, ${error}` ) );
     },
     fetchDefaultMedia: ctx => ctx.dispatch( "fetchMediaData", ctx.state.ProPlayer.thePackage.getDefaultSegmentEntryID() ),
     async fetchMediaData ( { dispatch }, segID ) {
       const response = await dispatch( "fetchSegment", segID )
-        .then( id => dispatch("setCurrentSegmentSetup", id))
+        .then( id => dispatch( "setCurrentSegmentSetup", id ) )
         .then( ID => dispatch( "fetchUserLoops", ID ) )
-        .then( () => dispatch( "getMediaInfo"))
+        .then( () => dispatch( "getMediaInfo" ) )
       return response
     },
     fetchSegment: ( { dispatch }, ID ) => {
@@ -251,7 +251,7 @@ export default {
           return pkg;
         } );
       }
-      console.log('segmentData', segmentData);
+      console.log( 'segmentData', segmentData );
       if ( segmentData ) ctx.commit( "SET_CURRENT_SEGMENT_SETUP", segmentData );
       return segmentId;
     },
