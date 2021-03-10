@@ -1,4 +1,4 @@
-import Vue from "vue";
+import { Notify, QSpinnerGears} from "quasar";
 import { firebaseAuth } from "boot/firebase";
 import { Loading, LocalStorage } from "quasar";
 
@@ -26,27 +26,37 @@ export default {
       dispatch("login_user", payload);
     })
     .catch(error => {
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // ..
-      console.error(errorCode, errorMessage);
+      Notify.create({
+        type: "negative",
+        caption: error.code,
+        message: error.message
+      })
+      console.error(error.code, error.message);
     });
 },
 login_user({ commit }, payload) {
+  const dismiss = Notify.create( {
+    spinner: QSpinnerGears,
+    message: 'Working...',
+  } )
   firebaseAuth
     .signInWithEmailAndPassword(payload.email, payload.password)
     .then(userCredential => {
       // Signed in
       var user = userCredential.user;
       // console.log("Login Successful", user);
+      dismiss()
       this.$router.replace("/").catch(err => {});
     })
     .catch(error => {
       commit("SET_LOGGED_IN", false);
-      var errorCode = error.code;
-      var errorMessage = error.message;
-
-      console.error(errorCode, errorMessage);
+      dismiss()
+      Notify.create( {
+        type: "negative",
+        caption: error.code,
+        message: error.message
+      } )
+      console.error( error.code, error.message );
     });
 },
 logout_user({ commit }) {
