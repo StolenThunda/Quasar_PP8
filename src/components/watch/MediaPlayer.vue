@@ -133,8 +133,8 @@ export default {
   },
   components: {
     "media-progress-slider": () =>
-      import("components/watch/MediaProgressSlider"),
-    "player-controls": () => import("components/watch/PlayerControls")
+      import("components/watch/MediaProgressSlider.vue"),
+    "player-controls": () => import("components/watch/PlayerControls.vue")
   },
   watch: {
     seekToTime() { this.seekTo(this.seekToTime);},

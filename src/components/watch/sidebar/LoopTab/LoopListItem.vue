@@ -3,9 +3,9 @@
         clickable
         v-ripple
         active-class="text-orange"
-        :id="getItemID(loop, i)"
-        :key="getItemID(loop,i)"
-        @click="toggleActive(loop, i)"
+        :id="getItemID(loop, index)"
+        :key="getItemID(loop,index)"
+        @click="toggleActive(loop, index)"
         :active="active(loop)"
       >
   <q-item-section avatar>
@@ -32,7 +32,7 @@
 <script>
 import { loop_funcs } from "../../../../mixins/loop_funcs.js"
   export default {
-    props: ['loop'],
+    props: ['loop', 'index'],
  mixins: [ loop_funcs ],
     
   }

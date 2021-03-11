@@ -1,50 +1,55 @@
 <template>
-  <!-- <q-page padding> -->
-    <q-card class="auth-tabs">
-      <q-tabs
-        v-model="tab"
-        dense
-        class="text-grey"
-        active-color="primary"
-        indicator-color="primary"
-        align="justify"
-        narrow-indicator
-      >
-        <q-tab name="login" label="Login" />
-        <q-tab name="register" label="Register" />
-      </q-tabs>
-
-      <q-separator />
-
-      <q-tab-panels v-model="tab" animated>
-        <q-tab-panel name="login">
-          <login-register :tab="tab" />
-        </q-tab-panel>
-
-        <q-tab-panel name="register">
-          <login-register :tab="tab" />
-        </q-tab-panel>
-      </q-tab-panels>
-    </q-card>
-  <!-- </q-page> -->
+  <q-page padding>
+    <q-carousel
+      v-model="slide"
+      height="85vh"
+      transition-prev="fade"
+      transition-next="fade"
+      @mouseenter="autoplay = false"
+      @mouseleave="autoplay = true"
+      infinite
+      autoplay
+      animated
+    >
+      <q-carousel-slide
+        :name="1"
+        img-src="https://cdn.texasbluesalley.com/styles/TXBALogo.svg"
+      />
+      <q-carousel-slide
+        :name="2"
+        img-src="https://cdn.texasbluesalley.com/misc/locals-page/AllCourses-1600px.jpg"
+      />
+      <q-carousel-slide
+        :name="3"
+        img-src="https://txba-media.s3.amazonaws.com/woodshed/course-type-images/SRV-800.jpg"
+      />
+      <q-carousel-slide
+        :name="4"
+        img-src="https://txba-media.s3.amazonaws.com/woodshed/course-type-images/Influences-800.jpg"
+      />
+    <!-- <template v-slot:control>
+        <q-carousel-control
+          class="absolute-center"
+        >
+         
+        </q-carousel-control>
+      </template> -->
+    </q-carousel>
+  </q-page>
 </template>
 
 <script>
-import LoginRegister from 'src/components/auth/LoginRegister.vue';
+
 export default {
-  // name: 'PageName',
-  data() {
-    return {
-      tab: "login"
-    };
-  },
-  components: { LoginRegister }
+  name: "Auth",
+  data: () => ({
+    fullscreen: false,
+    stars: 3,
+    slide: 1,
+    autoplay: true,
+  }),
+  // components: { LoginRegister }
 };
 </script>
 
-<style>
-.auth-tabs {
-  max-width: 500px;
-  margin: 0 auto;
-}
-</style>
+

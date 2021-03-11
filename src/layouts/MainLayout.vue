@@ -12,8 +12,17 @@
           v-if="loggedIn"
           @toggle-drawer="leftDrawerOpen = !leftDrawerOpen"
         />
+        <q-btn
+          v-else
+          rounded
+          color="grey-4"
+          text-color="secondary"
+          label="Click Here to Enter"
+          @click="card = !card"
+        />
+
         <q-space />
-        <q-toolbar-title class="text-h6 text-bold"
+        <q-toolbar-title class="text-h5 text-bold absolute-center"
           ><span color="secondary">ProPlayer v8</span>
         </q-toolbar-title>
 
@@ -25,7 +34,36 @@
           split
           flat
         />
-        <auth-button  v-if="loggedIn" />
+        <auth-button v-if="loggedIn" />
+
+        <q-dialog v-model="card">
+          <q-card class="auth-tabs">
+            <q-tabs
+              v-model="tab"
+              dense
+              class="text-grey"
+              active-color="primary"
+              indicator-color="primary"
+              align="justify"
+              narrow-indicator
+            >
+              <q-tab name="login" label="Login" />
+              <q-tab name="register" label="Register" />
+            </q-tabs>
+
+            <q-separator />
+
+            <q-tab-panels v-model="tab" animated>
+              <q-tab-panel name="login">
+                <login-register :tab="tab" />
+              </q-tab-panel>
+
+              <q-tab-panel name="register">
+                <login-register :tab="tab" />
+              </q-tab-panel>
+            </q-tab-panels>
+          </q-card>
+        </q-dialog>
       </q-toolbar>
     </q-header>
 
@@ -48,30 +86,34 @@
   </q-layout>
 </template>
 
-<script> 
-import DynamicTab from "components/base/DynamicTab"
-import DrawerToggle from "components/base/DrawerToggle"
-import AuthButton from "components/base/AuthButton"
+<script>
+import DynamicTab from "components/base/DynamicTab.vue";
+import DrawerToggle from "components/base/DrawerToggle.vue";
+import AuthButton from "components/base/AuthButton.vue";
+import LoginRegister from "src/components/auth/LoginRegister.vue";
 import { mapState, mapActions } from "vuex";
 export default {
   name: "MainLayout",
   components: {
     DynamicTab,
     DrawerToggle,
-    AuthButton
+    AuthButton,
+    LoginRegister
   },
   data: () => ({
-    leftDrawerOpen: false
+    leftDrawerOpen: false,
+    tab: "login",
+    card: false
   }),
   computed: {
-    ...mapState('auth', ["loggedIn"] ),
-    ...mapState('default', {tabs: state => state.sidebarTabs}),
+    ...mapState("auth", ["loggedIn"]),
+    ...mapState("default", { tabs: state => state.sidebarTabs })
   },
   mounted() {
     this.resetSideBar();
   },
   methods: {
-    ...mapActions('default', ["resetSideBar"])
+    ...mapActions("default", ["resetSideBar"])
   }
 };
 </script>
@@ -80,5 +122,10 @@ export default {
 #mobileAuthNavBar {
   min-height: 125px;
   justify-content: space-between;
+}
+.auth-tabs {
+  /* height: 50vh; */
+  max-width: 500px;
+  margin: 0 auto;
 }
 </style>

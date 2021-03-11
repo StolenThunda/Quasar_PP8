@@ -7,15 +7,11 @@
 </template>
 
 <script> 
-import Segments from "components/watch/Segments"
+import Segments from "components/watch/Segments.vue"
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapGetters } = createNamespacedHelpers("watch");
 export default {
   name: "PlayerSideBarTabs",
-  data: () => ({
-    // tab: true,
-    // sections: null
-  }),
   computed: {
     ...mapState(["playSections"])
   },

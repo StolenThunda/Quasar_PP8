@@ -39,8 +39,8 @@
 </template>
 
 <script>
-import MediaProgressSlider from "components/watch/MediaProgressSlider"
-import PlayerControls from "components/watch/PlayerControls"
+import MediaProgressSlider from "components/watch/MediaProgressSlider.vue"
+import PlayerControls from "components/watch/PlayerControls.vue"
 import { mapActions, mapState } from "vuex"
 export default {
   name: "MediaPlayerWrapper",

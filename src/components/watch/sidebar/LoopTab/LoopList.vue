@@ -1,20 +1,18 @@
 <template>
   <div>
     <q-list>
-      <LoopListItem 
-      v-for="(item, i) in Object.entries(loopArray)"
-       :loop="loopArray[i]" 
-       :key="i"
-       >
-
-      </LoopListItem>
-       
+      <LoopListItem
+        v-for="(item, i) in Object.entries(loopArray)"
+        :loop="loopArray[i]"
+        :index="i"
+        :key="i"
+      />
     </q-list>
   </div>
 </template>
 
 <script>
-import LoopListItem from "./LoopListItem.vue"
+import LoopListItem from "./LoopListItem.vue";
 export default {
   name: "LoopList",
   props: {
@@ -34,30 +32,6 @@ export default {
   data: () => ({ activeList: {}, componentKey: 0 }),
   components: {
     LoopListItem
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   }
 };
 </script>

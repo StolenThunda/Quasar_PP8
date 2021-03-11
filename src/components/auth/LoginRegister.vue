@@ -39,6 +39,7 @@
       />
     </div>
     <div class="row">
+      <q-btn label="Cancel" icon="close" color="primary" v-close-popup />
       <q-space />
       <q-btn color="primary" :label="tab" type="submit" />
     </div>
