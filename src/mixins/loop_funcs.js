@@ -2,7 +2,7 @@ import Vue  from "vue";
 export const loop_funcs = {
   data: () => ({ activeList: {}}),
   created() {
-    if (this.loopArray.length) {
+    if (this.loopArray?.length) {
       for (let [k, v] of Object.entries(this.loopArray)) {
         const loop = v;
         const key = this.getActiveItemName(loop);

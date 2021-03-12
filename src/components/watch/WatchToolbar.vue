@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import CourseInfo from "components/watch/CourseInfo"
+import CourseInfo from "components/watch/CourseInfo.vue"
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapGetters } = createNamespacedHelpers("watch");
 export default {

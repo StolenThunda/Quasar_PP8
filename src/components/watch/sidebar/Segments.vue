@@ -53,7 +53,12 @@ export default {
   name: "Segments",
   computed: {
     sections() {
-      return this.ProPlayer.thePackage.getSections();
+      var sect1 = this.ProPlayer.thePackage.getSections();
+      var sect2 = this.playSections
+      console.log('sect1', sect1)
+      console.log('sect2', sect2)
+      // return this.ProPlayer.thePackage.getSections();
+      return sect1
     },
     packID() {
       return this.$route.params.packageID;

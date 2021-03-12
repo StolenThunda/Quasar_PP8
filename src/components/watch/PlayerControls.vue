@@ -117,7 +117,7 @@ import MediaProgressSlider from "./MediaProgressSlider.vue";
 export default {
   name: "PlayerControls",
   components: {
-    videoSettingsMenu: () => import("components/watch/settings/VideoSettings")
+    videoSettingsMenu: () => import("components/watch/settings/VideoSettings.vue")
   },
   props: ["isPlaying", "loopStart", "loopStop", "currentTime", "isLoopDefined"],
   data: () => ({ looping: false }),

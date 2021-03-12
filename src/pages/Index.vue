@@ -7,24 +7,7 @@
     </div>
     <div class="q-pa-md" v-else> 
       <span class="text-bold text-h4" >Welcome </span>
-    <!-- <q-carousel
-      v-model="slide"
-      transition-prev="fade"
-      transition-next="fade"
-      @mouseenter="autoplay = false"
-      @mouseleave="autoplay = true"
-      height="70vh"
-      infinite
-      autoplay
-      animated
-      arrows
-      padding
-    >
-      <q-carousel-slide :name="1" img-src="https://cdn.texasbluesalley.com/styles/TXBALogo.svg" />
-      <q-carousel-slide :name="2" img-src="https://cdn.texasbluesalley.com/misc/locals-page/AllCourses-1600px.jpg" />
-      <q-carousel-slide :name="3" img-src="https://txba-media.s3.amazonaws.com/woodshed/course-type-images/SRV-800.jpg" />
-      <q-carousel-slide :name="4" img-src="https://txba-media.s3.amazonaws.com/woodshed/course-type-images/Influences-800.jpg" />
-    </q-carousel> -->
+   
 
   </div>  
   </q-page>

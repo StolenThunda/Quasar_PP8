@@ -1,5 +1,7 @@
 <template>
-  <div>
+  <div
+  >
+      <!-- class="row fit justify-start items-center no-wrap" -->
     <vue-plyr
       name="plyr"
       v-if="divPlayer"
@@ -35,7 +37,10 @@
     </vue-plyr>
 
     <!-- <pan-zoom> -->
-    <vue-plyr v-if="!divPlayer" ref="mediaPlayer">
+    <vue-plyr
+      v-if="!divPlayer"
+      ref="mediaPlayer"
+    >
       <video
         v-if="this.type == 'audio'"
         id="mediaPlayer"
@@ -61,7 +66,11 @@
       :loopStop="loopStop"
     >
       <template #slider>
-        <media-progress-slider :remaining="duration" :ctime="ctime" :activeLoop="loopObj" />
+        <media-progress-slider
+          :remaining="duration"
+          :ctime="ctime"
+          :activeLoop="loopObj"
+        />
       </template>
     </player-controls>
   </div>
@@ -133,25 +142,32 @@ export default {
   },
   components: {
     "media-progress-slider": () =>
-      import("components/watch/MediaProgressSlider"),
-    "player-controls": () => import("components/watch/PlayerControls")
+      import("components/watch/MediaProgressSlider.vue"),
+    "player-controls": () => import("components/watch/PlayerControls.vue")
   },
   watch: {
-    seekToTime() { this.seekTo(this.seekToTime);},
+    seekToTime() {
+      this.seekTo(this.seekToTime);
+    },
     playing(e) {
       this.playing = e;
     },
     validLoop: function(valid) {
-      this.loopObj = this.loopActive ? { min: this.loopStart, max: this.loopStop} : null
-      if (valid){
-        this.$root.$emit('valid-loop', {status: this.validLoop, loop: this.loopObj })
+      this.loopObj = this.loopActive
+        ? { min: this.loopStart, max: this.loopStop }
+        : null;
+      if (valid) {
+        this.$root.$emit("valid-loop", {
+          status: this.validLoop,
+          loop: this.loopObj
+        });
       } else {
-        this.$root.$emit('valid-loop', {status: this.validLoop })
+        this.$root.$emit("valid-loop", { status: this.validLoop });
       }
     }
   },
   computed: {
-    ...mapState("watch", ["playerSettings", 'seekToTime']),
+    ...mapState("watch", ["playerSettings", "seekToTime"]),
     player() {
       return this.$refs.mediaPlayer.player;
     },
@@ -173,15 +189,15 @@ export default {
   },
   methods: {
     ...mapActions("watch", ["flipPlayer", "loadPlayerSettings"]),
-    setCurrentTime(val){
-      this.player.currentTime = val
+    setCurrentTime(val) {
+      this.player.currentTime = val;
     },
-    clearLoop(){
-      this.loopStart = null
-      this.loopStop = null
-      this.loopObj = null
-      this.loopActive = false
-      console.log('loop cleared')
+    clearLoop() {
+      this.loopStart = null;
+      this.loopStop = null;
+      this.loopObj = null;
+      this.loopActive = false;
+      console.log("loop cleared");
     },
     pzInit(pz_instance) {
       console.log("pz", pz_instance);
@@ -241,7 +257,7 @@ export default {
     seekTo(time) {
       console.log("Seek to time ", time);
       if (!this.player) return;
-      let val = time >= 0 ? time : 0
+      let val = time >= 0 ? time : 0;
       this.ctime = this.setCurrentTime(val);
     },
     restart() {
@@ -259,10 +275,14 @@ export default {
       } else {
         this.playPlayer();
       }
-      console.log('player status: ', this.player.playing)
+      console.log("player status: ", this.player.playing);
     },
-    pausePlayer() { this.player.pause() },
-    playPlayer() { this.player.play() },
+    pausePlayer() {
+      this.player.pause();
+    },
+    playPlayer() {
+      this.player.play();
+    },
     setloopStart() {
       if (!this.player) return;
       const current = this.player.currentTime;
@@ -320,7 +340,7 @@ export default {
       console.log("looptoggle");
       if (this.validLoop) this.setCurrentTime(this.loopStart);
       this.loopActive = !this.loopActive;
-      
+
       this.player.togglePlay(this.loopActive);
       this.showMessage({
         type: "info",
@@ -366,7 +386,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  padding-bottom: calc(var(--aspect-ratio, 0.35) * 100%); 
+  padding-bottom: calc(var(--aspect-ratio, 0.35) * 100%);
 }
 .flipped {
   -webkit-transform: rotateY(180deg);

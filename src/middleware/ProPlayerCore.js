@@ -1136,7 +1136,7 @@ export class ProPlayer {
     let theTitle = "";
     let currentState = history.state;
     let bPushNewState = true;
-    debugger;
+    // debugger;
     //First, check if we're pushing the same state that we already have loaded.
     console.log("Checking: " + JSON.stringify(currentState));
     if (currentState !== null) {
@@ -4371,7 +4371,7 @@ export class LoopsManager {
       strCollectionRole,
       bEditable
     ) {
-      debugger
+      // debugger
       var theCollection = this.getCollectionByRole(strCollectionRole);
       if (theCollection == null) {
         var newCollectionID = this.a_Collections.length;

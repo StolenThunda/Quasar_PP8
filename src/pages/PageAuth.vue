@@ -1,50 +1,77 @@
 <template>
-  <!-- <q-page padding> -->
-    <q-card class="auth-tabs">
-      <q-tabs
-        v-model="tab"
-        dense
-        class="text-grey"
-        active-color="primary"
-        indicator-color="primary"
-        align="justify"
-        narrow-indicator
+  <q-page padding>
+    <q-carousel
+      v-model="slide"
+      height="85vh"
+      transition-prev="fade"
+      transition-next="fade"
+      @mouseenter="autoplay = false"
+      @mouseleave="autoplay = true"
+      infinite
+      autoplay
+      animated
+      arrows
+    >
+      <q-carousel-slide
+        v-for="(img, i) in images"
+        :key="i"
+        :name="i"
+        class="column no-wrap"
       >
-        <q-tab name="login" label="Login" />
-        <q-tab name="register" label="Register" />
-      </q-tabs>
-
-      <q-separator />
-
-      <q-tab-panels v-model="tab" animated>
-        <q-tab-panel name="login">
-          <login-register :tab="tab" />
-        </q-tab-panel>
-
-        <q-tab-panel name="register">
-          <login-register :tab="tab" />
-        </q-tab-panel>
-      </q-tab-panels>
-    </q-card>
-  <!-- </q-page> -->
+        <div
+          class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap"
+        >
+          <q-img
+            class="rounded-borders full-height"
+            :src="img.src"
+            :ratio="img.ratio"
+            :contain="img.contain"
+          />
+        </div>
+      </q-carousel-slide>
+    </q-carousel>
+  </q-page>
 </template>
 
 <script>
-import LoginRegister from 'src/components/auth/LoginRegister.vue';
 export default {
-  // name: 'PageName',
-  data() {
-    return {
-      tab: "login"
-    };
-  },
-  components: { LoginRegister }
+  name: "Auth",
+  data: () => ({
+    fullscreen: false,
+    slide: 1,
+    autoplay: true,
+    images: [
+      {
+        src: "https://cdn.texasbluesalley.com/styles/TXBALogo.svg",
+        contain: true
+      },
+      {
+        src:
+          "https://cdn.texasbluesalley.com/misc/locals-page/AllCourses-1600px.jpg"
+      },
+      {
+        src:
+          "https://txba-media.s3.amazonaws.com/woodshed/course-type-images/SRV-800.jpg"
+      },
+      {
+        src:
+          "https://txba-media.s3.amazonaws.com/woodshed/course-type-images/Influences-800.jpg"
+      },
+      {
+        src:
+          "https://cdn.texasbluesalley.com/styles/TXBA-Theme/banners/TXBA-Store-Banner.jpg"
+      },
+      {
+        src:
+          "https://cdn.texasbluesalley.com/products/3840/dsc00025__medium.jpg",
+        contain: true
+      },
+      {
+        src:
+          "https://cdn.texasbluesalley.com/styles/TXBA-Theme/banners/TXBA-Home-Banner.jpg",
+        contain: true
+      }
+    ]
+  })
 };
 </script>
-
-<style>
-.auth-tabs {
-  max-width: 500px;
-  margin: 0 auto;
-}
-</style>

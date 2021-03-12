@@ -80,7 +80,7 @@ export default {
           componentName: "FavList",
           icon: "favorite",
           iconOnly: true,
-          cmp: () => import("components/FavoritesList")
+          cmp: () => import("components/base/FavoritesList.vue")
         }
       ];
       // console.log(`Adding Def Tab: ${JSON.stringify(tabs)}`);

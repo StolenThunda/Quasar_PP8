@@ -8,7 +8,8 @@
   "scripts": {
     "build_deploy": "quasar build && ../deployProjects.sh",
     "lint": "eslint --ext .js,.vue ./",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "debug": "quasar build --debug"
   },
   "dependencies": {
     "@capacitor/android": "^2.4.1",
