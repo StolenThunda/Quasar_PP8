@@ -1,14 +1,17 @@
-import { authGuard } from "../auth/authGuard.js";
+// import { authGuard } from "../auth/authGuard.js";
 const routes = [
   {
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Index.vue") }]
+    children: [
+      { path: "/auth", component: () => import("pages/PageAuth.vue") },
+      { path: "", component: () => import("pages/Index.vue") }
+  ]
   },
   {
     path: "/tools",
     component: () => import("layouts/Browser.vue"),
-    beforeEnter: authGuard,
+    // beforeEnter: authGuard,
     children: [
       {
         name: "external",
@@ -52,7 +55,7 @@ const routes = [
     name: "watch",
     path: "/watch",
     component: () => import("layouts/WatchLayout.vue"),
-    beforeEnter: authGuard,
+    // beforeEnter: authGuard,
     children: [
       {
         name: "player",
@@ -69,7 +72,7 @@ const routes = [
   {
     path: "/profile",
     component: () => import("layouts/MainLayout.vue"),
-    beforeEnter: authGuard,
+    // beforeEnter: authGuard,/
     children: [{ path: "", component: () => import("pages/Profile.vue") }]
   },
   // Always leave this as last one,

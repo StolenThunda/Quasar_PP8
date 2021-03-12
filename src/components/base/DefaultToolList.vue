@@ -4,8 +4,8 @@
       <q-list style="min-width: 100px;" dense>
         <template v-for="toolSection in this.tools">
           <span :key="toolSection.title">
-          <q-item>
-            <q-item-label class="text-weight-bolder text-capitalize">{{
+          <q-item dense>
+            <q-item-label class="q-pt-sm text-weight-bolder text-capitalize">{{
               toolSection.title
             }}</q-item-label>
           </q-item>
@@ -102,22 +102,25 @@ export default {
     },
     go(dest) {
       if (dest !== "refresh")
-        this.$router.push(`https://texasbluesalley.com/${dest}`);
+        this.$router.push(`https://texasbluesalley.com/${dest}`).catch(err => {});
       this.refresh();
     }
   }
 };
 </script>
 
-<style lang="sass" scoped>
-.section-heading
+<style lang="scss" scoped>
+.section-heading {
     text-transform: uppercase !important;
     font-weight: 900 !important;
     background: #777 !important;
     line-height: 1.25em !important;
     font-size: .8em !important;
-.q-link
-  background-color: #000000 !important
-.q-item
-  background-color: #424242
+}
+.q-link{
+  background-color: #000000 !important;
+}
+.q-item{
+  background-color: #424242;
+}
 </style>

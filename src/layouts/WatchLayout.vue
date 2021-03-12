@@ -1,12 +1,7 @@
 <template>
-  <q-layout
-    view="lHh LpR lFf"
-    container
-    style="height: 100vh"
-    class="shadow-2 rounded-borders"
-  >
-    <q-header reveal elevated>
-      <watch-tool-bar>
+  <q-layout view="lHh LpR lFf">
+    <q-header>
+      <watch-toolbar>
         <template #toggle>
           <q-btn
             flat
@@ -17,43 +12,60 @@
           />
         </template>
         <template #auth>
-          <auth-button></auth-button>
+          <auth-button />
         </template>
-      </watch-tool-bar>
+      </watch-toolbar>
     </q-header>
 
-    <q-drawer
-      :width="300"
-      :breakpoint="500"
-      v-model="leftDrawer"
-      show-if-above
-      elevated
-    >
-      <q-scroll-area :delay="1200" :thumb-style="thumbStyle" class="fit">
-        <!-- style="height: 90vh; max-width: 300px;" -->
-        <dynamic-tab :tabList="this.tabs" class="q-item" />
-      </q-scroll-area>
-    </q-drawer>
-
     <q-page-container>
-      <router-view :key="$route.fullPath" />
+      <q-splitter
+        v-model="splitterModel"
+        reverse
+        :limits="[65, 100]"
+        style="height: 92vh"
+      >
+        <template v-slot:before v:tabs="tabs">
+          <q-scroll-area :thumb-style="thumbStyle" class="fit">
+            <dynamic-tab :tabList="tabs" class="q-item" />
+          </q-scroll-area>
+        </template>
+
+        <template v-slot:separator>
+          <!-- size="140px" -->
+          <q-avatar
+            color="secondary"
+            text-color="white"
+            icon="drag_indicator"
+            @dblclick="leftDrawer = !leftDrawer"
+          />
+        </template>
+        <template v-slot:after>
+          <router-view :key="$route.fullPath" />
+        </template>
+      </q-splitter>
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
+
+import DynamicTab from "components/base/DynamicTab"
+import DrawerToggle from "components/base/DrawerToggle"
+import AuthButton from "components/base/AuthButton"
+import WatchToolbar from "components/watch/WatchToolbar"
 import { mapState, mapActions } from "vuex";
 export default {
   name: "WatchLayout",
   components: {
-    DynamicTab: () => import("components/base/DynamicTab"),
-    WatchToolBar: () => import("components/watch/WatchToolbar"),
-    AuthButton: () => import("components/base/AuthButton")
+    DynamicTab,
+    WatchToolbar,
+    AuthButton
   },
   data: () => ({
-    leftDrawer: false,
+    leftDrawer: true,
     currentTab: null,
     favs: false,
+    splitterModel: 80,
     thumbStyle: {
       right: "5px",
       borderRadius: "5px",
@@ -62,23 +74,34 @@ export default {
       opacity: 0.35
     }
   }),
+  computed: {
+    getTabs() {
+      return this.tabs;
+    }
+  },
+  watch: {
+    leftDrawer(val) {
+      this.splitterModel = val ? 80 : 100;
+    }
+  },
   created() {
     this.getPackageData();
     this.addSidebarTabs([
       {
         name: "Segments",
-        componentName: "Segments",
+        componentName: "SegmentsManager",
         icon: "mdi-segment",
+        iconOnly: true,
         cmp: () => import("components/watch/sidebar/Segments"),
         menu: () => import("components/watch/settings/WatchSettings")
       },
       {
         name: "Comments",
-        componentName: "Comments",
+        componentName: "CommentsManager",
         icon: "mdi-comment-multiple-outline",
-        cmp: () => import("components/watch/sidebar/Comments"),
-        // menu: () => import("components/watch/sidebar/WatchSettings")
-      }
+        iconOnly: true, 
+        cmp: () => import("components/watch/sidebar/Comments")
+      }, 
     ]);
   },
   computed: {
@@ -93,12 +116,12 @@ export default {
       this.currentTab = tab;
     },
     goBack() {
-      window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/");
+      window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/").catch(err => {});
     },
     async getPackageData() {
       return await this.fetchPackage(this.$route.params.packageID);
     },
-    ...mapActions("default", ["addSidebarTabs"]),
+    ...mapActions(["addSidebarTabs"]),
     ...mapActions("watch", ["fetchPackage"])
   }
 };

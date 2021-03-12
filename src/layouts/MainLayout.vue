@@ -1,18 +1,32 @@
 <template>
-<q-layout view="hHh Lpr lff" container style="height: 100vh" class="shadow-2 rounded-borders">
-  <!-- <q-layout view="lHh Lpr lff"> -->
+  <q-layout
+    view="hHh Lpr lff"
+    container
+    style="height: 100vh"
+    class="shadow-2 rounded-borders"
+  >
+    <!-- <q-layout view="lHh Lpr lff"> -->
     <q-header elevated>
       <q-toolbar>
-        <drawer-toggle 
-          v-if="$auth.isAuthenticated"
+        <drawer-toggle
+          v-if="loggedIn"
           @toggle-drawer="leftDrawerOpen = !leftDrawerOpen"
         />
-        <q-toolbar-title class="text-h6 text-bold"
+        <q-btn
+          v-else
+          rounded
+          color="grey-4"
+          text-color="secondary"
+          label="Click Here to Enter"
+          @click="card = !card"
+        />
+
+        <q-space />
+        <q-toolbar-title class="text-h5 text-bold absolute-center"
           ><span color="secondary">ProPlayer v8</span>
         </q-toolbar-title>
 
         <q-btn
-          v-if="$auth.isAuthenticated"
           size="25px"
           color="secondary"
           to="/browser"
@@ -20,50 +34,86 @@
           split
           flat
         />
-        <auth-button></auth-button>
+        <auth-button v-if="loggedIn" />
+
+        <q-dialog v-model="card">
+          <q-card class="auth-tabs">
+            <q-tabs
+              v-model="tab"
+              dense
+              class="text-grey"
+              active-color="primary"
+              indicator-color="primary"
+              align="justify"
+              narrow-indicator
+            >
+              <q-tab name="login" label="Login" />
+              <q-tab name="register" label="Register" />
+            </q-tabs>
+
+            <q-separator />
+
+            <q-tab-panels v-model="tab" animated>
+              <q-tab-panel name="login">
+                <login-register :tab="tab" />
+              </q-tab-panel>
+
+              <q-tab-panel name="register">
+                <login-register :tab="tab" />
+              </q-tab-panel>
+            </q-tab-panels>
+          </q-card>
+        </q-dialog>
       </q-toolbar>
     </q-header>
 
     <q-drawer
-      v-if="$auth.isAuthenticated"
+      v-if="loggedIn"
       v-model="leftDrawerOpen"
       show-if-above
       bordered
       :width="350"
       :breakpoint="500"
     >
-      <dynamic-tab :tabList="sidebarTabs" />
+      <dynamic-tab :tabList="tabs" />
     </q-drawer>
 
     <q-page-container>
       <transition mode="out-in">
-      <router-view @toggle-drawer="leftDrawerOpen = !leftDrawerOpen" />
+        <router-view @toggle-drawer="leftDrawerOpen = !leftDrawerOpen" />
       </transition>
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
-import { createNamespacedHelpers } from "vuex";
-const { mapState, mapActions } = createNamespacedHelpers("default");
+import DynamicTab from "components/base/DynamicTab.vue";
+import DrawerToggle from "components/base/DrawerToggle.vue";
+import AuthButton from "components/base/AuthButton.vue";
+import LoginRegister from "src/components/auth/LoginRegister.vue";
+import { mapState, mapActions } from "vuex";
 export default {
   name: "MainLayout",
   components: {
-    DynamicTab: () => import("components/base/DynamicTab"),
-    DrawerToggle: () => import("components/base/DrawerToggle"),
-    AuthButton: () => import("components/base/AuthButton")
+    DynamicTab,
+    DrawerToggle,
+    AuthButton,
+    LoginRegister
   },
   data: () => ({
-      leftDrawerOpen: false
+    leftDrawerOpen: false,
+    tab: "login",
+    card: false
   }),
   computed: {
-    ...mapState(["sidebarTabs"])
+    ...mapState("auth", ["loggedIn"]),
+    ...mapState("default", { tabs: state => state.sidebarTabs })
   },
   mounted() {
     this.resetSideBar();
   },
   methods: {
-    ...mapActions(["resetSideBar"])
+    ...mapActions("default", ["resetSideBar"])
   }
 };
 </script>
@@ -72,5 +122,10 @@ export default {
 #mobileAuthNavBar {
   min-height: 125px;
   justify-content: space-between;
+}
+.auth-tabs {
+  /* height: 50vh; */
+  max-width: 500px;
+  margin: 0 auto;
 }
 </style>

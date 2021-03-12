@@ -1,38 +1,46 @@
 <template>
-  <div class="">
-  
-      <plyr-vue 
-        name="plyr"
-        v-if="divPlayer"
-        ref="mediaPlayer"
-        v-on="$attrs"
-        data-plyr-config='{ "debug": true, "controls": false }'
-      >  
+  <div
+  >
+      <!-- class="row fit justify-start items-center no-wrap" -->
+    <vue-plyr
+      name="plyr"
+      v-if="divPlayer"
+      ref="mediaPlayer"
+      v-on="$attrs"
+      data-plyr-config='{ "debug": true, "controls": false }'
+    >
       <!-- <panZoom
       :options="pzOptions"
       @init="pzInit"
     > -->
-        <div class="videoWrapper" id="mediaPlayer" :class="{ flipped: playerSettings.flipped }">
-          <iframe
-            v-if="type === 'youtube'"
-            :src="youtubePlayer"
-            allowfullscreen
-            allowtransparency
-          />
+      <div
+        class="videoWrapper"
+        id="mediaPlayer"
+        :class="{ flipped: playerSettings.flipped }"
+      >
+        <iframe
+          v-if="type === 'youtube'"
+          :src="youtubePlayer"
+          allowfullscreen
+          allowtransparency
+        />
 
-          <iframe
-            v-if="type === 'vimeo'"
-            :src="vimeoPlayer"
-            allowfullscreen
-            allowtransparency
-            allow="autoplay"
-          />
-        </div>
-    <!-- </panZoom> -->
-      </plyr-vue>
+        <iframe
+          v-if="type === 'vimeo'"
+          :src="vimeoPlayer"
+          allowfullscreen
+          allowtransparency
+          allow="autoplay"
+        />
+      </div>
+      <!-- </panZoom> -->
+    </vue-plyr>
 
     <!-- <pan-zoom> -->
-    <plyr-vue v-if="!divPlayer" ref="mediaPlayer">
+    <vue-plyr
+      v-if="!divPlayer"
+      ref="mediaPlayer"
+    >
       <video
         v-if="this.type == 'audio'"
         id="mediaPlayer"
@@ -48,7 +56,7 @@
           :type="source.type"
         />
       </video>
-    </plyr-vue>
+    </vue-plyr>
     <!-- </pan-zoom> -->
     <player-controls
       :currentTime="ctime"
@@ -58,19 +66,19 @@
       :loopStop="loopStop"
     >
       <template #slider>
-        <media-progress-slider :remaining="duration" :ctime="ctime" />
+        <media-progress-slider
+          :remaining="duration"
+          :ctime="ctime"
+          :activeLoop="loopObj"
+        />
       </template>
     </player-controls>
   </div>
 </template>
 
 <script>
-import Vue from "vue";
-// import panzoom from "vue-panzoom";
-import VuePlyr from "vue-plyr";
 import { utilities } from "../../mixins/utilities";
 import { mapState, mapActions } from "vuex";
-Vue.use(VuePlyr);
 // Vue.use(panZoom);
 export default {
   name: "PlyerMediaPlayer",
@@ -104,7 +112,8 @@ export default {
     },
     zoom: null,
     playing: false,
-    loopActive: false
+    loopActive: false,
+    loopObj: null
   }),
   created() {
     this.$root.$on("slider-change", this.seekTo);
@@ -119,33 +128,46 @@ export default {
     this.$root.$on("volume", this.volumeChange);
     this.$root.$on("zoom", this.toggleZoom);
     this.$root.$on("resetZoom", this.resetZoom);
-    this.$root.$on("clearLoop", () => {
-      this.loopStop = this.loopStart = null;
-    });
+    this.$root.$on("clear-loop", this.clearLoop);
   },
-  mounted() { 
+  mounted() {
     this.player.on("ready", e => {
       this.duration = e.detail.plyr.duration;
       this.loadDefaultSettings();
-      this.player.toggleControls(false)
+      this.player.toggleControls(false);
     });
     this.player.on("timeupdate", this.timeUpdated);
+    this.player.on("clear-loop", this.clearLoop);
     this.player.on("playing play pause", this.stateChange);
-    // });
   },
   components: {
-    "plyr-vue": VuePlyr,
     "media-progress-slider": () =>
-      import("components/watch/MediaProgressSlider"),
-    "player-controls": () => import("components/watch/PlayerControls")
+      import("components/watch/MediaProgressSlider.vue"),
+    "player-controls": () => import("components/watch/PlayerControls.vue")
   },
   watch: {
+    seekToTime() {
+      this.seekTo(this.seekToTime);
+    },
     playing(e) {
       this.playing = e;
+    },
+    validLoop: function(valid) {
+      this.loopObj = this.loopActive
+        ? { min: this.loopStart, max: this.loopStop }
+        : null;
+      if (valid) {
+        this.$root.$emit("valid-loop", {
+          status: this.validLoop,
+          loop: this.loopObj
+        });
+      } else {
+        this.$root.$emit("valid-loop", { status: this.validLoop });
+      }
     }
   },
   computed: {
-    ...mapState("watch", ["playerSettings"]),
+    ...mapState("watch", ["playerSettings", "seekToTime"]),
     player() {
       return this.$refs.mediaPlayer.player;
     },
@@ -167,6 +189,16 @@ export default {
   },
   methods: {
     ...mapActions("watch", ["flipPlayer", "loadPlayerSettings"]),
+    setCurrentTime(val) {
+      this.player.currentTime = val;
+    },
+    clearLoop() {
+      this.loopStart = null;
+      this.loopStop = null;
+      this.loopObj = null;
+      this.loopActive = false;
+      console.log("loop cleared");
+    },
     pzInit(pz_instance) {
       console.log("pz", pz_instance);
       this.pz = pz_instance;
@@ -223,9 +255,10 @@ export default {
       return isDivPlayer;
     },
     seekTo(time) {
-      // console.log("orig time ", time);
+      console.log("Seek to time ", time);
       if (!this.player) return;
-      this.ctime = this.player.currentTime = time >= 0 ? time : 0;
+      let val = time >= 0 ? time : 0;
+      this.ctime = this.setCurrentTime(val);
     },
     restart() {
       this.seekTo(0);
@@ -238,10 +271,17 @@ export default {
     togglePlay(val) {
       if (!this.player) return;
       if (this.player.playing || !val) {
-        this.player.pause();
+        this.pausePlayer();
       } else {
-        this.player.play();
+        this.playPlayer();
       }
+      console.log("player status: ", this.player.playing);
+    },
+    pausePlayer() {
+      this.player.pause();
+    },
+    playPlayer() {
+      this.player.play();
     },
     setloopStart() {
       if (!this.player) return;
@@ -298,8 +338,9 @@ export default {
     },
     toggleLooping() {
       console.log("looptoggle");
-      if (this.validLoop) this.player.currentTime = this.loopStart;
+      if (this.validLoop) this.setCurrentTime(this.loopStart);
       this.loopActive = !this.loopActive;
+
       this.player.togglePlay(this.loopActive);
       this.showMessage({
         type: "info",
@@ -311,13 +352,13 @@ export default {
         message: this.loopActive ? "Loop Active" : "Loop Stopped",
         icon: this.loopIcon
       });
-    },
+    }
     // resizeIFrameToFitContent( iFrame ) {
     //   console.log('b-iframe', iFrame)
     //   iFrame.width  = iFrame.contentWindow.parent.document.body.scrollWidth + 'px';
     // iFrame.height = iFrame.contentWindow.parent.document.body.scrollHeight  * .9 + 'px';
     //   console.log('a-iframe', iFrame)
-// }
+    // }
   }
 };
 </script>
@@ -345,7 +386,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-   /* padding-bottom: calc(var(--aspect-ratio, 0.35) * 100%);  */
+  padding-bottom: calc(var(--aspect-ratio, 0.35) * 100%);
 }
 .flipped {
   -webkit-transform: rotateY(180deg);

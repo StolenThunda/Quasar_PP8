@@ -3,22 +3,28 @@
     <span class="text-h6">{{ title }}</span>
     <slot name="header-pages"></slot>
     <q-list v-model="resultList">
+
       <q-intersection
         v-for="entry in resultList"
         :key="entry.id"
         transition="slide-right"
       >
         <q-card class="q-mb-xs" bordered flat>
-          <q-item class="browser-result-wrapper">
-            <q-item-section v-model="entry.avatar" @hover="toggler" avatar>
+
+          <q-item class="browser-result-wrapper"  >
+            <q-item-section             
+              v-model="entry.avatar"
+              @hover="toggler"
+              avatar
+            >
               <q-btn
                 class="browser-result-fav-wrapper q-ml-lg"
                 :color="isFavorite(entry) ? 'negative' : 'primary'"
                 icon="favorite"
                 title="Toggle Favorite"
-                @click="toggleFavorite(entry)"
                 round
                 push
+               @click="toggleFavorite(entry)"
               />
             </q-item-section>
             <q-item :to="lnk(entry)" clickable v-ripple style="width:100%">
@@ -36,6 +42,7 @@
                 </q-img>
               </q-item-section>
               <q-item-section class="browser-result-text-wrapper">
+
                 <q-item-label
                   text-color="secondary"
                   class="text-weight-bolder text-body2 browser-result-title"
@@ -74,6 +81,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 export default {
+  name: "ResultList",
   props: {
     resultList: Array,
     title: String,
@@ -86,7 +94,6 @@ export default {
     showCurrent() {
       return this.$store.state.browser.searching && !this.hideCurrent;
     },
-
     ...mapGetters("default", ["isFavorite"])
   },
   components: {
@@ -94,19 +101,16 @@ export default {
   },
   methods: {
     lnk(entry) {
-      console.log("isYT", entry.avatar);
       const isYoutubeVid = entry.avatar.indexOf("youtube") >= 0;
       const lnk = isYoutubeVid
         ? `/watch/${entry.id}/${entry.id}`
         : `/watch/${entry.id}`;
-      console.log("lnk", lnk);
       return lnk;
     },
     toggler(e) {
       console.log(e.currentTarget);
     },
     ...mapActions("default", ["toggleFavorite"]),
-    ...mapActions("watch", ["playSegment"])
   }
 };
 </script>
@@ -115,17 +119,11 @@ export default {
 .browser-result-wrapper {
   position: relative;
   width: 100%;
-  // float: left;
-  // padding: 0.5em 0.25em;
-  // border-bottom: 1px solid #444;
 }
 
 .browser-result-image {
-  // border: 1px solid #555;
   float: left;
   margin-left: 2.5rem;
-  // width: 6rem;
-  // position: relative;
 }
 
 .browser-result-image img {
@@ -140,6 +138,7 @@ export default {
   margin-right: 1rem;
   margin-left: 4rem;
 }
+
 
 .browser-result-title {
   font-size: 1.1rem;
