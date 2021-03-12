@@ -10,46 +10,68 @@
       infinite
       autoplay
       animated
+      arrows
     >
       <q-carousel-slide
-        :name="1"
-        img-src="https://cdn.texasbluesalley.com/styles/TXBALogo.svg"
-      />
-      <q-carousel-slide
-        :name="2"
-        img-src="https://cdn.texasbluesalley.com/misc/locals-page/AllCourses-1600px.jpg"
-      />
-      <q-carousel-slide
-        :name="3"
-        img-src="https://txba-media.s3.amazonaws.com/woodshed/course-type-images/SRV-800.jpg"
-      />
-      <q-carousel-slide
-        :name="4"
-        img-src="https://txba-media.s3.amazonaws.com/woodshed/course-type-images/Influences-800.jpg"
-      />
-    <!-- <template v-slot:control>
-        <q-carousel-control
-          class="absolute-center"
+        v-for="(img, i) in images"
+        :key="i"
+        :name="i"
+        class="column no-wrap"
+      >
+        <div
+          class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap"
         >
-         
-        </q-carousel-control>
-      </template> -->
+          <q-img
+            class="rounded-borders full-height"
+            :src="img.src"
+            :ratio="img.ratio"
+            :contain="img.contain"
+          />
+        </div>
+      </q-carousel-slide>
     </q-carousel>
   </q-page>
 </template>
 
 <script>
-
 export default {
   name: "Auth",
   data: () => ({
     fullscreen: false,
-    stars: 3,
     slide: 1,
     autoplay: true,
-  }),
-  // components: { LoginRegister }
+    images: [
+      {
+        src: "https://cdn.texasbluesalley.com/styles/TXBALogo.svg",
+        contain: true
+      },
+      {
+        src:
+          "https://cdn.texasbluesalley.com/misc/locals-page/AllCourses-1600px.jpg"
+      },
+      {
+        src:
+          "https://txba-media.s3.amazonaws.com/woodshed/course-type-images/SRV-800.jpg"
+      },
+      {
+        src:
+          "https://txba-media.s3.amazonaws.com/woodshed/course-type-images/Influences-800.jpg"
+      },
+      {
+        src:
+          "https://cdn.texasbluesalley.com/styles/TXBA-Theme/banners/TXBA-Store-Banner.jpg"
+      },
+      {
+        src:
+          "https://cdn.texasbluesalley.com/products/3840/dsc00025__medium.jpg",
+        contain: true
+      },
+      {
+        src:
+          "https://cdn.texasbluesalley.com/styles/TXBA-Theme/banners/TXBA-Home-Banner.jpg",
+        contain: true
+      }
+    ]
+  })
 };
 </script>
-
-
