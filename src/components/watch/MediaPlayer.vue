@@ -1,7 +1,5 @@
 <template>
-  <div
-  >
-      <!-- class="row fit justify-start items-center no-wrap" -->
+  <div>
     <vue-plyr
       name="plyr"
       v-if="divPlayer"
@@ -37,10 +35,7 @@
     </vue-plyr>
 
     <!-- <pan-zoom> -->
-    <vue-plyr
-      v-if="!divPlayer"
-      ref="mediaPlayer"
-    >
+    <vue-plyr v-if="!divPlayer" ref="mediaPlayer">
       <video
         v-if="this.type == 'audio'"
         id="mediaPlayer"
