@@ -119,12 +119,16 @@ export default {
       console.log( "playerOpts", ctx.playerOpts );
       console.log( "playerSettings", ctx.playerSettings );
       console.log( 'New data', data )
-      ctx.currentSetup = Object.assign(
-        {},
-        ctx.currentSetup,
-        ctx.playerOpts,
-        ctx.playerSettings,
-        data );
+      if (data) {
+        ctx.currentSetup = Object.assign(
+          {},
+          ctx.currentSetup,
+          ctx.playerOpts,
+          ctx.playerSettings,
+          data );
+      }else{
+        ctx.currentSetup = {}
+      }
     },
     SET_PLAY_SECTIONS(ctx, data){
       ctx.playSections = data?.playSections
@@ -233,6 +237,7 @@ export default {
       const response = await ctx.rootState.TXBA_UTILS.getSegment( ID );
       console.log( "segData", response );
       ctx.commit( "SET_CURRENT_SEGMENT", response );
+      ctx.commit("SET_CURRENT_SEGMENT_SETUP", null) 
       return ID;
     },
     setCurrentSegmentSetup ( ctx, segmentId ) {

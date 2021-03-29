@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh LpR lFf">
     <q-header>
-      <watch-toolbar>
+      <watch-toolbar class="q-electron-drag">
         <template #toggle>
           <q-btn
             flat

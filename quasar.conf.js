@@ -22,7 +22,7 @@ module.exports = function (/* ctx */) {
       'router-auth',
       'firebase',
       'axios',
-      'panzoom',
+      // 'panzoom',
       'vue-plyr'
     ],
 

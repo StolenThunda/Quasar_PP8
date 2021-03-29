@@ -1,6 +1,7 @@
 <template>
-  <div>
+  <div class="column justify-between">
     <vue-plyr
+      class="col"
       name="plyr"
       v-if="divPlayer"
       ref="mediaPlayer"
@@ -250,9 +251,9 @@ export default {
       return isDivPlayer;
     },
     seekTo(time) {
-      console.log("Seek to time ", time);
-      if (!this.player) return;
+      if (!this.player || typeof time == NaN) return;
       let val = time >= 0 ? time : 0;
+      console.log("Seek to time ", time);
       this.ctime = this.setCurrentTime(val);
     },
     restart() {
@@ -263,26 +264,22 @@ export default {
       this.playing = state !== "pause";
       // console.log(state, this.playing);
     },
-    togglePlay(val) {
+    togglePlay() {
       if (!this.player) return;
-      if (this.player.playing || !val) {
-        this.pausePlayer();
+      if (this.player.playing) {
+        this.player.pause();
       } else {
-        this.playPlayer();
+        this.player.play();
       }
-      console.log("player status: ", this.player.playing);
-    },
-    pausePlayer() {
-      this.player.pause();
-    },
-    playPlayer() {
-      this.player.play();
+      console.log("playing?: ", this.player.playing);
     },
     setloopStart() {
       if (!this.player) return;
+      if (typeof this.player.currentTime === NaN) return;
       const current = this.player.currentTime;
       this.loopStart = current;
       if (this.loopStop <= current) this.loopStop = null;
+
       this.showMessage(
         Object.assign({}, this.cfgLoopIcon, {
           type: "positive",
@@ -292,7 +289,8 @@ export default {
       );
     },
     setloopStop() {
-      if (this.player.currentTime === "NaN") return;
+      if (!this.player) return;
+      if (typeof this.player.currentTime === NaN) return;
       const current = this.player.currentTime;
       console.log("curr", this.secondsToMinutes(current));
       if (typeof this.loopStart === "number") {
@@ -372,7 +370,7 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(var(--aspect-ratio, 0.35) * 100%);
 }
 
 .videoWrapper iframe {

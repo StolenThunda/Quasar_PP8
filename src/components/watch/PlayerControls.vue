@@ -18,14 +18,14 @@
             class="transport-button"
             title="Toggle Playback."
             :icon="isPlaying ? 'mdi-pause' : 'mdi-play'"
-            @click="togglePlay"
+            @click="$root.$emit('togglePlay')"
           />
         </li>
         <li class="">
           <q-btn
             id="playback-beginning"
             class="transport-button"
-            @click="restartPlayback"
+            @click="$root.$emit('restart', 0);"
             icon="mdi-skip-backward"
             title="Back to the beginning."
             :disable="this.currentTime === 0"
@@ -35,7 +35,7 @@
           <q-btn
             id="playback-rewind"
             class="transport-button"
-            @click="seek('back')"
+            @click="$root.$emit('seek-5', seekTime(-5))"
             title="Rewind 5 Seconds."
             icon-right="mdi-rewind-5"
           >
@@ -45,7 +45,7 @@
           <q-btn
             id="playback-forward"
             class="transport-button"
-            @click="seek('forward')"
+            @click="$root.$emit('seek5', seekTime(5))"
             title="Forward 5 Seconds."
             icon="mdi-fast-forward-5"
           >
@@ -55,7 +55,7 @@
           <q-btn
             id="looping-start"
             class="transport-button"
-            @click="setLoop('loopStart')"
+            @click="$root.$emit('loopStart')"
             title="Set loop starting point."
             :color="typeof loopStart === 'number' ? 'green' : 'white'"
             icon="mdi-arrow-collapse-left"
@@ -68,7 +68,7 @@
           <q-btn
             id="looping-stop"
             class="transport-button"
-            @click="setLoop('loopStop')"
+            @click="$root.$emit('loopStop')"
             title="Set loop stopping point."
             :color="typeof loopStop === 'number' ? 'green' : 'white'"
             :disable="stopDisabled"
@@ -79,29 +79,32 @@
           </q-btn>
         </li>
         <li class="">
-            <!-- <q-icon name="mdi-autorenew" ></q-icon> -->
           <q-btn-dropdown
             id="looping-toggle"
             split
             :disable-dropdown="!isLoopDefined"
             title="Begin/End Looping."
-            class="transport-button"            
+            class="transport-button"
             :color="!isLoopDefined ? 'grey' : 'green'"
             :disable="!isLoopDefined"
             icon="mdi-autorenew"
             :class="{ rotate: looping }"
-            @click="toggleLooping"
+            @click="toggleLooping(); $root.$emit('toggleLooping')"
           >
-              <q-list>
-        <q-item clickable v-close-popup @click="clearLoop">
-          <q-item-section avatar>
-            <q-avatar icon="mdi-minus-circle-off" color="primary" text-color="white" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Clear Loop</q-item-label>
-          </q-item-section>
-        </q-item>
-              </q-list>
+            <q-list>
+              <q-item clickable v-close-popup @click="toggleLooping(false); $root.$emit('clear-loop');">
+                <q-item-section avatar>
+                  <q-avatar
+                    icon="mdi-minus-circle-off"
+                    color="primary"
+                    text-color="white"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Clear Loop</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
           </q-btn-dropdown>
         </li>
         <li>
@@ -117,41 +120,22 @@ import MediaProgressSlider from "./MediaProgressSlider.vue";
 export default {
   name: "PlayerControls",
   components: {
-    videoSettingsMenu: () => import("components/watch/settings/VideoSettings.vue")
+    videoSettingsMenu: () =>
+      import("components/watch/settings/VideoSettings.vue")
   },
   props: ["isPlaying", "loopStart", "loopStop", "currentTime", "isLoopDefined"],
   data: () => ({ looping: false }),
   computed: {
     stopDisabled() {
       return !(typeof this.loopStart === "number");
+    },
+    seekTime(val) {
+      return this.currentTime + val
     }
   },
   methods: {
-    togglePlay(val) {
-      this.$root.$emit("togglePlay", val);
-    },
-    clearLoop(){
-      this.looping = false
-      this.$root.$emit('clear-loop')
-    },
-    setLoop(loop) {
-      // console.log('setloop', loop)
-      this.$root.$emit(loop, loop);
-    },
-    restartPlayback() {
-      this.$root.$emit("restart", 0);
-    },
-    seek(dir) {
-      // console.log("seek", dir);
-      if (dir === "forward") {
-        this.$root.$emit("seek5", this.currentTime + 5);
-      } else {
-        this.$root.$emit("seek-5", this.currentTime - 5);
-      }
-    },
-    toggleLooping() {
-      this.looping = !this.looping;
-      this.$root.$emit("toggleLooping");
+    toggleLooping(val) {
+      this.looping = (val) ? val : !this.looping;
     }
   }
 };

@@ -2,7 +2,7 @@
   <!-- <q-layout view="lHh Lpr lff"> -->
   <q-layout view="hHh Lpr lff">
     <q-header elevated>
-      <browser-toolbar @toggle-drawer="toggleDrawer">
+      <browser-toolbar @toggle-drawer="toggleDrawer" class="q-electron-drag">
         <template #toggleDrawer>
           <q-btn
             label="Toggle Filters"

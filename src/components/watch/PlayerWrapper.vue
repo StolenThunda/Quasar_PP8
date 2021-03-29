@@ -42,6 +42,9 @@ export default {
         console.error("Something ain't right");
       }
     );
+    // this.$nextTick(() => {
+      
+    // })
   }, 
   computed: {
     ...mapState("watch", ["currentSetup"])
