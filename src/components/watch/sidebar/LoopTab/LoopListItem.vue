@@ -5,7 +5,7 @@
         active-class="text-orange"
         :id="getItemID(loop, index)"
         :key="getItemID(loop,index)"
-        @click="toggleActive(loop, index)"
+        @click.prevent="toggleActive(loop, index)"
         :active="active(loop)"
       >
   <q-item-section avatar>

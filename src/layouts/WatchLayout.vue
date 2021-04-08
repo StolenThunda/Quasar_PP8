@@ -20,9 +20,9 @@
     <q-page-container>
       <q-splitter
         v-model="splitterModel"
+        style="height: 92vh"
         reverse
         :limits="[65, 100]"
-        style="height: 92vh"
       >
         <template v-slot:before v:tabs="tabs">
           <q-scroll-area :thumb-style="thumbStyle" class="fit">
@@ -64,7 +64,7 @@ export default {
     leftDrawer: true,
     currentTab: null,
     favs: false,
-    splitterModel: 80,
+    splitterModel: 60,
     thumbStyle: {
       right: "5px",
       borderRadius: "5px",
@@ -80,7 +80,7 @@ export default {
   },
   watch: {
     leftDrawer(val) {
-      this.splitterModel = val ? 80 : 100;
+      this.splitterModel = val ? 65 : 100;
     }
   },
   created() {

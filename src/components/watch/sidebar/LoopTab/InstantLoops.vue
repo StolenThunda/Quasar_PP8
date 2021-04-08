@@ -30,7 +30,7 @@ export default {
         name: "Locals",
         componentName: "Locals Loops",
         // props: {admin: false },
-        cmp: () => import("./ReadOnlyLoops")
+        cmp: () => import("./MemberLoops")
       }
       ]
   }),

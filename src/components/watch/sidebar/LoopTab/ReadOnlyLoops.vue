@@ -8,7 +8,7 @@
 <script>
 import { mapState } from "vuex";
 import LoopList from "./LoopList.vue";
-import MemberLoopList  from "./MemberLoopList.vue";
+import MemberLoopList  from "./MemberLoops.vue";
 export default {
   name: "ReadOnlyLoops",
   props: {

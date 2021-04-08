@@ -1,40 +1,5 @@
 <template>
   <div class="column justify-between">
-    <!-- <vue-plyr
-      class="col"
-      name="plyr"
-      v-if="divPlayer"
-      ref="mediaPlayer"
-      v-on="$attrs"
-      data-plyr-config='{ "debug": true }'
-    >
-      <!- <panZoom
-      :options="pzOptions"
-      @init="pzInit"
-    > ->
-      <div
-        class="videoWrapper"
-        id="mediaPlayer"
-        :class="{ flipped: playerSettings.flipped }"
-      >
-        <iframe
-          v-if="type === 'youtube'"
-          :src="youtubePlayer"
-          allowfullscreen
-          allowtransparency
-        />
-
-        <iframe
-          v-if="type === 'vimeo'"
-          :src="vimeoPlayer"
-          allowfullscreen
-          allowtransparency
-          allow="autoplay"
-        />
-      </div>
-      <!- </panZoom> ->
-    </vue-plyr> -->
-
     <!-- <pan-zoom> -->
     <vue-plyr ref="mediaPlayer">
       <!-- Begin Audio Interface -->
@@ -147,6 +112,16 @@ export default {
     this.$root.$on("zoom", this.toggleZoom);
     this.$root.$on("resetZoom", this.resetZoom);
     this.$root.$on("clear-loop", this.clearLoop);
+
+    this.unsubscribe = this.$store.subscribe((mutation, state) => {
+      if (mutation.type === 'watch/SET_SEEK_TIME'){
+       this.seekTo(state.watch.seekToTime);
+      this.player?.play()
+      }
+    })
+  }, 
+  beforeDestroy() {
+    this.unsubscribe();
   },
   mounted() {
     this.player.on("ready", e => {
@@ -164,9 +139,11 @@ export default {
     "player-controls": () => import("components/watch/PlayerControls.vue")
   },
   watch: {
-    seekToTime() {
-      this.seekTo(this.seekToTime);
-    },
+    // seekToTime() {
+    //   this.seekTo(this.seekToTime);
+    //   console.log('seekto', this.seekToTime)
+    //   this.player.play()
+    // },
     playing(e) {
       this.playing = e;
     },
@@ -188,8 +165,6 @@ export default {
     ...mapState("watch", ["playerSettings", "seekToTime"]),
     divPlayer() {
       return ["youtube", "vimeo"].includes(this.type);
-      // console.log("isDivPlay", isDivPlayer);
-      // return isDivPlayer;
     },
     player() {
       return this.$refs.mediaPlayer.player;

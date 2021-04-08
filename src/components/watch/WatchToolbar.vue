@@ -5,12 +5,7 @@
       <slot>
         <q-btn round flat to="/" icon="home" />
         <q-btn round flat @click="toggleInfo" icon="info" />
-        <q-toolbar-title>
-          <span
-            class="absolute-center text-capitalize"
-            v-html="packageTitle"
-          ></span>
-        </q-toolbar-title>
+       <q-space />
         <q-fab
           v-if="getHistory.length"
           :label="'History: ' + getHistory.length"
@@ -53,7 +48,18 @@
         v-if="fullScreenEnabled"
         @click="toggleFullScreen" />
       <slot name="auth"></slot>
+      
     </q-toolbar>
+    <q-toolbar inset>
+        <q-toolbar-title>
+          <div
+            class="text-capitalize ellipsis-2-lines row justify-center"
+            v-html="packageTitle"
+
+          ></div>
+        </q-toolbar-title>
+
+        </q-toolbar>
     <course-info v-show="visible" @closeInfo="toggleInfo" />
   </div>
 </template>
