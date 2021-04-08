@@ -3,11 +3,11 @@
     <q-item class="row">
       <q-item-section
         id="current-time"
-        class="q-pl-md col-1 text-weight-bolder text-caption"
+        class="q-px-xl col-2 text-weight-bolder text-caption"
       >
         {{ elapsedTime }}
       </q-item-section>
-      <q-item-section id="progressSlider" class="col-10">
+      <q-item-section id="progressSlider" class="col-8">
         <q-slider
           dense
           label
@@ -35,7 +35,7 @@
         <!-- </div> -->
         <!-- <div id="chapters-wrapper"></div> -->
       </q-item-section>
-      <q-item-section id="time-left" class="col-1 q-pl-md text-weight-bolder text-caption">
+      <q-item-section id="time-left" class="col-2 q-px-xl text-weight-bolder text-caption">
         {{ timeLeft }}
       </q-item-section>
     </q-item>
