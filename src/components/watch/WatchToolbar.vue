@@ -72,7 +72,7 @@ export default {
     visible: false
   }),
   mounted() {
-    var title = this.packageTitle;
+    this.title = this.packageTitle;
   },
   watch: {
     packageTitle(val) {

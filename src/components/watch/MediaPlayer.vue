@@ -1,17 +1,17 @@
 <template>
   <div class="column justify-between">
-    <vue-plyr
+    <!-- <vue-plyr
       class="col"
       name="plyr"
       v-if="divPlayer"
       ref="mediaPlayer"
       v-on="$attrs"
-      data-plyr-config='{ "debug": true, "controls": false }'
+      data-plyr-config='{ "debug": true }'
     >
-      <!-- <panZoom
+      <!- <panZoom
       :options="pzOptions"
       @init="pzInit"
-    > -->
+    > ->
       <div
         class="videoWrapper"
         id="mediaPlayer"
@@ -32,11 +32,12 @@
           allow="autoplay"
         />
       </div>
-      <!-- </panZoom> -->
-    </vue-plyr>
+      <!- </panZoom> ->
+    </vue-plyr> -->
 
     <!-- <pan-zoom> -->
-    <vue-plyr v-if="!divPlayer" ref="mediaPlayer">
+    <vue-plyr ref="mediaPlayer">
+      <!-- Begin Audio Interface -->
       <video
         v-if="this.type == 'audio'"
         id="mediaPlayer"
@@ -52,6 +53,26 @@
           :type="source.type"
         />
       </video>
+      <!-- End Audio Interface -->
+
+      <!-- Begin Video Interface -->
+      <video
+        v-else
+        id="mediaPlayer"
+        ref="mediaPlayer"
+        :playsinline="playsinline"
+        :controls="controls"
+        :data-poster="poster"
+      >
+        <source
+          v-for="source in sources"
+          :key="source.src"
+          :src="source.src"
+          :type="source.type"
+          :size="source.size"
+        />
+      </video>
+      <!-- End Video Interface -->
     </vue-plyr>
     <!-- </pan-zoom> -->
     <player-controls
@@ -81,6 +102,7 @@ export default {
   inheritAttrs: false,
   mixins: [utilities],
   props: {
+    flipped: Boolean,
     controls: Boolean,
     poster: String,
     sources: Array,
@@ -164,11 +186,17 @@ export default {
   },
   computed: {
     ...mapState("watch", ["playerSettings", "seekToTime"]),
+    divPlayer() {
+      return ["youtube", "vimeo"].includes(this.type);
+      // console.log("isDivPlay", isDivPlayer);
+      // return isDivPlayer;
+    },
     player() {
       return this.$refs.mediaPlayer.player;
     },
     vimeoPlayer() {
-      return `https://player.vimeo.com/video/${this.sources[0].src}?loop=false&amp;byline=false&amp;portrait=false&amp;title=false&amp;speed=true&amp;transparent=0&amp;gesture=media`;
+      // return `https://player.vimeo.com/video/${this.sources[0].src}?loop=false&amp;byline=false&amp;portrait=false&amp;title=false&amp;speed=true&amp;transparent=0&amp;gesture=media`;
+      return `${this.sources[0].src}`;
     },
     youtubePlayer() {
       // return `http://www.youtube.com/embed/${this.sources[0].src}?rel=0&hd=1 `;
@@ -245,11 +273,7 @@ export default {
         }
       }
     },
-    divPlayer() {
-      const isDivPlayer = this.titletype in ["youtube", "vimeo"];
-      console.log("isDivPlay", isDivPlayer);
-      return isDivPlayer;
-    },
+
     seekTo(time) {
       if (!this.player || typeof time == NaN) return;
       let val = time >= 0 ? time : 0;

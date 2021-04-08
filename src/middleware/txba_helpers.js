@@ -350,7 +350,7 @@ export default class TXBA_Utilities {
             type: "soundslice"
           }
         ],
-        color: "bluet"
+        color: "blue"
       };
     if (this.objectHaveKeyLike(seg, "PDF"))
       type = {

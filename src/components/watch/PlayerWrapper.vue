@@ -1,25 +1,37 @@
 <template>
-  <div
-    id="mediaPlayerWrapper"
-    v-if="currentSetup.sources"
-    :set="(s = currentSetup.sources[0])"
-  >
-    <template v-if="renderers.includes(s.mediaType)">
-      <pdf-renderer v-if="s.type === 'pdf'" :src="s.src" />
-      <soundslice-renderer v-if="s.type === 'soundslice'" :src="s.src" />
-    </template>
-    <media-player
-      v-else
-      v-bind="currentSetup"
-      :key="'mediaPlayer-' + componentKey"
-      :src="s.src"
+  <div>
+    Type: {{ mediaType }}
+    <div
+      class="q-pa-lg media-content-wrapper"
+      v-if="mediaType === 'html'"
+      v-html="ProPlayer.theSegment.getHTMLContent().replaceAll('h2', 'h5')"
     />
-    <!-- {{ s.type }} -->
+
+    <soundslice-renderer
+      v-else-if="mediaType === 'soundslice'"
+      :src="currentSetup.data"
+    />
+      <!-- v-else-if="currentSetup.sources" -->
+    <div
+      v-else
+      id="mediaPlayerWrapper"
+      :set="(s = currentSetup.sources[0])"
+    >
+      <media-player
+        v-bind="currentSetup"
+        :key="'mediaPlayer-' + componentKey"
+        :src="s.src"
+      />
+      <template v-if="renderers.includes(currentSetup.mediaType)">
+        <pdf-renderer v-if="s.type === 'pdf'" :src="s.src" />
+      </template>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState } from "vuex";
+// import SoundSlice from './renderers/SoundSlice.vue';
 export default {
   name: "MediaPlayerWrapper",
   components: {
@@ -30,52 +42,61 @@ export default {
   },
   data: () => ({
     componentKey: 0,
-    renderers: ["pdf", "soundslice"]
+    renderers: ["pdf"]
   }),
   created() {
     this.$root.$on("flip-player", this.flipper);
   },
-  mounted() {
-    const media = this.fetchPackage(this.$route.params.packageID).then(
-      () => this.fetchDefaultMedia(),
-      error => {
-        console.error("Something ain't right");
-      }
-    );
-    // this.$nextTick(() => {
-      
-    // })
-  }, 
   computed: {
-    ...mapState("watch", ["currentSetup"])
+    mediaType() {
+      return this.ProPlayer.theSegment.getPrimaryMediaType();
+    },
+    ...mapState("watch", ["currentSetup", "ProPlayer"])
   },
   watch: {
     currentSetup() {
-      console.info("setup changed",this.currentSetup);
+      console.info("setup changed", this.currentSetup);
       this.forceRerender();
     }
   },
   methods: {
-    ...mapActions("watch", ["fetchPackage", "fetchDefaultMedia"]),
-    isRenderer(type) {
-      console.log("type", type);
-      return this.renderers.includes(type);
-    },
     forceRerender() {
       this.componentKey += 1;
     }
   }
 };
 </script>
-<style >
-
+<style>
 #mediaPlayerWrapper {
   bottom: 0;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  /* background: black; */
+  overflow: hidden;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.media-content-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+  padding: 1rem;
+  background: #222;
+  overflow: auto;
+}
+
+#mediaPlayer iframe {
+  height: 100%;
+  width: 100%;
+  bottom: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   overflow: hidden;
   border: none;
   padding: 0;

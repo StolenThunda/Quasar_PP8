@@ -1686,7 +1686,7 @@ export class Engine {
       this.initializeVolumeSlider();
       this.initializeSpeedSlider();
       this.initializeZoomSlider();
-      this.initializePanZoom();
+      // this.initializePanZoom();
       //this.initializePlaybackSpeeds();
       this.createResolutionRadioButtons();
       //this.createPlaybackRateButtons();

@@ -50,7 +50,6 @@
 <script>
 
 import DynamicTab from "components/base/DynamicTab"
-import DrawerToggle from "components/base/DrawerToggle"
 import AuthButton from "components/base/AuthButton"
 import WatchToolbar from "components/watch/WatchToolbar"
 import { mapState, mapActions } from "vuex";

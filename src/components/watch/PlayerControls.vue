@@ -116,7 +116,7 @@
 </template>
 
 <script>
-import MediaProgressSlider from "./MediaProgressSlider.vue";
+// import MediaProgressSlider from "./MediaProgressSlider.vue";
 export default {
   name: "PlayerControls",
   components: {
@@ -129,11 +129,11 @@ export default {
     stopDisabled() {
       return !(typeof this.loopStart === "number");
     },
-    seekTime(val) {
-      return this.currentTime + val
-    }
   },
   methods: {
+    seekTime(val) {
+      return this.currentTime + val
+    },
     toggleLooping(val) {
       this.looping = (val) ? val : !this.looping;
     }

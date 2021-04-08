@@ -1,11 +1,11 @@
 <template>
   <q-list>
-    <template v-for="section in sections">
+    <template v-for="(section, i) in ProPlayer.thePackage.getSections()">
       <q-expansion-item
         :key="section.sectionID"
         v-if="section.segments"
         group="somegroup"
-        default-opened
+        :default-opened="i == 0"
         style="max-width: 350px"
         header-style="background-color:#464646; min-width: 250px;"
         expand-separator
@@ -13,9 +13,9 @@
       >
         <template #header>
           {{ section.sectionTitle }}
-          <q-space />
+          <!-- <q-space /> -->
         </template>
-        <q-list class="q-py-sm rounded-borders" keep-alive bordered dense>
+        <q-list class="q-py-sm rounded-borders" keep-alive>
           <q-item
             v-for="segment in section.segments"
             :key="segment.segmentID"
@@ -23,10 +23,11 @@
             :id="segment.segmentID"
             ripple
             clickable
-            @click="openSegment(segment.segmentID)"
-            height="20px"
+            @click="loadSegment(segment.segmentID)"
             active-class="secondary"
+            dense
           >
+            <!-- height="20px" -->
             <q-item-section avatar>
               <q-icon
                 :color="segmentIconInfo.color"
@@ -35,7 +36,7 @@
               />
             </q-item-section>
             <q-item-section>
-              <q-item-label caption>{{ segment.segmentTitle }}</q-item-label>
+              <q-item-label caption lines="3">{{ segment.segmentTitle }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -52,22 +53,22 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "Segments",
   computed: {
-    sections() {
-      var sect1 = this.ProPlayer.thePackage.getSections();
-      var sect2 = this.playSections
-      console.log('sect1', sect1)
-      console.log('sect2', sect2)
-      // return this.ProPlayer.thePackage.getSections();
-      return sect1
-    },
+    // sections() {
+    //   var sect1 = this.ProPlayer.thePackage.getSections();
+    //   // var sect2 = this.playSections
+    //   console.log('sect1', sect1)
+    //   // console.log('sect2', sect2)
+    //   // return this.ProPlayer.thePackage.getSections();
+    //   return sect1
+    // },
     packID() {
       return this.$route.params.packageID;
     },
     ...mapState("watch", ["playSections", "ProPlayer"])
   },
   methods: {
-    openSegment(id) {
-      this.fetchSegment(id).then(id => {
+    loadSegment(id) {
+      this.openSegment(id).then(() => {
         const route = `/watch/${this.packID}/${id}`;
         console.log("openSegmentWithinCurrentPackage_route", route);
         this.$router.push({ path: `${route}` }).catch(err => {});
@@ -122,7 +123,7 @@ export default {
       // console.log("SEGINFO", seg, ico);
       return ico;
     },
-    ...mapActions("watch", ["fetchSegment"])
+    ...mapActions("watch", ["openSegment"])
   }
 };
 </script>
