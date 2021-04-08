@@ -2,7 +2,7 @@
   <div>
     <q-toolbar>
       <slot name="toggleDrawer" v-if="activeCategory"></slot>
-      <q-toolbar-title class="text-capitalize text-center text-subvalue2">
+      <q-toolbar-title class="text-capitalize text-center text-subtitle2">
         Browser
         
         <q-breadcrumbs-el v-model="activeCategory"> {{ entitleCategory() }}</q-breadcrumbs-el>
@@ -105,7 +105,8 @@ export default {
     ...mapState('browser',["activeCategory"])
   },
   methods: {
-    entitleCategory() { return (this.activeCategory) ? " - " + format.capitalize(
+    entitleCategory() { 
+      return (this.activeCategory) ? " - " + format.capitalize(
         this.activeCategory.replaceAll("_", " ")
       ) : ""
     },

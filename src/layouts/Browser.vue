@@ -28,8 +28,8 @@
 </template>
 
 <script>
-import DynamicTab from "components/base/DynamicTab.vue"
-import BrowserToolbar from "components/browse/BrowserToolbar.vue"
+import DynamicTab from "components/base/DynamicTab.vue";
+import BrowserToolbar from "components/browse/BrowserToolbar.vue";
 import { mapState, mapActions } from "vuex";
 export default {
   name: "BrowserLayout",
@@ -42,7 +42,7 @@ export default {
     category: null
   }),
   created() {
-   this.$root.$on("toggle-drawer", this.toggleTruncate);
+    this.$root.$on("toggle-drawer", this.toggleTruncate);
     this.$root.$on("toggle-favorite", this.toggleFavorite);
     this.$root.$on("remove-favorite", this.delFav);
     this.$root.$on("add-favorite", this.addFavorite);
@@ -62,11 +62,15 @@ export default {
       this.removeDrawer(name);
     },
     delFav(data) {
-      console.log('favEmitted', data)
-      this.removeFavorite(data)
+      console.log("favEmitted", data);
+      this.removeFavorite(data);
     },
     ...mapActions("browser", ["removeDrawer"]),
-    ...mapActions("default", ["addFavorite", "removeFavorite", "toggleFavorite"])
+    ...mapActions("default", [
+      "addFavorite",
+      "removeFavorite",
+      "toggleFavorite"
+    ])
   }
 };
 </script>

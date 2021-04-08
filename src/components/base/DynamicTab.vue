@@ -54,6 +54,11 @@ export default {
   mounted() {
     this.myTabs = this.sortedTabs(this.tabList);
   },
+  watch: {
+    tabList(){
+      this.getFirst()
+    }
+  }, 
   methods: {
     sortedTabs(list) {
       const tabOrder = [
