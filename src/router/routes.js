@@ -52,7 +52,7 @@ const routes = [
   },{
     name: "watch",
     path: "/watch",
-    component: () => import("layouts/WatchLayout.vue"),
+    component: () => import("src/layouts/WatchDrawer.vue"),
     children: [
       {
         name: "player",

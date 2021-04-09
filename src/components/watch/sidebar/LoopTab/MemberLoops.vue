@@ -1,7 +1,7 @@
 <template>
   <div>
     <div  
-      v-if="memberLoops.memberLoopCollections.length > 0">
+      v-if="memberLoops.memberLoopCollections.length >= 1">
       <q-expansion-item
         v-for="memberLoop in memberLoops.memberLoopCollections"
         :label="getMember(memberLoop)"

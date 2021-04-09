@@ -18,11 +18,9 @@
       </q-tab>
     </q-tabs>
 
+      <!-- transition-prev="scale"
+      transition-next="scale" -->
     <q-tab-panels
-      animated
-      transition-prev="scale"
-      transition-next="scale"
-      keep-alive
       v-model="selectedTab"
     >
       <q-tab-panel
@@ -53,16 +51,16 @@ export default {
   mounted() {
     this.myTabs = this.sortedTabs(this.tabList);
   },
-  watch: {
-    tabList: {
-      handler: function(val, old) {
-        // console.log('val', val)
-        // console.log('old', old)
-        this.getFirst();
-      },
-      deep: true
-    }
-  }, 
+  // watch: {
+  //   tabList: {
+  //     handler: function(val, old) {
+  //       // console.log('val', val)
+  //       // console.log('old', old)
+  //       this.getFirst();
+  //     },
+  //     deep: true
+  //   }
+  // }, 
   methods: {
     sortedTabs(list) {
       const tabOrder = [
