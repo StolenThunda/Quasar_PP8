@@ -3,7 +3,7 @@
     ><!-- Be sure to play with the Layout demo on docs -->
 
     <!-- (Optional) The Header -->
-    <q-header elevated>
+    <q-header >
       <watch-toolbar class="q-electron-drag">
         <template #toggle>
           <q-btn
@@ -21,8 +21,8 @@
     </q-header>
 
     <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
-    <q-drawer v-model="leftDrawer" side="left" show-if-above elevated>
-      <div
+    <q-drawer v-model="leftDrawer" side="left" bordered>
+      <!-- <div
       class="row"
       >
         <q-btn
@@ -32,12 +32,8 @@
           icon="mdi-code-less-than"
           @click="leftDrawer = !leftDrawer"
         />
-          <!-- label="Close" -->
-      </div>
-      <!-- QScrollArea is optional -->
-      <!-- <q-scroll-area class="fit q-pa-sm"> -->
+      </div> -->
       <dynamic-tab :tabList="tabs" />
-      <!-- </q-scroll-area> -->
     </q-drawer>
 
     <q-page-container>

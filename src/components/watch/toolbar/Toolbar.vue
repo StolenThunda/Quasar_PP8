@@ -5,6 +5,14 @@
       <slot>
         <q-btn round flat to="/" icon="home" />
         <q-btn round flat @click="toggleInfo" icon="info" />
+        <q-toolbar-title
+        
+          class="text-h5 text-bold absolute-center"
+        >
+        <div
+          v-html="packageTitle"
+        />
+      </q-toolbar-title>
         <q-space />
         <q-fab
           v-if="getHistory.length"
@@ -21,7 +29,6 @@
             :label="packageTitle"
             :to="`/watch/${course.packageID}`"
           />
-          <!-- color="primary" -->
         </q-fab>
         <q-fab
           v-if="hasDownloads"
@@ -50,14 +57,10 @@
       />
       <slot name="auth"></slot>
     </q-toolbar>
-    <q-toolbar inset>
-      <q-toolbar-title>
-        <div
-          class="text-capitalize ellipsis-2-lines row justify-center"
-          v-html="packageTitle"
-        />
+    <q-toolbar v-if="activeSegment"  inset>
+      <q-toolbar-title class="text-caption text-center" >
+        {{ activeSegment.segmentFullTitle }}
       </q-toolbar-title>
-      <p class="text-caption" v-if="activeSegment">{{ activeSegment.segmentFullTitle }}</p>
     </q-toolbar>
     <course-info v-show="visible" @closeInfo="toggleInfo" />
   </div>
