@@ -123,8 +123,8 @@ export default {
           name: "filters",
           componentName: "category_filters",
           icon: "mdi-filter-plus-outline",
-          cmp: () => import("components/browse/BrowserFilters"),
-          menu: () => import("components/browse/BrowserSettings")
+          cmp: () => import("components/browse/Filters"),
+          menu: () => import("components/browse/Settings")
         }
       ]);
       return true;

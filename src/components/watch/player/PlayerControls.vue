@@ -25,7 +25,7 @@
           <q-btn
             id="playback-beginning"
             class="transport-button"
-            @click="$root.$emit('restart', 0);"
+            @click="$root.$emit('restart', 0)"
             icon="mdi-skip-backward"
             title="Back to the beginning."
             :disable="this.currentTime === 0"
@@ -58,10 +58,11 @@
             @click="$root.$emit('loopStart')"
             title="Set loop starting point."
             :color="typeof loopStart === 'number' ? 'green' : 'white'"
-            icon="mdi-arrow-collapse-left"
-            flat
           >
-            <span class="text-weight-bold text-body1 q-px-xs">A</span>
+            <div class="row items-center no-wrap">
+              <q-icon left name="mdi-arrow-collapse-left" class="q-px-xs" />
+              <span class="text-weight-bolder text-body1">A</span>
+            </div>
           </q-btn>
         </li>
         <li class="">
@@ -72,10 +73,11 @@
             title="Set loop stopping point."
             :color="typeof loopStop === 'number' ? 'green' : 'white'"
             :disable="stopDisabled"
-            icon-right="mdi-arrow-collapse-right"
-            flat
           >
-            <span class="text-weight-bold text-body1 q-px-xs">B</span>
+            <div class="row items-center no-wrap">
+              <span class="text-weight-bolder text-body1 q-px-xs">B</span>
+              <q-icon left name="mdi-arrow-collapse-right" />
+            </div>
           </q-btn>
         </li>
         <li class="">
@@ -89,10 +91,20 @@
             :disable="!isLoopDefined"
             icon="mdi-autorenew"
             :class="{ rotate: looping }"
-            @click="toggleLooping(); $root.$emit('toggleLooping')"
+            @click="
+              toggleLooping();
+              $root.$emit('toggleLooping');
+            "
           >
             <q-list>
-              <q-item clickable v-close-popup @click="toggleLooping(false); $root.$emit('clear-loop');">
+              <q-item
+                clickable
+                v-close-popup
+                @click="
+                  toggleLooping(false);
+                  $root.$emit('clear-loop');
+                "
+              >
                 <q-item-section avatar>
                   <q-avatar
                     icon="mdi-minus-circle-off"
@@ -116,7 +128,6 @@
 </template>
 
 <script>
-// import MediaProgressSlider from "./MediaProgressSlider.vue";
 export default {
   name: "PlayerControls",
   components: {
@@ -128,14 +139,14 @@ export default {
   computed: {
     stopDisabled() {
       return !(typeof this.loopStart === "number");
-    },
+    }
   },
   methods: {
     seekTime(val) {
-      return this.currentTime + val
+      return this.currentTime + val;
     },
     toggleLooping(val) {
-      this.looping = (val) ? val : !this.looping;
+      this.looping = val ? val : !this.looping;
     }
   }
 };

@@ -51,7 +51,7 @@
 
 import DynamicTab from "components/base/DynamicTab"
 import AuthButton from "components/base/AuthButton"
-import WatchToolbar from "components/watch/WatchToolbar"
+import WatchToolbar from "components/watch/toolbar/Toolbar"
 import { mapState, mapActions } from "vuex";
 export default {
   name: "WatchLayout",
@@ -91,15 +91,15 @@ export default {
         componentName: "SegmentsManager",
         icon: "mdi-segment",
         iconOnly: true,
-        cmp: () => import("components/watch/sidebar/Segments"),
-        menu: () => import("components/watch/settings/WatchSettings")
+        cmp: () => import("components/watch/sidebar/segmentTab/Segments"),
+        menu: () => import("components/watch/settings/playerSettings")
       },
       {
         name: "Comments",
         componentName: "CommentsManager",
         icon: "mdi-comment-multiple-outline",
         iconOnly: true, 
-        cmp: () => import("components/watch/sidebar/Comments")
+        cmp: () => import("components/watch/sidebar/commentTab/Comments")
       }, 
     ]);
   },

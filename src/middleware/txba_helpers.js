@@ -11,7 +11,7 @@ export default class TXBA_Utilities {
     this.filter_slug = "--ajax-browser-filters";
     this.package_slug = "--ajax-get-package-info";
     this.search_slug = "--ajax-browser-search-entries";
-    this.user_loops_slug = "--ajax-get-segment-user-loops";
+    this.member_loops_slug = "--ajax-get-segment-user-loops";
     this.segment_slug = "--ajax-get-segment-info";
     this.load_media_slug = "--ajax-load-media";
     this.load_vimeo_slug = "/--ajax-load-media/vimeo/";
@@ -64,17 +64,15 @@ export default class TXBA_Utilities {
   }
   async getFavs(id) {
     let url = this.favorites_slug + "/" + id ? id : "";
-    const data = await this.getAsyncData( url );
-    return this.parseFavoriteHtml( data );
+    return this.getAsyncData( url , this.parseFavoriteHtml)
   }
 
-  async getNotification() {
-    const data = await this.getAsyncData( this.notification_slug );
-    return this.parseNotificationHtml( data );
+  getNotification() {
+    return this.getAsyncData( this.notification_slug ,this.parseNotificationHtml );
   }
 
-  getUserLoops(segID) {
-    return this.getAsyncData(`${this.user_loops_slug}/${segID}`);
+  getMemberLoops(segID) {
+    return this.getAsyncData(`${this.member_loops_slug}/${segID}`);
   }
 
   getUserSegment(segID) {
@@ -82,9 +80,7 @@ export default class TXBA_Utilities {
   }
 
   async getDefaultSearchEntries() {
-    return this.getAsyncData(this.default_entries_slug).then(data =>
-      this.parseSearchResults(data)
-    );
+    return this.getAsyncData(this.default_entries_slug, this.parseSearchResults)
   }
 
   async getSearchEntries(category, auth, url) {
@@ -100,9 +96,7 @@ export default class TXBA_Utilities {
     return this.getAsyncData(slug).then(data => this.parseSearchResults(data));
   }
   async getSearchFiltersByCategory(code) {
-    return this.getAsyncData(`${this.filter_slug}/${code}`).then(data =>
-      this.parseCriteria(data)
-    );
+    return this.getAsyncData(`${this.filter_slug}/${code}` ,this.parseCriteria)
   }
 
   async getPackage(ID) {
@@ -124,16 +118,9 @@ export default class TXBA_Utilities {
   }
 
   async getComments(packageID, segmentID) {
-    const req = `${this.load_comments_slug}/?package_id=${packageID}&segment_id=${segmentID}&author=no`;
-    const finalComments = this.parseCommentHtml(this.getCommentString(1));
-    // const asyncComments = await this.getAsyncData(req)
-    // .then(data => this.parseCommentHtml(data))
-    // .then(data => {
-    //   console.log("asyncComm", data)
-    //   return data
-    // }
-    // );
-    return finalComments;
+    const slug = `${this.load_comments_slug}/?package_id=${packageID}&segment_id=${segmentID}&author=no`;
+    return this.getAsyncData(slug, this.parseCommentHtml);
+    return this.parseCommentHtml(this.getCommentString(1));
   }
 
   async loadMedia(slug, info) {
@@ -1561,7 +1548,7 @@ export default class TXBA_Utilities {
     const mockHtml = $(".accordion-title");
     return mockHtml;
   }
-  getCommentString(example) {
+  getCommentString(version) {
     var strComments = "";
     const staticWithoutComments = `<div id="add-cmt-wrapper" class="sidebar-controls-wrapper">
   <div class="row tight">
@@ -3023,7 +3010,7 @@ Drop me a note when u have a moment. Question about billing. No rush.</p>
   
 </ul>
 `;
-    switch (example) {
+    switch (version) {
       case 1:
       case true:
         strComments = staticWithComments;

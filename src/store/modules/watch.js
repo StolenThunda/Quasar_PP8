@@ -7,6 +7,7 @@ export default {
     ProPlayer: new ProPlayer(),
     currentSetup: { sources: null },
     userLoops: null,
+    memberLoops: null,
     sections: null,
     courseHistory: [],
     seekToTime: 0,
@@ -66,6 +67,10 @@ export default {
     SET_USER_LOOP_DATA(ctx, data) {
       console.log("Setting user Loops", data);
       ctx.userLoops = JSON.parse(JSON.stringify(data));
+    },
+    SET_MEMBER_LOOP_DATA(ctx, data) {
+      console.log("Setting member Loops", data);
+      ctx.memberLoops = JSON.parse(JSON.stringify(data));
     },
     SET_CURRENT_PACKAGE(ctx, packageData) {
       if (packageData.packageError === "") {
@@ -168,8 +173,8 @@ export default {
       // console.log('coms', comments)
       return comments;
     },
-    async fetchUserLoopData(ctx, ID) {
-      return await ctx.rootState.TXBA_UTILS.getUserLoops(ID)
+    async fetchMemberLoopData(ctx, ID) {
+      return await ctx.rootState.TXBA_UTILS.getMemberLoops(ID)
         .then(loopData => {
           // handle malformed JSON
           if (typeof loopData === "object") return loopData;
@@ -183,11 +188,12 @@ export default {
           );
         })
         .then(loopData => {
-          ctx.commit("SET_USER_LOOP_DATA", loopData);
+          ctx.commit( "SET_MEMBER_LOOP_DATA", loopData );
+          console.log('member loops', loopData)
           return loopData;
         });
     },
-    fetchUserLoops: (ctx, ID) => ctx.dispatch("fetchUserLoopData", ID),
+    fetchMemberLoops: (ctx, ID) => ctx.dispatch("fetchMemberLoopData", ID),
     fetchPackage: ({ dispatch }, ID) => {
       const newId = dispatch("fetchPackageData", ID).then(id => {
         const tabs = ["Loops", "Chapters"];
@@ -219,7 +225,8 @@ export default {
           return seg;
         })
         .then(id => dispatch("setCurrentSegmentSetup", id))
-        .then(ID => dispatch("fetchUserLoops", ID))
+        // .then(ID => dispatch("fetchUserLoops", ID))
+        .then(ID => dispatch("fetchMemberLoops", ID))
         .then(() => dispatch("getMediaInfo"));
       return response;
     },
@@ -228,10 +235,10 @@ export default {
         const loopTabs = [
           {
             name: "Loops",
-            componentName: "InstantLoopsManager",
+            componentName: "LoopsManager",
             icon: "mdi-sync",
             iconOnly: true,
-            cmp: () => import("components/watch/sidebar/LoopTab/InstantLoops")
+            cmp: () => import("components/watch/sidebar/LoopTab/LoopManager")
           },
           {
             name: "Chapters",

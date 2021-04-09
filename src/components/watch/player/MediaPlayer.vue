@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { utilities } from "../../mixins/utilities";
+import { utilities } from "../../../mixins/utilities";
 import { mapState, mapActions } from "vuex";
 // Vue.use(panZoom);
 export default {
@@ -112,7 +112,7 @@ export default {
     this.$root.$on("zoom", this.toggleZoom);
     this.$root.$on("resetZoom", this.resetZoom);
     this.$root.$on("clear-loop", this.clearLoop);
-
+    this.$root.$on('set-loop', this.setLoopWithObject)
     this.unsubscribe = this.$store.subscribe((mutation, state) => {
       if (mutation.type === 'watch/SET_SEEK_TIME'){
        this.seekTo(state.watch.seekToTime);
@@ -135,15 +135,11 @@ export default {
   },
   components: {
     "media-progress-slider": () =>
-      import("components/watch/MediaProgressSlider.vue"),
-    "player-controls": () => import("components/watch/PlayerControls.vue")
+      import("src/components/watch/player/MediaProgressSlider.vue"),
+    "player-controls": () => import("src/components/watch/player/PlayerControls.vue")
   },
   watch: {
-    // seekToTime() {
-    //   this.seekTo(this.seekToTime);
-    //   console.log('seekto', this.seekToTime)
-    //   this.player.play()
-    // },
+    
     playing(e) {
       this.playing = e;
     },
@@ -178,16 +174,25 @@ export default {
       return `https://www.youtube.com/embed/${this.sources[0].src}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&controls=0&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1`;
     },
     validLoop() {
-      return (
+      const isValid = (
         typeof this.loopStart === "number" &&
         typeof this.loopStop === "number" &&
         this.loopStart !== this.loopStop &&
         this.loopStop - this.loopStart > 1
       );
+      if (isValid) this.$root.$emit('valid-loop',isValid)
+      return isValid
     }
   },
   methods: {
     ...mapActions("watch", ["flipPlayer", "loadPlayerSettings"]),
+    setLoopWithObject(loop){
+      console.log('loop /w obj', loop)
+      const startTime = loop[1]
+      const endTime = loop[2]
+      this.setloopStart(startTime)
+      this.setloopStop(endTime)
+    },
     setCurrentTime(val) {
       this.player.currentTime = val;
     },
@@ -196,6 +201,7 @@ export default {
       this.loopStop = null;
       this.loopObj = null;
       this.loopActive = false;
+      this.$root.$emit('loop-cleared')
       console.log("loop cleared");
     },
     pzInit(pz_instance) {
@@ -272,10 +278,11 @@ export default {
       }
       console.log("playing?: ", this.player.playing);
     },
-    setloopStart() {
+    setloopStart(time) {
       if (!this.player) return;
-      if (typeof this.player.currentTime === NaN) return;
-      const current = this.player.currentTime;
+      if (!this.player.currentTime) return;
+      if (typeof this.player?.currentTime === NaN) return;
+      const current = time ? time : this.player.currentTime;
       this.loopStart = current;
       if (this.loopStop <= current) this.loopStop = null;
 
@@ -287,10 +294,11 @@ export default {
         })
       );
     },
-    setloopStop() {
+    setloopStop(time) {
       if (!this.player) return;
+      if (!this.player.currentTime) return;
       if (typeof this.player.currentTime === NaN) return;
-      const current = this.player.currentTime;
+      const current = time ? time : this.player.currentTime;
       console.log("curr", this.secondsToMinutes(current));
       if (typeof this.loopStart === "number") {
         if (this.loopStart !== current) {

@@ -1,13 +1,14 @@
 <template>
   <div>
-    <q-list v-if="chapterArray.length" bordered separator dense>
+    <q-list v-if="chapterArray.length"  bordered separator dense
+      class="q-mr-xs">
       <template v-for="[index, chapter] in chapterArray.entries()">
         <q-item
           clickable
           v-ripple
           active-class="text-orange"
           :id="getItemName(chapter)"
-          :key="getItemName(chapter) + collectionID + componentKey + index"          
+          :key="getItemName(chapter) + collectionID + componentKey + index"
           @click.prevent="setSeekToTime(chapter[1])"
         >
           <q-item-section avatar>

@@ -23,12 +23,12 @@ export const loop_funcs = {
       return this.getItemName(val) + "_active";
     },
     toggleActive(loop, i) {
-      this.$nextTick(() => {
+      // this.$nextTick(() => {
         const itm = this.getActiveItemName(loop);
         console.log("toggle from", itm, this.activeList[itm]);
         this.activeList[itm] = !this.activeList[itm];
         console.log("toggle to", itm, this.activeList[itm]);
-      });
+      // });
       this.componentKey++;
     },
     getItemName(val) {

@@ -11,9 +11,8 @@
       v-else-if="mediaType === 'soundslice'"
       :src="currentSetup.data"
     />
-      <!-- v-else-if="currentSetup.sources" -->
     <div
-      v-else
+      v-else-if="currentSetup.sources"
       id="mediaPlayerWrapper"
       :set="(s = currentSetup.sources[0])"
     >
@@ -38,7 +37,7 @@ export default {
     "pdf-renderer": () => import("components/watch/renderers/PDF.vue"),
     "soundslice-renderer": () =>
       import("components/watch/renderers/SoundSlice.vue"),
-    "media-player": () => import("components/watch/MediaPlayer.vue")
+    "media-player": () => import("src/components/watch/player/MediaPlayer.vue")
   },
   data: () => ({
     componentKey: 0,

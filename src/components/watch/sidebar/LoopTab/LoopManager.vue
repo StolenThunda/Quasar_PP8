@@ -17,7 +17,6 @@ export default {
       {
         name: "TXBA",
         componentName: "TXBA Loops",
-        props: {TXBALoops: true },
         cmp: () => import("./ReadOnlyLoops")
       },
       {
@@ -29,7 +28,6 @@ export default {
       {
         name: "Locals",
         componentName: "Locals Loops",
-        // props: {admin: false },
         cmp: () => import("./MemberLoops")
       }
       ]

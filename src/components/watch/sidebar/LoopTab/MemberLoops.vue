@@ -1,17 +1,18 @@
 <template>
   <div>
-    <div v-if="loopArray.length">
-        <!-- :set="(memberLoop = loopArray[i])" -->
+    <div  
+      v-if="memberLoops">
       <q-expansion-item
-        v-for="memberLoop in loopArray"
+        v-for="memberLoop in memberLoops.memberLoopCollections"
         :label="getMember(memberLoop)"
-        :key="getMember(memberLoop) + idx++"
+        :key="getMember(memberLoop)"
         :id="memberLoop"
+        header-class="bg-accent text-white"
         dense-toggle
         dense
         popup
       >
-      <pre>{{ memberLoop }}</pre>
+        <!-- <pre>{{ memberLoop }}</pre> -->
         <loop-list
           :loopArray="memberLoop.memberLoops"
           :altMessage="altMessage"
@@ -19,43 +20,31 @@
         />
       </q-expansion-item>
     </div>
-    <div v-else>
+    <!-- <div v-else>
       {{ altMessage }}
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
-import { loop_funcs } from "../../../../mixins/loop_funcs.js"
+import { mapState } from "vuex";
 import LoopList from "./LoopList.vue";
 export default {
   name: "MemberLoopList",
-  mixins: [ loop_funcs ],
-  data: () => ({ idx: 0 }),
-  props: {
-    loopArray: {
-      type: Array,
-      default: () => []
-    },
-    altMessage: {
-      type: String,
-      default: "No Alt Message or Data"
-    },
-    collectionID: {
-      type: Number,
-      default: () => 0
-    },
-    member: {
-      type: String,
-      default: ""
-    }
-  },
+  data: () => ({
+    altMessage: "There are no community loops for this item.",
+    idx: 0,
+    collectionID: 2
+  }),
   components: {
     LoopList
   },
-  methods:{
-    getMember(objLoop){
-      return objLoop?.memberName || ""
+  computed: {
+    ...mapState("watch", ["memberLoops"])
+  },
+  methods: {
+    getMember(objLoop) {
+      return objLoop?.memberName || "";
     }
   }
 };

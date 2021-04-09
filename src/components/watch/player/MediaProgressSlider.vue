@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { utilities } from "../../mixins/utilities";
+import { utilities } from "../../../mixins/utilities";
 export default {
   name: "MediaProgressSlider",
   props: ["remaining", "ctime", "activeLoop"],
