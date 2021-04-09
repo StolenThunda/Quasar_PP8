@@ -11,6 +11,9 @@
       v-else-if="mediaType === 'soundslice'"
       :src="currentSetup.data"
     />
+    <template v-if="renderers.includes(currentSetup.mediaType)">
+      <pdf-renderer v-if="s.type === 'pdf'" :src="s.src" />
+    </template>
     <div
       v-else-if="currentSetup.sources"
       id="mediaPlayerWrapper"
@@ -21,15 +24,12 @@
         :key="'mediaPlayer-' + componentKey"
         :src="s.src"
       />
-      <template v-if="renderers.includes(currentSetup.mediaType)">
-        <pdf-renderer v-if="s.type === 'pdf'" :src="s.src" />
-      </template>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 // import SoundSlice from './renderers/SoundSlice.vue';
 export default {
   name: "MediaPlayerWrapper",
@@ -46,6 +46,9 @@ export default {
   created() {
     this.$root.$on("flip-player", this.flipper);
   },
+  mounted() {
+    this.openSegment(this.$route.params.segmentID);
+  },
   computed: {
     mediaType() {
       return this.ProPlayer.theSegment.getPrimaryMediaType();
@@ -54,11 +57,12 @@ export default {
   },
   watch: {
     currentSetup() {
-      console.info("setup changed", this.currentSetup);
+      // console.info("setup changed", this.currentSetup);
       this.forceRerender();
     }
   },
   methods: {
+    ...mapActions("watch", ["openSegment"]),
     forceRerender() {
       this.componentKey += 1;
     }

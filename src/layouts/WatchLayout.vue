@@ -26,7 +26,7 @@
       >
         <template v-slot:before v:tabs="tabs">
           <q-scroll-area :thumb-style="thumbStyle" class="fit">
-            <dynamic-tab :tabList="tabs" class="q-item" />
+            <dynamic-tab :tabList="tabs" />
           </q-scroll-area>
         </template>
 
@@ -64,7 +64,7 @@ export default {
     leftDrawer: true,
     currentTab: null,
     favs: false,
-    splitterModel: 60,
+    splitterModel: 55,
     thumbStyle: {
       right: "5px",
       borderRadius: "5px",

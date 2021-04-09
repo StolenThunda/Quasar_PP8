@@ -4,6 +4,7 @@ export default {
   namespaced: true,
   state: {
     currentCourse: null,
+    activeSegment: null,
     ProPlayer: new ProPlayer(),
     currentSetup: { sources: null },
     userLoops: null,
@@ -13,6 +14,8 @@ export default {
     seekToTime: 0,
     mediaSources: null,
     playerSettings: {
+      loop_start: 0,
+      loop_stop: 0,
       speed: 1,
       volume: 0.5,
       zoomEnabled: false,
@@ -25,6 +28,21 @@ export default {
     playSections: []
   },
   mutations: {
+    RESET_PACKAGE ( ctx ) {
+      // ctx.activeSegment = null
+      // ctx.currentCourse = null
+      // ctx.
+    },
+    SET_ACTIVE_SEGMENT ( ctx, data ) {
+      console.info('setting active segment', data)
+      ctx.activeSegment = data
+    },
+    SET_LOOP_START ( ctx, time ) {
+      ctx.playerSettings.loop_start = time;
+    },
+    SET_LOOP_STOP ( ctx, time ) {
+      ctx.playerSettings.loop_stop = time;
+    },
     FLIP_PLAYER(ctx) {
       console.log("b4", ctx.playerSettings.flipped);
       ctx.playerSettings.flipped = !ctx.playerSettings.flipped;
@@ -39,7 +57,7 @@ export default {
     },
     SET_CURRENT_COURSE(ctx, data) {
       if (!data) return;
-      console.log("currentCourse", data);
+      // console.log("currentCourse", data);
       if (ctx.currentCourse !== null) {
         // if (ctx.courseHistory.length > 4) ctx.courseHistory.shift();
         ctx.courseHistory.push(ctx.currentCourse);
@@ -65,11 +83,11 @@ export default {
       }
     },
     SET_USER_LOOP_DATA(ctx, data) {
-      console.log("Setting user Loops", data);
+      // console.log("Setting user Loops", data);
       ctx.userLoops = JSON.parse(JSON.stringify(data));
     },
     SET_MEMBER_LOOP_DATA(ctx, data) {
-      console.log("Setting member Loops", data);
+      // console.log("Setting member Loops", data);
       ctx.memberLoops = JSON.parse(JSON.stringify(data));
     },
     SET_CURRENT_PACKAGE(ctx, packageData) {
@@ -120,10 +138,10 @@ export default {
       ctx.ProPlayer.bSegmentDataLoadingFinished = true;
     },
     SET_CURRENT_SEGMENT_SETUP(ctx, data) {
-      console.log("currentSetup", ctx.currentSetup);
+      // console.log("currentSetup", ctx.currentSetup);
       // console.log( "playerOpts", ctx.playerOpts );
       // console.log( "playerSettings", ctx.playerSettings );
-      console.log("New data", data);
+      // console.log("New data", data);
       if (data) {
         ctx.currentSetup = Object.assign(
           {},
@@ -136,7 +154,7 @@ export default {
         ctx.currentSetup = {};
       }
 
-      console.log("currentSetup", ctx.currentSetup);
+      // console.log("currentSetup", ctx.currentSetup);
     },
     SET_PLAY_SECTIONS(ctx, data) {
       ctx.playSections = data?.playSections;
@@ -189,7 +207,7 @@ export default {
         })
         .then(loopData => {
           ctx.commit( "SET_MEMBER_LOOP_DATA", loopData );
-          console.log('member loops', loopData)
+          // console.log('member loops', loopData)
           return loopData;
         });
     },
@@ -205,6 +223,7 @@ export default {
     async fetchPackageData(ctx, ID) {
       return await ctx.rootState.TXBA_UTILS.getPackage(ID).then(
         packageData => {
+          ctx.dispatch( 'resetPackage' )
           ctx.commit("SET_CURRENT_PACKAGE", packageData);
           ctx.commit("SET_PLAY_SECTIONS", packageData);
 
@@ -212,6 +231,9 @@ export default {
         },
         error => console.error(`Problem fetching package data, ${error}`)
       );
+    },
+    resetPackage ( {commit} ) {
+      commit('RESET_PACKAGE')
     },
     fetchDefaultMedia: ctx =>
       ctx.dispatch(
@@ -221,7 +243,7 @@ export default {
     async fetchMediaData({ dispatch }, segID) {
       const response = await dispatch("fetchSegment", segID)
         .then(seg => {
-          console.log("fetchMediaData-segment", seg);
+          // console.log("fetchMediaData-segment", seg);
           return seg;
         })
         .then(id => dispatch("setCurrentSegmentSetup", id))
@@ -254,7 +276,7 @@ export default {
     },
     async fetchSegmentData(ctx, ID) {
       const response = await ctx.rootState.TXBA_UTILS.getSegment(ID);
-      console.log("segData", response);
+      // console.log("segData", response);
       ctx.commit("SET_CURRENT_SEGMENT", response);
       ctx.commit("SET_CURRENT_SEGMENT_SETUP", null);
       return ID;
@@ -265,17 +287,17 @@ export default {
         segmentData = ctx.state.playSections[0].segments.filter(
           itm => itm.id === segmentId
         )[0];
-        console.log("seg-data", segmentData);
+        // console.log("seg-data", segmentData);
       } else {
         segmentData = ctx.dispatch("fetchPackage", segmentId).then(pkg => {
           // console.log( "seg-id", segmentId );
           segmentId = ctx.getters.getFirstSegment().id;
-          console.log("seg-id", segmentId);
+          // console.log("seg-id", segmentId);
           ctx.dispatch("setCurrentSegmentSetup", segmentId);
           return pkg;
         });
       }
-      console.log("segmentData", segmentData);
+      // console.log("segmentData", segmentData);
       if (segmentData) ctx.commit("SET_CURRENT_SEGMENT_SETUP", segmentData);
       return segmentId;
     },
@@ -304,15 +326,15 @@ export default {
       let info = { mediaType: mediaType };
       let slug = "/--ajax-load-media";
       var data;
-      console.log("getMediaInfo", mediaType);
-      console.log(mediaType, segment);
+      // console.log("getMediaInfo", mediaType);
+      // console.log(mediaType, segment);
       switch (mediaType) {
         case "vimeo":
           data = segment.getVimeoCode();
           info.data = data;
           slug += `/${mediaType}/${data}`;
           const media = await ctx.rootState.TXBA_UTILS.loadMedia(slug);
-          console.log("vimeo", media);
+          // console.log("vimeo", media);
           return ctx.dispatch("parseMediaInfo", media);
         case "youtube":
           data = segment.getYouTubeCode();
@@ -363,7 +385,7 @@ export default {
           // return info
           return `<div class='media-content-wrapper'>${segment.getHTMLContent()}</div>`;
       }
-      console.log("loading Media", slug, info);
+      // console.log("loading Media", slug, info);
 
       // TODO: Fix hokey workaround
       ctx.commit("SET_CURRENT_SEGMENT_SETUP", info);

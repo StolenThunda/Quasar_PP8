@@ -5,7 +5,7 @@
       <slot>
         <q-btn round flat to="/" icon="home" />
         <q-btn round flat @click="toggleInfo" icon="info" />
-       <q-space />
+        <q-space />
         <q-fab
           v-if="getHistory.length"
           :label="'History: ' + getHistory.length"
@@ -41,31 +41,30 @@
         <q-btn size="25px" to="/browser" icon="mdi-magnify" flat />
       </slot>
       <q-btn
-      class="q-pa-xs"
-      round
-      flat
+        class="q-pa-xs"
+        round
+        flat
         icon="mdi-arrow-expand-all"
         v-if="fullScreenEnabled"
-        @click="toggleFullScreen" />
+        @click="toggleFullScreen"
+      />
       <slot name="auth"></slot>
-      
     </q-toolbar>
     <q-toolbar inset>
-        <q-toolbar-title>
-          <div
-            class="text-capitalize ellipsis-2-lines row justify-center"
-            v-html="packageTitle"
-
-          ></div>
-        </q-toolbar-title>
-
-        </q-toolbar>
+      <q-toolbar-title>
+        <div
+          class="text-capitalize ellipsis-2-lines row justify-center"
+          v-html="packageTitle"
+        />
+      </q-toolbar-title>
+      <p class="text-caption" v-if="activeSegment">{{ activeSegment.segmentFullTitle }}</p>
+    </q-toolbar>
     <course-info v-show="visible" @closeInfo="toggleInfo" />
   </div>
 </template>
 
 <script>
-import CourseInfo from "src/components/watch/toolbar/CourseInfo.vue"
+import CourseInfo from "src/components/watch/toolbar/CourseInfo.vue";
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapGetters } = createNamespacedHelpers("watch");
 export default {
@@ -87,12 +86,13 @@ export default {
   },
   computed: {
     fullScreenEnabled() {
-      let loaded =  this.ProPlayer.theSegment.isLoaded() &&
+      let loaded =
+        this.ProPlayer.theSegment.isLoaded() &&
         (this.ProPlayer.theSegment.getVimeoCode() !== "" ||
           this.ProPlayer.theSegment.getYouTubeCode() !== "" ||
           this.ProPlayer.theSegment.getMP3Filename() !== "" ||
-          this.ProPlayer.theSegment.getSoundSliceCode() !== "")
-        return loaded
+          this.ProPlayer.theSegment.getSoundSliceCode() !== "");
+      return loaded;
     },
     downloadLink() {
       let file = this.ProPlayer.theSegment.getMP3Filename();
@@ -112,10 +112,12 @@ export default {
         : title;
     },
     ...mapGetters(["getHistory"]),
-    ...mapState(["ProPlayer"])
+    ...mapState(["ProPlayer", "activeSegment"])
   },
   methods: {
-    toggleFullScreen() { this.ProPlayer.fullscreeenToggle() },
+    toggleFullScreen() {
+      this.ProPlayer.fullscreeenToggle();
+    },
     showInfo(c) {
       console.log("course", c);
     },

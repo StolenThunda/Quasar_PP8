@@ -64,11 +64,14 @@ export default class TXBA_Utilities {
   }
   async getFavs(id) {
     let url = this.favorites_slug + "/" + id ? id : "";
-    return this.getAsyncData( url , this.parseFavoriteHtml)
+    return this.getAsyncData(url, this.parseFavoriteHtml);
   }
 
   getNotification() {
-    return this.getAsyncData( this.notification_slug ,this.parseNotificationHtml );
+    return this.getAsyncData(
+      this.notification_slug,
+      this.parseNotificationHtml
+    );
   }
 
   getMemberLoops(segID) {
@@ -80,7 +83,10 @@ export default class TXBA_Utilities {
   }
 
   async getDefaultSearchEntries() {
-    return this.getAsyncData(this.default_entries_slug, this.parseSearchResults)
+    return this.getAsyncData(
+      this.default_entries_slug,
+      this.parseSearchResults
+    );
   }
 
   async getSearchEntries(category, auth, url) {
@@ -96,7 +102,7 @@ export default class TXBA_Utilities {
     return this.getAsyncData(slug).then(data => this.parseSearchResults(data));
   }
   async getSearchFiltersByCategory(code) {
-    return this.getAsyncData(`${this.filter_slug}/${code}` ,this.parseCriteria)
+    return this.getAsyncData(`${this.filter_slug}/${code}`, this.parseCriteria);
   }
 
   async getPackage(ID) {
@@ -112,7 +118,7 @@ export default class TXBA_Utilities {
   }
 
   async getSegment(ID) {
-    let slug = `${this.segment_slug}/${ID}`
+    let slug = `${this.segment_slug}/${ID}`;
     // console.log('getSeg', slug)
     return this.getAsyncData(slug);
   }
@@ -124,33 +130,29 @@ export default class TXBA_Utilities {
   }
 
   async loadMedia(slug, info) {
-    const html = await this.getAsyncData( `${slug}` );  
-    const $ = cheerio.load( html );
-    const text = $( "script" ).html();
+    const html = await this.getAsyncData(`${slug}`);
+    const $ = cheerio.load(html);
+    const text = $("script").html();
     // return html
-    const matchX = text.match( /var videoData = (.*);/ );
-    if (!matchX) return info
+    const matchX = text.match(/var videoData = (.*);/);
+    if (!matchX) return info;
     let strVidData = matchX[1];
     // replace single with double quotes
-    strVidData = strVidData.replace( /'/g, '"' );
+    strVidData = strVidData.replace(/'/g, '"');
     //match any variables (alphanumeric) that end with a colon :, but will ingore any matches that are found between quotes (i.e. data string values)
-    strVidData = strVidData.replace( /([^"]+)|("[^"]+")/g, function (
-      $0,
-      $1,
-      $2
-    ) {
-      if ( $1 ) {
+    strVidData = strVidData.replace(/([^"]+)|("[^"]+")/g, function($0, $1, $2) {
+      if ($1) {
         // Replace property names with quotes
-        return $1.replace( /([a-zA-Z0-9]+?):/g, '"$1":' );
+        return $1.replace(/([a-zA-Z0-9]+?):/g, '"$1":');
       } else {
         return $2;
       }
-    } );
-    strVidData = strVidData.replace( "},]", "}]" );
-    console.dir("loadingMedia", JSON.parse(strVidData), info);
-    var objReturn = JSON.parse( strVidData );
-    // if (typeof(info.data) !== 'undefined') objReturn = Object.assign({}, info, objReturn, info) 
-    return objReturn
+    });
+    strVidData = strVidData.replace("},]", "}]");
+    // console.dir("loadingMedia", JSON.parse(strVidData), info);
+    var objReturn = JSON.parse(strVidData);
+    // if (typeof(info.data) !== 'undefined') objReturn = Object.assign({}, info, objReturn, info)
+    return objReturn;
   }
   parseCommentHtml(strComments, lvl = null) {
     const $ = cheerio.load(strComments);

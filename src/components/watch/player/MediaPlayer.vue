@@ -112,14 +112,14 @@ export default {
     this.$root.$on("zoom", this.toggleZoom);
     this.$root.$on("resetZoom", this.resetZoom);
     this.$root.$on("clear-loop", this.clearLoop);
-    this.$root.$on('set-loop', this.setLoopWithObject)
+    this.$root.$on("set-loop", this.setLoopWithObject);
     this.unsubscribe = this.$store.subscribe((mutation, state) => {
-      if (mutation.type === 'watch/SET_SEEK_TIME'){
-       this.seekTo(state.watch.seekToTime);
-      this.player?.play()
+      if (mutation.type === "watch/SET_SEEK_TIME") {
+        this.seekTo(state.watch.seekToTime);
+        this.player?.play();
       }
-    })
-  }, 
+    });
+  },
   beforeDestroy() {
     this.unsubscribe();
   },
@@ -136,10 +136,10 @@ export default {
   components: {
     "media-progress-slider": () =>
       import("src/components/watch/player/MediaProgressSlider.vue"),
-    "player-controls": () => import("src/components/watch/player/PlayerControls.vue")
+    "player-controls": () =>
+      import("src/components/watch/player/PlayerControls.vue")
   },
   watch: {
-    
     playing(e) {
       this.playing = e;
     },
@@ -174,24 +174,23 @@ export default {
       return `https://www.youtube.com/embed/${this.sources[0].src}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&controls=0&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1`;
     },
     validLoop() {
-      const isValid = (
+      const isValid =
         typeof this.loopStart === "number" &&
         typeof this.loopStop === "number" &&
         this.loopStart !== this.loopStop &&
-        this.loopStop - this.loopStart > 1
-      );
-      if (isValid) this.$root.$emit('valid-loop',isValid)
-      return isValid
+        this.loopStop - this.loopStart > 1;
+      if (isValid) this.$root.$emit("valid-loop", isValid);
+      return isValid;
     }
   },
   methods: {
     ...mapActions("watch", ["flipPlayer", "loadPlayerSettings"]),
-    setLoopWithObject(loop){
-      console.log('loop /w obj', loop)
-      const startTime = loop[1]
-      const endTime = loop[2]
-      this.setloopStart(startTime)
-      this.setloopStop(endTime)
+    setLoopWithObject(loop) {
+      console.log("loop /w obj", loop);
+      const startTime = loop[1];
+      const endTime = loop[2];
+      this.setloopStart(startTime);
+      this.setloopStop(endTime);
     },
     setCurrentTime(val) {
       this.player.currentTime = val;
@@ -201,7 +200,7 @@ export default {
       this.loopStop = null;
       this.loopObj = null;
       this.loopActive = false;
-      this.$root.$emit('loop-cleared')
+      this.$root.$emit("loop-cleared");
       console.log("loop cleared");
     },
     pzInit(pz_instance) {
@@ -254,7 +253,6 @@ export default {
         }
       }
     },
-
     seekTo(time) {
       if (!this.player || typeof time == NaN) return;
       let val = time >= 0 ? time : 0;
@@ -285,7 +283,7 @@ export default {
       const current = time ? time : this.player.currentTime;
       this.loopStart = current;
       if (this.loopStop <= current) this.loopStop = null;
-
+      this.$store.commit("watch/SET_LOOP_START", this.loopStart);
       this.showMessage(
         Object.assign({}, this.cfgLoopIcon, {
           type: "positive",
@@ -304,6 +302,7 @@ export default {
         if (this.loopStart !== current) {
           if (this.loopStart < current) {
             this.loopStop = current;
+            this.$store.commit("watch/SET_LOOP_STOP", this.loopStop);
             this.showMessage(
               Object.assign({}, this.cfgLoopIcon, {
                 type: "positive",

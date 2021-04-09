@@ -31,7 +31,6 @@
         :key="tab.name"
         :name="tab.name"
       >
-      <!-- {{ tab.props ? tab.props : ''}} -->
         <component :is="tab.cmp" v-bind="tab.props"></component>
       </q-tab-panel>
     </q-tab-panels>
@@ -55,8 +54,13 @@ export default {
     this.myTabs = this.sortedTabs(this.tabList);
   },
   watch: {
-    tabList(){
-      this.getFirst()
+    tabList: {
+      handler: function(val, old) {
+        // console.log('val', val)
+        // console.log('old', old)
+        this.getFirst();
+      },
+      deep: true
     }
   }, 
   methods: {
