@@ -40,7 +40,7 @@ export default {
   name: "DynamicTabs",
   data: () => ({
     selectedTab: null,
-      myTabs: []
+      myTabs: [], 
   }),
   props: {
     tabList: {

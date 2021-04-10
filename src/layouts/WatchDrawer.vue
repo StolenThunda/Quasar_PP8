@@ -1,16 +1,15 @@
 <template>
   <q-layout view="hhh lpR lFr"
-    ><!-- Be sure to play with the Layout demo on docs -->
-
-    <!-- (Optional) The Header -->
-    <q-header >
+    >
+    
+    <q-header reveal elevated>
       <watch-toolbar class="q-electron-drag">
         <template #toggle>
           <q-btn
             flat
             round
             dense
-            icon="menu"
+            :icon="drawerIcon"
             @click="leftDrawer = !leftDrawer"
           />
         </template>
@@ -20,10 +19,9 @@
       </watch-toolbar>
     </q-header>
 
-    <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
-    <q-drawer v-model="leftDrawer" side="left" bordered>
-      <!-- <div
-      class="row"
+    <q-drawer v-model="leftDrawer" side="left" show-if-above bordered>
+      <div
+      class="row lt-md"
       >
         <q-btn
           class="offset-10 col"
@@ -32,7 +30,7 @@
           icon="mdi-code-less-than"
           @click="leftDrawer = !leftDrawer"
         />
-      </div> -->
+      </div>
       <dynamic-tab :tabList="tabs" />
     </q-drawer>
 
@@ -68,9 +66,15 @@ export default {
     }
   }),
   computed: {
+    drawerIcon(){ return this.leftDrawer ? 'mdi-backburger' : 'menu'},
     getTabs() {
       return this.tabs;
-    }
+    },
+    ...mapState("default", { tabs: "sidebarTabs" }),
+    ...mapState("watch", {
+      sections: "sections",
+      currentCourse: "currentCourse"
+    })
   },
   watch: {
     leftDrawer(val) {
@@ -97,14 +101,8 @@ export default {
       }
     ]);
   },
-  computed: {
-    ...mapState("default", { tabs: "sidebarTabs" }),
-    ...mapState("watch", {
-      sections: "sections",
-      currentCourse: "currentCourse"
-    })
-  },
   methods: {
+    
     showTab(tab) {
       this.currentTab = tab;
     },

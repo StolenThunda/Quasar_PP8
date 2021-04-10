@@ -1,6 +1,6 @@
 <template>
   <q-list>
-    <template v-for="section in ProPlayer.thePackage.getSections()">
+    <template v-for="section in sections">
       <q-expansion-item
         group="somegroup"
         :key="section.sectionID"
@@ -44,7 +44,7 @@
         </q-list>
       </q-expansion-item>
     </template>
-    <q-inner-loading>
+    <q-inner-loading v-if="!sections">
       <q-spinner-gears size="50px" color="primary" />
     </q-inner-loading>
   </q-list>
@@ -59,6 +59,7 @@ export default {
     packID() {
       return this.$route.params.packageID;
     },
+    sections() { return this.ProPlayer.thePackage.getSections()},
     ...mapState("watch", ["playSections", "ProPlayer", "activeSegment"])
   },
   methods: {
