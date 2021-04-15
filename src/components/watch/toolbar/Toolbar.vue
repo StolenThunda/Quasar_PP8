@@ -7,7 +7,7 @@
         <q-btn round flat @click="toggleInfo" icon="info" />
         <q-toolbar-title
           shrink
-          class="text-h5 text-bold absolute-center"
+          class="text-h4 text-weight-bolder absolute-center"
         >
         <div
           v-html="packageTitle"
@@ -58,7 +58,7 @@
       <slot name="auth"></slot>
     </q-toolbar>
     <q-toolbar v-if="activeSegment"  inset>
-      <q-toolbar-title class="text-caption text-center" >
+      <q-toolbar-title class="offset-3 col-6 bg-accent text-uppercase text-center text-weight-bolder" >
         {{ activeSegment.segmentFullTitle }}
       </q-toolbar-title>
     </q-toolbar>

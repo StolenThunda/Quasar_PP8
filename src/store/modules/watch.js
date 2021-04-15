@@ -29,8 +29,9 @@ export default {
   },
   mutations: {
     RESET_PACKAGE ( ctx ) {
-      // ctx.activeSegment = null
-      // ctx.currentCourse = null
+      ctx.activeSegment = null
+      ctx.currentCourse = null
+      console.log('reset-package')
       // ctx.
     },
     SET_ACTIVE_SEGMENT ( ctx, data ) {
@@ -223,7 +224,7 @@ export default {
     async fetchPackageData(ctx, ID) {
       return await ctx.rootState.TXBA_UTILS.getPackage(ID).then(
         packageData => {
-          ctx.dispatch( 'resetPackage' )
+          // ctx.dispatch( 'resetPackage' )
           ctx.commit("SET_CURRENT_PACKAGE", packageData);
           ctx.commit("SET_PLAY_SECTIONS", packageData);
 

@@ -29,6 +29,9 @@
 import { mapState } from "vuex";
 export default {
   name: "PackageInfo",
+  mounted() {
+    this.$store.commit('watch/RESET_PACKAGE')
+  },
   computed: {
     title() {
       return this.ProPlayer.thePackage.getTitle();
