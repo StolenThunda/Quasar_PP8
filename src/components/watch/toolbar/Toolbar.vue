@@ -6,7 +6,7 @@
         <q-btn round flat to="/" icon="home" />
         <q-btn round flat @click="toggleInfo" icon="info" />
         <q-toolbar-title
-        
+          shrink
           class="text-h5 text-bold absolute-center"
         >
         <div
