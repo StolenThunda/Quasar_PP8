@@ -14,8 +14,8 @@
           v-if="!activeLoop"
           v-model="progress"
           color="secondary"
-          :min="0"
-          :max="remaining"
+          :min="ctime"
+          :max="duration"
           :label-value="elapsedTime"
           @change="sliderChanged"
           @pan="sliderSliding"
@@ -23,13 +23,11 @@
         <!-- <div > -->
         <q-range
           id="loop-region"
+          v-else
+          color="accent"
+          v-model="activeLoop"
           dense
           label
-          color="secondary"
-          v-else
-          :min="0"
-          :max="remaining"
-          v-model="activeLoop"
           readonly
         />
         <!-- </div> -->
@@ -43,10 +41,11 @@
 </template>
 
 <script>
+import { mapGetters, mapState } from "vuex";
 import { utilities } from "../../../mixins/utilities";
 export default {
   name: "MediaProgressSlider",
-  props: ["remaining", "ctime", "activeLoop"],
+  props: [ "ctime"],
   mixins: [utilities],
   data: () => ({
     progress: 0.0
@@ -55,11 +54,20 @@ export default {
     this.progress = this.ctime;
   },
   computed: {
+    ...mapState('watch' ,['playerSettings']),
+    ...mapGetters('watch',['isValidLoop', 'getLoopStart', 'getLoopStop']),
+    duration(){ return this.playerSettings.duration },
+    activeLoop(){
+      return this.isValidLoop ? {
+        min: Math.floor(this.getLoopStart),
+        max: Math.floor(this.getLoopStop)
+      } : null
+    }, 
     elapsedTime() {
       return this.secondsToMinutes(this.progress);
     },
     timeLeft() {
-      return this.secondsToMinutes(this.remaining - this.progress);
+      return this.secondsToMinutes(this.duration - this.progress);
     }
   },
   watch: {

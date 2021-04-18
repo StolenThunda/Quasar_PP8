@@ -19,7 +19,7 @@
       </watch-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawer" side="left" show-if-above bordered>
+    <q-drawer v-model="leftDrawer" side="left" show-if-above bordered overlay>
       <div
       class="row lt-md"
       >

@@ -8,11 +8,6 @@
         :label="tab.iconOnly ? '' : tab.name"
         :icon="tab.labelOnly  ? '' : tab.icon"
         @click.prevent="selectedTab = tab.name"
-        inline-label
-        outside-arrows
-        mobile-arrows
-      transition-prev="scale"
-      transition-next="scale"
       >
         <q-menu v-if="tab.menu">
           <component :is="tab.menu"></component>

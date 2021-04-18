@@ -7,7 +7,7 @@ export default ({ router }) => {
     const key = "loggedIn";
     const now = new Date();
     let loggedIn = LocalStorage.getItem(key);
-    console.log('logged: ', loggedIn);
+    // console.log('logged: ', loggedIn);
     // // test to see if login expired
     if (loggedIn) {
       if (now.getTime() < loggedIn?.expiry) {

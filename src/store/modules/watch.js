@@ -13,37 +13,48 @@ export default {
     courseHistory: [],
     seekToTime: 0,
     mediaSources: null,
-    playerSettings: {
-      loop_start: 0,
-      loop_stop: 0,
-      speed: 1,
-      volume: 0.5,
-      zoomEnabled: false,
-      zoom: 1,
-      flipped: false
-    },
+    playerSettings: {},
+    //   duration: -1,
+    //   speed: 1,
+    //   volume: 0.5,
+    //   zoom: 1,
+    //   loop_start: -1,
+    //   loop_stop: -1,
+    //   playing: false,
+    //   looping: false,
+    //   flipped: false,
+    //   zoomEnabled: false
+    // },
     playerOpts: {
       controls: false
     },
     playSections: []
   },
   mutations: {
-    RESET_PACKAGE ( ctx ) {
-      ctx.activeSegment = null
-      ctx.currentCourse = null
-      console.log('reset-package')
+    RESET_PACKAGE(ctx) {
+      ctx.activeSegment = null;
+      ctx.currentCourse = null;
+      Vue.set(ctx, 'playerSettings', {
+        duration: -1,
+        speed: 1,
+        volume: 0.5,
+        zoom: 1,
+        loop_start: -1,
+        loop_stop: -1,
+        playing: false,
+        looping: false,
+        flipped: false,
+        zoomEnabled: false
+      });
+      ctx.currentSetup = { sources: null };
+      console.log("reset-package");
       // ctx.
     },
-    SET_ACTIVE_SEGMENT ( ctx, data ) {
-      console.info('setting active segment', data)
-      ctx.activeSegment = data
+    SET_ACTIVE_SEGMENT(ctx, data) {
+      console.info("setting active segment", data);
+      ctx.activeSegment = data;
     },
-    SET_LOOP_START ( ctx, time ) {
-      ctx.playerSettings.loop_start = time;
-    },
-    SET_LOOP_STOP ( ctx, time ) {
-      ctx.playerSettings.loop_stop = time;
-    },
+
     FLIP_PLAYER(ctx) {
       console.log("b4", ctx.playerSettings.flipped);
       ctx.playerSettings.flipped = !ctx.playerSettings.flipped;
@@ -167,11 +178,79 @@ export default {
       console.log("media", typeof data);
       ctx.mediaSources = data;
     },
+    SET_SEGMENT_DURATION(ctx, data) {
+      console.log("duration", data);
+      ctx.playerSettings.duration = data;
+    },
+    SET_LOOP_START(ctx, time) {
+      ctx.playerSettings.loop_start = time;
+    },
+    SET_LOOP_STOP(ctx, time) {
+      ctx.playerSettings.loop_stop = time;
+    },
     SET_LOOP_SELECTED(ctx, { nCollectionID, nListIndex, nLoopIndex }) {
       ctx.loopManager.loopSelected(nCollectionID, nListIndex, nLoopIndex);
+    },
+    TOGGLE_LOOPING(ctx, val) {
+      ctx.playerSettings.looping = val ? val : !ctx.playerSettings.looping;
+    },
+    TOGGLE_PLAYING(ctx, val) {
+      ctx.playerSettings.playing = val ? val : !ctx.playerSettings.playing;
     }
   },
   actions: {
+    clearLoop({ commit }) {
+      commit("SET_LOOP_START", -1);
+      commit("SET_LOOP_STOP", -1);
+      commit("TOGGLE_LOOPING", false);
+      commit("TOGGLE_PLAYING", false);
+    },
+    setLoopStart({ commit, state }, time) {
+      console.log("start time", time);
+      const current = time; //? time : -1;
+      console.log("set start:", current);
+      commit("SET_LOOP_START", current);
+      if (state.playerSettings.loop_stop <= current)
+        commit("SET_LOOP_STOP", -1);
+    },
+    setLoopStop({ commit, state }, time) {
+      const current = time; //? time : -1;
+      const start = state.playerSettings.loop_start;
+      var info = {};
+      if (start >= 0) {
+        if (start !== current) {
+          if (start < current) {
+            console.log("set stop:", current);
+            commit("SET_LOOP_STOP", current);
+            info = {
+              type: "positive",
+              message: "Loop End Set"
+            };
+          } else {
+            info = {
+              type: "negative",
+              message: "Loop end must be greater the loop start!"
+            };
+          }
+        } else {
+          info = {
+            type: "negative",
+            message: "Loop Start and End cannot be equal"
+          };
+        }
+      } else {
+        info = {
+          type: "info",
+          message: "Must set loop start first"
+        };
+      }
+      console.info(info);
+      return info;
+    },
+    setLoopWithObject({ dispatch }, data) {
+      console.log("setting loop start/end", data);
+      dispatch("setLoopStart", data[1]).then(dispatch("setLoopStop", data[2]));
+    },
     setLoopSelected({ commit }, data) {
       commit("SET_LOOP_SELECTED", data);
     },
@@ -207,7 +286,7 @@ export default {
           );
         })
         .then(loopData => {
-          ctx.commit( "SET_MEMBER_LOOP_DATA", loopData );
+          ctx.commit("SET_MEMBER_LOOP_DATA", loopData);
           // console.log('member loops', loopData)
           return loopData;
         });
@@ -233,8 +312,8 @@ export default {
         error => console.error(`Problem fetching package data, ${error}`)
       );
     },
-    resetPackage ( {commit} ) {
-      commit('RESET_PACKAGE')
+    resetPackage({ commit }) {
+      commit("RESET_PACKAGE");
     },
     fetchDefaultMedia: ctx =>
       ctx.dispatch(
@@ -353,15 +432,15 @@ export default {
           data = segment.getSoundSliceCode();
           info.data = data;
           slug = `/--ajax-load-soundslice/${mediaType}/${data}`;
-          const embed = await ctx.rootState.TXBA_UTILS.getAsyncData( slug );
-          console.log( embed )
+          const embed = await ctx.rootState.TXBA_UTILS.getAsyncData(slug);
+          console.log(embed);
           const setup = {
             data: data,
             type: mediaType,
             embed: embed
-          }
+          };
           ctx.commit("SET_CURRENT_SEGMENT_SETUP", setup);
-          return embed
+          return embed;
           break;
         case "pdf":
           slug = `/--ajax-load-pdf/${segment.getPDFFilename()}`;
@@ -394,6 +473,13 @@ export default {
     }
   },
   getters: {
+    isValidLoop: ctx => {
+      const start = ctx.playerSettings.loop_start;
+      const stop = ctx.playerSettings.loop_stop;
+      return start >= 0 && stop >= 1 && start !== stop && stop - start > 1;
+    },
+    getLoopStart: ctx => ctx.playerSettings.loop_start,
+    getLoopStop: ctx => ctx.playerSettings.loop_stop,
     getHistory: ctx => {
       const histLength = ctx.courseHistory.length;
       if (histLength === 0) return [];

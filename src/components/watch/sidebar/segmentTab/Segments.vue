@@ -23,11 +23,12 @@
             :id="segment.segmentID"
             @click="loadSegment(segment)"
             :active="isActive(segment.segmentID)"
-            active-class="bg-accent"
+            active-class="bg-accent inset-shadow-down"
             clickable
             ripple
             dense
           >
+            <!-- active-class="bg-accent inset-shadow shadow-box  doc-inset-shadow" -->
             <q-item-section avatar>
               <q-icon
                 :color="segmentIconInfo.color"

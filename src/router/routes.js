@@ -1,11 +1,12 @@
 const routes = [
   {
+    path: "/auth",
+    component: () => import("src/pages/AuthPage.vue"),
+  },
+  {
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
-    children: [
-      { name: "Auth", path: "/auth", component: () => import("pages/PageAuth.vue") },
-      { path: "", component: () => import("pages/Index.vue") }
-    ]
+    children: [{ path: "", component: () => import("pages/Index.vue") }]
   },
   {
     path: "/tools",
@@ -49,7 +50,8 @@ const routes = [
         }
       }
     ]
-  },{
+  },
+  {
     name: "watch",
     path: "/watch",
     component: () => import("src/layouts/WatchDrawer.vue"),

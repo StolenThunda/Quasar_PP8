@@ -56,7 +56,7 @@ export default {
     LoopList
   },
   created() {
-    this.$root.$on("valid-loop", this.toggleAdd);
+    // this.$root.$on("valid-loop", this.toggleAdd);
   },
   computed: {
     loopData() {

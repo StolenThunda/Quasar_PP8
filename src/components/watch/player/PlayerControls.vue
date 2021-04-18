@@ -55,9 +55,9 @@
           <q-btn
             id="looping-start"
             class="transport-button"
-            @click="$root.$emit('loopStart')"
+            @click="$root.$emit('loopStart', currentTime)"
             title="Set loop starting point."
-            :color="typeof loopStart === 'number' ? 'green' : 'white'"
+            :color="isStartSet"
           >
             <div class="row items-center no-wrap">
               <q-icon left name="mdi-arrow-collapse-left" class="q-px-xs" />
@@ -69,10 +69,10 @@
           <q-btn
             id="looping-stop"
             class="transport-button"
-            @click="$root.$emit('loopStop')"
+            @click="$root.$emit('loopStop', currentTime)"
             title="Set loop stopping point."
-            :color="typeof loopStop === 'number' ? 'green' : 'white'"
-            :disable="stopDisabled"
+            :color="isStopSet"
+            :disable="start === -1"
           >
             <div class="row items-center no-wrap">
               <span class="text-weight-bolder text-body1 q-px-xs">B</span>
@@ -84,26 +84,20 @@
           <q-btn-dropdown
             id="looping-toggle"
             split
-            :disable-dropdown="!isLoopDefined"
+            :disable-dropdown="!isValidLoop"
             title="Begin/End Looping."
             class="transport-button"
-            :color="!isLoopDefined ? 'grey' : 'green'"
-            :disable="!isLoopDefined"
+            :color="!isValidLoop ? 'primary' : 'green'"
+            :disable="!isValidLoop"
             icon="mdi-autorenew"
             :class="{ rotate: looping }"
-            @click="
-              toggleLooping();
-              $root.$emit('toggleLooping');
-            "
+            @click="$store.commit('watch/TOGGLE_LOOPING');$root.$emit('togglePlay')"
           >
             <q-list>
               <q-item
                 clickable
                 v-close-popup
-                @click="
-                  toggleLooping(false);
-                  $root.$emit('clear-loop');
-                "
+                @click="$store.dispatch('watch/clearLoop'), $root.$emit('togglePlay')"
               >
                 <q-item-section avatar>
                   <q-avatar
@@ -128,26 +122,36 @@
 </template>
 
 <script>
+import { mapState, mapGetters } from "vuex";
 export default {
   name: "PlayerControls",
   components: {
     videoSettingsMenu: () =>
       import("components/watch/settings/VideoSettings.vue")
   },
-  props: ["isPlaying", "loopStart", "loopStop", "currentTime", "isLoopDefined"],
-  data: () => ({ looping: false }),
+  props: ["currentTime"],
   computed: {
-    stopDisabled() {
-      return !(typeof this.loopStart === "number");
-    }
+    ...mapState("watch", {
+      start: state => state.playerSettings.loop_start,
+      stop: state => state.playerSettings.loop_stop,
+      isPlaying: state => state.playerSettings.playing,
+      looping: state => state.playerSettings.looping
+    }),
+    ...mapGetters("watch", ['isValidLoop']),
+    isStartSet() {
+      return this.start > -1 ? "green" : "primary";
+    },
+    isStopSet() {
+      return this.stop > 1 ? "green" : "primary";
+    },
   },
   methods: {
     seekTime(val) {
       return this.currentTime + val;
-    },
-    toggleLooping(val) {
-      this.looping = val ? val : !this.looping;
     }
+    // toggleLooping(val) {
+    //   this.looping = val ? val : !this.looping;
+    // }
   }
 };
 </script>

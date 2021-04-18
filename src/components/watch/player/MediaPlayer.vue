@@ -40,18 +40,10 @@
       <!-- End Video Interface -->
     </vue-plyr>
     <!-- </pan-zoom> -->
-    <player-controls
-      :currentTime="ctime"
-      :isPlaying="playing"
-      :isLoopDefined="validLoop"
-      :loopStart="loopStart"
-      :loopStop="loopStop"
-    >
+    <player-controls :currentTime="ctime" >
       <template #slider>
         <media-progress-slider
-          :remaining="duration"
           :ctime="ctime"
-          :activeLoop="loopObj"
         />
       </template>
     </player-controls>
@@ -60,7 +52,7 @@
 
 <script>
 import { utilities } from "../../../mixins/utilities";
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 // Vue.use(panZoom);
 export default {
   name: "PlyerMediaPlayer",
@@ -83,10 +75,7 @@ export default {
     cdn_url: String
   },
   data: () => ({
-    duration: 1000,
     ctime: 0,
-    loopStart: null,
-    loopStop: null,
     pzOptions: {
       minZoom: 1,
       maxZoom: 4,
@@ -94,9 +83,6 @@ export default {
       boundsPadding: 0.1
     },
     zoom: null,
-    playing: false,
-    loopActive: false,
-    loopObj: null
   }),
   created() {
     this.$root.$on("slider-change", this.seekTo);
@@ -106,13 +92,12 @@ export default {
     this.$root.$on("seek-5", this.seekTo);
     this.$root.$on("loopStart", this.setloopStart);
     this.$root.$on("loopStop", this.setloopStop);
-    this.$root.$on("toggleLooping", this.toggleLooping);
+    // this.$root.$on("toggleLooping", this.toggleLooping);
     this.$root.$on("speed", this.speedChange);
     this.$root.$on("volume", this.volumeChange);
     this.$root.$on("zoom", this.toggleZoom);
     this.$root.$on("resetZoom", this.resetZoom);
     this.$root.$on("clear-loop", this.clearLoop);
-    this.$root.$on("set-loop", this.setLoopWithObject);
     this.unsubscribe = this.$store.subscribe((mutation, state) => {
       if (mutation.type === "watch/SET_SEEK_TIME") {
         this.seekTo(state.watch.seekToTime);
@@ -125,7 +110,6 @@ export default {
   },
   mounted() {
     this.player.on("ready", e => {
-      this.duration = e.detail.plyr.duration;
       this.loadDefaultSettings();
       this.player.toggleControls(false);
     });
@@ -140,25 +124,33 @@ export default {
       import("src/components/watch/player/PlayerControls.vue")
   },
   watch: {
-    playing(e) {
-      this.playing = e;
-    },
-    validLoop: function(valid) {
-      this.loopObj = this.loopActive
-        ? { min: this.loopStart, max: this.loopStop }
-        : null;
-      if (valid) {
-        this.$root.$emit("valid-loop", {
-          status: this.validLoop,
-          loop: this.loopObj
-        });
-      } else {
-        this.$root.$emit("valid-loop", { status: this.validLoop });
-      }
+    looping() {
+      console.log("looptoggle");
+      if (this.$store.getters["watch/isValidLoop"])
+        this.setCurrentTime(this.start);
+        console.log(`toggling looping: ${this.looping ? 'on' : 'off'}`)
+      this.player.togglePlay(this.looping);
+      this.showMessage({
+        type: "info",
+        caption: this.looping
+          ? `Start: ${this.secondsToMinutes(
+              this.start
+            )} -> End: ${this.secondsToMinutes(this.stop)}`
+          : this.secondsToMinutes(this.player.currentTime),
+        message: this.looping ? "Loop Active" : "Loop Stopped",
+        icon: this.loopIcon
+      });
     }
   },
   computed: {
-    ...mapState("watch", ["playerSettings", "seekToTime"]),
+    ...mapState("watch", {
+      start: state => state.playerSettings.loop_start,
+      stop: state => state.playerSettings.loop_stop,
+      isPlaying: state => state.playerSettings.playing,
+      looping: state => state.playerSettings.looping,
+      duration: state => state.playerSettings.duration,
+      seekToTime: state => state.seekToTime
+    }),
     divPlayer() {
       return ["youtube", "vimeo"].includes(this.type);
     },
@@ -172,34 +164,15 @@ export default {
     youtubePlayer() {
       // return `http://www.youtube.com/embed/${this.sources[0].src}?rel=0&hd=1 `;
       return `https://www.youtube.com/embed/${this.sources[0].src}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&controls=0&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1`;
-    },
-    validLoop() {
-      const isValid =
-        typeof this.loopStart === "number" &&
-        typeof this.loopStop === "number" &&
-        this.loopStart !== this.loopStop &&
-        this.loopStop - this.loopStart > 1;
-      if (isValid) this.$root.$emit("valid-loop", isValid);
-      return isValid;
     }
   },
   methods: {
     ...mapActions("watch", ["flipPlayer", "loadPlayerSettings"]),
-    setLoopWithObject(loop) {
-      console.log("loop /w obj", loop);
-      const startTime = loop[1];
-      const endTime = loop[2];
-      this.setloopStart(startTime);
-      this.setloopStop(endTime);
-    },
     setCurrentTime(val) {
       this.player.currentTime = val;
     },
     clearLoop() {
-      this.loopStart = null;
-      this.loopStop = null;
-      this.loopObj = null;
-      this.loopActive = false;
+      // this.loopObjx = null;
       this.$root.$emit("loop-cleared");
       console.log("loop cleared");
     },
@@ -238,17 +211,17 @@ export default {
       this.player.speed = val / 100;
     },
     timeUpdated: function(e) {
-      this.duration = this.player.duration;
+      this.$store.commit('watch/SET_SEGMENT_DURATION',  this.player.duration);
       this.ctime = this.player.currentTime;
-      if (this.loopActive) {
-        if (this.ctime >= this.loopStop) {
-          this.seekTo(this.loopStart);
+      if (this.looping) {
+        if (this.ctime >= this.stop) {
+          this.seekTo(this.start);
           this.showMessage({
             message: "Loop Rewound",
             caption:
               this.secondsToMinutes(this.ctime) +
               " >> " +
-              this.secondsToMinutes(this.loopStop)
+              this.secondsToMinutes(this.stop)
           });
         }
       }
@@ -262,11 +235,6 @@ export default {
     restart() {
       this.seekTo(0);
     },
-    stateChange(e) {
-      const state = e.type;
-      this.playing = state !== "pause";
-      // console.log(state, this.playing);
-    },
     togglePlay() {
       if (!this.player) return;
       if (this.player.playing) {
@@ -274,84 +242,27 @@ export default {
       } else {
         this.player.play();
       }
-      console.log("playing?: ", this.player.playing);
+      this.$store.commit('watch/TOGGLE_PLAYING', this.player.playing)
+      console.log("isisPlaying?: ", this.isPlaying);
     },
     setloopStart(time) {
-      if (!this.player) return;
-      if (!this.player.currentTime) return;
-      if (typeof this.player?.currentTime === NaN) return;
-      const current = time ? time : this.player.currentTime;
-      this.loopStart = current;
-      if (this.loopStop <= current) this.loopStop = null;
-      this.$store.commit("watch/SET_LOOP_START", this.loopStart);
-      this.showMessage(
-        Object.assign({}, this.cfgLoopIcon, {
-          type: "positive",
-          message: "Loop Start Set",
-          caption: this.secondsToMinutes(this.loopStart)
-        })
-      );
-    },
-    setloopStop(time) {
-      if (!this.player) return;
-      if (!this.player.currentTime) return;
-      if (typeof this.player.currentTime === NaN) return;
-      const current = time ? time : this.player.currentTime;
-      console.log("curr", this.secondsToMinutes(current));
-      if (typeof this.loopStart === "number") {
-        if (this.loopStart !== current) {
-          if (this.loopStart < current) {
-            this.loopStop = current;
-            this.$store.commit("watch/SET_LOOP_STOP", this.loopStop);
-            this.showMessage(
-              Object.assign({}, this.cfgLoopIcon, {
-                type: "positive",
-                message: "Loop End Set",
-                caption: this.secondsToMinutes(this.loopStop)
-              })
-            );
-          } else {
-            this.showMessage(
-              Object.assign({}, this.cfgLoopInfo, {
-                type: "negative",
-                message: "Loop end must be greater the loop start!"
-              })
-            );
-          }
-        } else {
-          this.showMessage(
-            Object.assign({}, this.cfgLoopInfo, {
-              type: "negative",
-              message: "Loop Start and End cannot be equal"
-            })
-          );
-        }
-      } else {
+      this.$store.dispatch("watch/setLoopStart", time).then(() => {
         this.showMessage(
-          Object.assign({}, this.cfgLoopWarning, {
-            type: "info",
-            message: "Must set loop start first"
+          Object.assign({}, this.cfgLoopIcon, {
+            type: "positive",
+            message: "Loop Start Set",
+            caption: this.secondsToMinutes(this.start)
           })
         );
-      }
-    },
-    toggleLooping() {
-      console.log("looptoggle");
-      if (this.validLoop) this.setCurrentTime(this.loopStart);
-      this.loopActive = !this.loopActive;
-
-      this.player.togglePlay(this.loopActive);
-      this.showMessage({
-        type: "info",
-        caption: this.loopActive
-          ? `Start: ${this.secondsToMinutes(
-              this.loopStart
-            )} -> End: ${this.secondsToMinutes(this.loopStop)}`
-          : this.secondsToMinutes(this.player.currentTime),
-        message: this.loopActive ? "Loop Active" : "Loop Stopped",
-        icon: this.loopIcon
       });
-    }
+    },
+    setloopStop(time) {
+      this.$store.dispatch("watch/setLoopStop", time).then(info => {
+        var caption = {};
+        if (this.stop > 0) caption = { caption: this.secondsToMinutes(this.stop) };
+        this.showMessage(Object.assign({}, this.cfgLoopIcon, info, caption));
+      });
+    },
     // resizeIFrameToFitContent( iFrame ) {
     //   console.log('b-iframe', iFrame)
     //   iFrame.width  = iFrame.contentWindow.parent.document.body.scrollWidth + 'px';

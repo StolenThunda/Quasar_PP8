@@ -2,7 +2,7 @@
   <q-item
     clickable
     v-ripple
-    active-class="text-orange"
+    active-class="bg-accent text-white"
     :key="index"
     @click.prevent="$root.$emit('toggle-active', loop)"
     :active="active"
@@ -23,10 +23,8 @@
 </template>
 
 <script>
-// import { loop_funcs } from "../../../../mixins/loop_funcs.js"
 export default {
   props: ["loop", "index", "active"]
-  // mixins: [ loop_funcs ]
 };
 </script>
 
