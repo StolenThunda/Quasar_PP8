@@ -4,7 +4,7 @@
     v-ripple
     active-class="bg-accent text-white"
     :key="index"
-    @click.prevent="$root.$emit('toggle-active', loop)"
+    @click.stop.prevent="$root.$emit('toggle-active', loop)"
     :active="active"
   >
     <q-item-section avatar>

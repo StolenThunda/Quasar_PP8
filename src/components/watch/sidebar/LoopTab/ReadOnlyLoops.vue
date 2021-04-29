@@ -9,11 +9,22 @@ import { mapState } from "vuex";
 import LoopList from "./LoopList.vue";
 export default {
   name: "ReadOnlyLoops",
-  components: { LoopList},
+  components: { LoopList },
+  mounted() {
+    this.ProPlayer.loopsManager.createNewCollection(
+      "loopList",
+      "system",
+      false
+    );
+    this.ProPlayer.loopsManager.addListToCollectionFromArray(
+      this.ProPlayer.theSegment.getLoopsArray(),
+      "system"
+    );
+  },
   computed: {
     loopData() {
-      const msg = "This item does not have any instant loops."
-      const loops = this.ProPlayer.theSegment.getLoopsArray() || []
+      const msg = "This item does not have any instant loops.";
+      const loops = this.ProPlayer.theSegment.getLoopsArray() || [];
       console.info("setting loopdata", loops);
       return {
         altMessage: msg,

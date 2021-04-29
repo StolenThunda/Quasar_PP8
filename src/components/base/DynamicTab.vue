@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :id="componentKey">
     <q-tabs v-model="selectedTab" inline-label>
       <q-tab
         v-for="tab in myTabs"
@@ -34,6 +34,7 @@
 export default {
   name: "DynamicTabs",
   data: () => ({
+    componentKey: 0,
     selectedTab: null,
       myTabs: [], 
   }),
@@ -46,16 +47,17 @@ export default {
   mounted() {
     this.myTabs = this.sortedTabs(this.tabList);
   },
-  // watch: {
-  //   tabList: {
-  //     handler: function(val, old) {
-  //       // console.log('val', val)
-  //       // console.log('old', old)
-  //       this.getFirst();
-  //     },
-  //     deep: true
-  //   }
-  // }, 
+  watch: {
+    // tabList: {
+    //   handler: function(val, old) {
+    //     // console.log('val', val)
+    //     // console.log('old', old)
+    //     // this.getFirst();
+    //     this.componentKey++
+    //   },
+    //   deep: true
+    // }
+  }, 
   methods: {
     sortedTabs(list) {
       const tabOrder = [

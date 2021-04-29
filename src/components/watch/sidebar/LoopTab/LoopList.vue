@@ -12,11 +12,11 @@
 </template>
 
 <script>
-import Vue from "vue";
-import LoopListItem from "./LoopListItem.vue";
+import { mapState } from "vuex";
+import LoopListItem from "components/watch/sidebar/loopTab/LoopListItem.vue";
 export default {
   name: "LoopList",
-  data: () => ({ activeList: {}, componentKey: 0 }),
+  data: () => ({ componentKey: 0 }),
   props: {
     loopArray: {
       type: Array,
@@ -36,19 +36,23 @@ export default {
   },
   created() {
     if (this.loopArray?.length) {
+      const list = {};
       for (let [k, v] of Object.entries(this.loopArray)) {
         const loop = v;
         const key = this.getActiveItemName(loop);
-        this.activeList[key] = false;
+        list[key] = false;
         // console.log('loop', key, loop);
       }
-      // TODO: SET activelist in store 
-      Vue.set(this, "activeList", this.activeList);
+      this.$store.commit("watch/SET_ACTIVE_LOOPLIST", list);
     }
     this.$root.$on("loop-cleared", this.clearAllLoops);
-    // this.$root.$on("activate", this.active);
     this.$root.$on("get-item-id", this.getItemID);
     this.$root.$on("toggle-active", this.toggleActive);
+  },
+  computed: {
+    ...mapState("watch", {
+      activeList: state => state.playerSettings.activeList
+    })
   },
   methods: {
     clearAllLoops() {
@@ -67,14 +71,14 @@ export default {
     },
     toggleActive(loop) {
       const itm = this.getActiveItemName(loop);
-      const active = !this.activeList[itm];
-      if (active) {
-        this.$store.dispatch("watch/setLoopWithObject", loop);
-      } else {
-        this.$store.dispatch("watch/setLoopWithObject", ["", -1, -1]);
+      const active =  !this.activeList[itm]
+      const objLoop = {
+        key : itm,
+        active : active,
+        loopdata: active ? loop : ["", -1, -1]
       }
-      this.activeList[itm] = active;
-      this.componentKey++;
+      this.$store.dispatch("watch/setLoopWithObject", objLoop)
+      // this.componentKey++;
     },
     getItemName(val) {
       if (!val || !val[0]) return val;

@@ -13,18 +13,19 @@ export default {
     courseHistory: [],
     seekToTime: 0,
     mediaSources: null,
-    playerSettings: {},
-    //   duration: -1,
-    //   speed: 1,
-    //   volume: 0.5,
-    //   zoom: 1,
-    //   loop_start: -1,
-    //   loop_stop: -1,
-    //   playing: false,
-    //   looping: false,
-    //   flipped: false,
-    //   zoomEnabled: false
-    // },
+    playerSettings: {
+      bLoadingLoopData: false,
+      duration: -1,
+      speed: 1,
+      volume: 0.5,
+      zoom: 1,
+      loop_start: -1,
+      loop_stop: -1,
+      playing: false,
+      looping: false,
+      flipped: false,
+      zoomEnabled: false
+    },
     playerOpts: {
       controls: false
     },
@@ -34,13 +35,15 @@ export default {
     RESET_PACKAGE(ctx) {
       ctx.activeSegment = null;
       ctx.currentCourse = null;
-      Vue.set(ctx, 'playerSettings', {
+      Vue.set(ctx, "playerSettings", {
         duration: -1,
         speed: 1,
         volume: 0.5,
         zoom: 1,
         loop_start: -1,
         loop_stop: -1,
+        activeList: null,
+        bLoadingLoopData: false,
         playing: false,
         looping: false,
         flipped: false,
@@ -179,13 +182,15 @@ export default {
       ctx.mediaSources = data;
     },
     SET_SEGMENT_DURATION(ctx, data) {
-      console.log("duration", data);
+      // console.log("duration", data);
       ctx.playerSettings.duration = data;
     },
     SET_LOOP_START(ctx, time) {
+      console.log("start", time);
       ctx.playerSettings.loop_start = time;
     },
     SET_LOOP_STOP(ctx, time) {
+      console.log("stop", time);
       ctx.playerSettings.loop_stop = time;
     },
     SET_LOOP_SELECTED(ctx, { nCollectionID, nListIndex, nLoopIndex }) {
@@ -193,6 +198,19 @@ export default {
     },
     TOGGLE_LOOPING(ctx, val) {
       ctx.playerSettings.looping = val ? val : !ctx.playerSettings.looping;
+    },
+    TOGGLE_ACTIVE_LOOP_STATUS(ctx, obj) {
+      ctx.playerSettings.activeList[obj.key] = obj.active;
+    },
+    TOGGLE_LOOPOBJECT_LOADING ( ctx ) {
+      ctx.playerSettings.bLoadingLoopData = !ctx.playerSettings.bLoadingLoopData
+    },
+    SET_ACTIVE_LOOPLIST(ctx, data) {
+      if (!data) {
+        ctx.playerSettings.activeList = null;
+      } else {
+        ctx.playerSettings.activeList = data;
+      }
     },
     TOGGLE_PLAYING(ctx, val) {
       ctx.playerSettings.playing = val ? val : !ctx.playerSettings.playing;
@@ -239,17 +257,32 @@ export default {
           };
         }
       } else {
-        info = {
-          type: "info",
-          message: "Must set loop start first"
-        };
+        if (state.playerSettings.bLoadingLoopData) {
+          console.log("set stop:", current);
+          commit("SET_LOOP_STOP", current);
+          info = {
+            type: "positive",
+            message: "Loop End Set"
+          };
+        } else {
+          info = {
+            type: "info",
+            message: "Must set loop start first"
+          };
+        }
       }
       console.info(info);
       return info;
     },
-    setLoopWithObject({ dispatch }, data) {
-      console.log("setting loop start/end", data);
-      dispatch("setLoopStart", data[1]).then(dispatch("setLoopStop", data[2]));
+    setLoopWithObject({ dispatch, commit }, loopObj) {
+      const loopdata = loopObj.loopdata;
+      commit("TOGGLE_LOOPOBJECT_LOADING")
+      console.log("setting loop start/end", loopdata);
+      dispatch("setLoopStart", loopdata[1]).then(
+        dispatch("setLoopStop", loopdata[2])
+        );
+        commit("TOGGLE_ACTIVE_LOOP_STATUS", loopObj);
+        commit("TOGGLE_LOOPOBJECT_LOADING")
     },
     setLoopSelected({ commit }, data) {
       commit("SET_LOOP_SELECTED", data);
@@ -356,6 +389,7 @@ export default {
     },
     async fetchSegmentData(ctx, ID) {
       const response = await ctx.rootState.TXBA_UTILS.getSegment(ID);
+      ctx.state.ProPlayer.openSegmentWithinCurrentPackage(ID, true);
       // console.log("segData", response);
       ctx.commit("SET_CURRENT_SEGMENT", response);
       ctx.commit("SET_CURRENT_SEGMENT_SETUP", null);

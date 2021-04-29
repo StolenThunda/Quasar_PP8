@@ -27,8 +27,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import LoopList from "./LoopList.vue";
+import { mapState } from "vuex"
+import LoopList from "./LoopList"
 export default {
   name: "MemberLoopList",
   data: () => ({
