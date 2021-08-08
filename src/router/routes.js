@@ -1,7 +1,7 @@
 const routes = [
   {
     path: "/auth",
-    component: () => import("src/pages/AuthPage.vue"),
+    component: () => import("src/pages/AuthPage.vue")
   },
   {
     path: "/",

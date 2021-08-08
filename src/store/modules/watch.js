@@ -35,6 +35,7 @@ export default {
     RESET_PACKAGE(ctx) {
       ctx.activeSegment = null;
       ctx.currentCourse = null;
+      ctx.currentSetup = { sources: null };
       Vue.set(ctx, "playerSettings", {
         duration: -1,
         speed: 1,
@@ -49,9 +50,7 @@ export default {
         flipped: false,
         zoomEnabled: false
       });
-      ctx.currentSetup = { sources: null };
-      console.log("reset-package");
-      // ctx.
+      // console.log("reset-package");
     },
     SET_ACTIVE_SEGMENT(ctx, data) {
       console.info("setting active segment", data);
@@ -202,8 +201,9 @@ export default {
     TOGGLE_ACTIVE_LOOP_STATUS(ctx, obj) {
       ctx.playerSettings.activeList[obj.key] = obj.active;
     },
-    TOGGLE_LOOPOBJECT_LOADING ( ctx ) {
-      ctx.playerSettings.bLoadingLoopData = !ctx.playerSettings.bLoadingLoopData
+    TOGGLE_LOOPOBJECT_LOADING(ctx) {
+      ctx.playerSettings.bLoadingLoopData = !ctx.playerSettings
+        .bLoadingLoopData;
     },
     SET_ACTIVE_LOOPLIST(ctx, data) {
       if (!data) {
@@ -276,13 +276,13 @@ export default {
     },
     setLoopWithObject({ dispatch, commit }, loopObj) {
       const loopdata = loopObj.loopdata;
-      commit("TOGGLE_LOOPOBJECT_LOADING")
+      commit("TOGGLE_LOOPOBJECT_LOADING");
       console.log("setting loop start/end", loopdata);
       dispatch("setLoopStart", loopdata[1]).then(
         dispatch("setLoopStop", loopdata[2])
-        );
-        commit("TOGGLE_ACTIVE_LOOP_STATUS", loopObj);
-        commit("TOGGLE_LOOPOBJECT_LOADING")
+      );
+      commit("TOGGLE_ACTIVE_LOOP_STATUS", loopObj);
+      commit("TOGGLE_LOOPOBJECT_LOADING");
     },
     setLoopSelected({ commit }, data) {
       commit("SET_LOOP_SELECTED", data);
@@ -373,14 +373,19 @@ export default {
             componentName: "LoopsManager",
             icon: "mdi-sync",
             iconOnly: true,
-            cmp: () => import("components/watch/sidebar/LoopTab/LoopManager")
+            cmp: () =>
+              import(
+                /* webpackChunkName: "watch-sidebar" */ "components/watch/sidebar/loopTab/LoopManager"
+              )
           },
           {
             name: "Chapters",
             componentName: "ChaptersManager",
             icon: "mdi-bookmark",
             iconOnly: true,
-            cmp: () => import("components/watch/sidebar/ChapterTab/Chapters")
+            cmp: () =>
+              import(/* webpackChunkName: "watch-sidebar" */ "components/watch/sidebar/ChapterTab/Chapters"
+              )
           }
         ];
         dispatch("addSidebarTabs", loopTabs, { root: true });
@@ -403,13 +408,14 @@ export default {
         )[0];
         // console.log("seg-data", segmentData);
       } else {
-        segmentData = ctx.dispatch("fetchPackage", segmentId).then(pkg => {
-          // console.log( "seg-id", segmentId );
-          segmentId = ctx.getters.getFirstSegment().id;
-          // console.log("seg-id", segmentId);
-          ctx.dispatch("setCurrentSegmentSetup", segmentId);
-          return pkg;
-        });
+        segmentData = ctx
+          .dispatch("fetchPackage", segmentId)
+          .then(() =>
+            ctx.dispatch(
+              "setCurrentSegmentSetup",
+              ctx.getters.getFirstSegment().id
+            )
+          );
       }
       // console.log("segmentData", segmentData);
       if (segmentData) ctx.commit("SET_CURRENT_SEGMENT_SETUP", segmentData);
@@ -475,7 +481,6 @@ export default {
           };
           ctx.commit("SET_CURRENT_SEGMENT_SETUP", setup);
           return embed;
-          break;
         case "pdf":
           slug = `/--ajax-load-pdf/${segment.getPDFFilename()}`;
           // this.mediaLoadPDFViewer(this.theS);

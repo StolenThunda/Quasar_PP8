@@ -1,13 +1,32 @@
 <template>
-  <q-list id="progressSliderWrapper">
-    <q-item class="row">
+  <q-list id="progressSliderWrapper" dense>
+    <q-item>
+      <q-item-section></q-item-section>
+      <q-item-section side>
+        <q-badge v-if="activeLoop" color="accent" transparent rounded>
+          <span class="text-center">
+            <span class="text-caption">
+              Current Loop
+            </span>
+            <br />
+            <span class="text-weight-bolder">
+              Start: {{ minTime(Math.floor(getLoopStart)) }} to End:
+              {{ maxTime(Math.floor(getLoopStop)) }}
+            </span>
+          </span>
+        </q-badge>
+      </q-item-section>
+      <q-item-section></q-item-section>
+    </q-item>
+    <q-item>
       <q-item-section
         id="current-time"
-        class="q-px-xl col-2 text-weight-bolder text-caption"
+        class="text-weight-bolder text-caption"
+        avatar
       >
         {{ elapsedTime }}
       </q-item-section>
-      <q-item-section id="progressSlider" class="col-8">
+      <q-item-section id="progressSlider">
         <q-slider
           dense
           label
@@ -28,12 +47,18 @@
           v-model="activeLoop"
           dense
           label
+          :left-label-value="minTime(activeLoop.min)"
+          :right-label-value="maxTime(activeLoop.max)"
           readonly
         />
         <!-- </div> -->
         <!-- <div id="chapters-wrapper"></div> -->
       </q-item-section>
-      <q-item-section id="time-left" class="col-2 q-px-xl text-weight-bolder text-caption">
+      <q-item-section
+        id="time-left"
+        class="text-weight-bolder text-caption"
+        avatar
+      >
         {{ timeLeft }}
       </q-item-section>
     </q-item>
@@ -45,7 +70,7 @@ import { mapGetters, mapState } from "vuex";
 import { utilities } from "../../../mixins/utilities";
 export default {
   name: "MediaProgressSlider",
-  props: [ "ctime"],
+  props: ["ctime"],
   mixins: [utilities],
   data: () => ({
     progress: 0.0
@@ -54,15 +79,25 @@ export default {
     this.progress = this.ctime;
   },
   computed: {
-    ...mapState('watch' ,['playerSettings']),
-    ...mapGetters('watch',['isValidLoop', 'getLoopStart', 'getLoopStop']),
-    duration(){ return this.playerSettings.duration },
-    activeLoop(){
-      return this.isValidLoop ? {
-        min: Math.floor(this.getLoopStart),
-        max: Math.floor(this.getLoopStop)
-      } : null
-    }, 
+    ...mapState("watch", ["playerSettings"]),
+    ...mapGetters("watch", ["isValidLoop", "getLoopStart", "getLoopStop"]),
+    duration() {
+      return this.playerSettings.duration;
+    },
+
+    activeLoop() {
+      return this.isValidLoop
+        ? this.playerSettings.looping
+          ? {
+              min: Math.floor(this.ctime),
+              max: Math.floor(this.getLoopStop)
+            }
+          : {
+              min: Math.floor(this.getLoopStart),
+              max: Math.floor(this.getLoopStop)
+            }
+        : null;
+    },
     elapsedTime() {
       return this.secondsToMinutes(this.progress);
     },
@@ -76,6 +111,12 @@ export default {
     }
   },
   methods: {
+    minTime(time) {
+      return this.secondsToMinutes(time);
+    },
+    maxTime(time) {
+      return this.secondsToMinutes(time);
+    },
     sliderChanged(e) {
       this.$root.$emit("slider-change", e);
     },

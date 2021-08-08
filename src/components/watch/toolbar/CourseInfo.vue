@@ -1,6 +1,6 @@
 <template>
   <q-banner
-    class="container q-ma-lg text-thin"
+    class="q-ma-lg q-pa-lg text-thin"
     bordered
     v-model="ProPlayer.thePackage"
   >
@@ -34,12 +34,7 @@ export default {
     overview() {
       return this.ProPlayer.thePackage.getOverview();
     },
-    ...mapState(["currentCourse", "ProPlayer"])
+    ...mapState([ "ProPlayer"])
   }
 };
 </script>
-<style lang="stylus" scoped>
-.container
-  border: 1px solid #555
-  background-color: rgba(84, 84, 84, 0.44)
-</style>

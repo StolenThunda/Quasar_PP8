@@ -6,8 +6,8 @@
   "author": "Tony Moses <tonym415@gmail.com>",
   "private": true,
   "scripts": {
-    "dev": "quasar d",
-    "dev:electron": "quasar d -m electron",
+    "dev": "npx quasar d",
+    "dev:electron": "npx quasar d -m electron",
     "build_deploy": "quasar build && ../deployProjects.sh",
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0",
@@ -26,16 +26,15 @@
     "firebase": "^8.2.6",
     "global": "^4.4.0",
     "quasar": "^1.13.2",
-    "vue-panzoom": "^1.1.3",
     "vue-plyr": "^6.0.4",
     "webpack": "^5.20.2"
   },
   "devDependencies": {
     "@quasar/app": "^2.2.1",
-    "@vue/devtools": "^5.3.3",
     "babel-eslint": "^10.0.1",
     "devtron": "^1.4.0",
     "electron": "^9.0.0",
+    "electron-builder": "^22.4.0",
     "electron-debug": "^3.0.1",
     "electron-devtools-installer": "^3.0.0",
     "electron-packager": "^14.1.1",

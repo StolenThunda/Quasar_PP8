@@ -17,23 +17,23 @@ export default {
       {
         name: "TXBA",
         componentName: "TXBA Loops",
-        cmp: () => import("./ReadOnlyLoops")
+        cmp: () => import(/* webpackChunkName: "watch-sidebar" */"./ReadOnlyLoops")
       },
       {
         name: "Yours",
         componentName: "Your Loops",
         icon: "",
-        cmp: () => import("./UserLoops")
+        cmp: () => import(/* webpackChunkName: "watch-sidebar" */"./UserLoops")
       },
       {
         name: "Locals",
         componentName: "Locals Loops",
-        cmp: () => import("./MemberLoops")
+        cmp: () => import(/* webpackChunkName: "watch-sidebar" */"./MemberLoops")
       }
       ]
   }),
   components: {
-    loopTabs: () => import("../../../../components/base/DynamicTab")
+    loopTabs: () => import(/* webpackMode: "lazy", webpackPrefetch: true, webpackPreload: true */"../../../../components/base/DynamicTab")
   },
   computed: {
     ...mapState("watch", ["currentSegment"])

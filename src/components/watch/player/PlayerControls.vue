@@ -127,7 +127,7 @@ export default {
   name: "PlayerControls",
   components: {
     videoSettingsMenu: () =>
-      import("components/watch/settings/VideoSettings.vue")
+      import(/* webpackChunkName: "watch-player" */"components/watch/settings/VideoSettings.vue")
   },
   props: ["currentTime"],
   computed: {

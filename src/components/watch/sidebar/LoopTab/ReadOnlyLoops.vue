@@ -6,7 +6,7 @@
 
 <script>
 import { mapState } from "vuex";
-import LoopList from "./LoopList.vue";
+import LoopList from "components/watch/sidebar/loopTab/LoopList";
 export default {
   name: "ReadOnlyLoops",
   components: { LoopList },

@@ -6,8 +6,8 @@
         :key="section.sectionID"
         v-if="section.segments"
         header-style="background-color:#464646; min-width: 250px;"
-        expand-separator
         style="max-width: 350px"
+        expand-separator
         default-opened
         switch-toggle-side
       >

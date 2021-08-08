@@ -1,8 +1,7 @@
 <template>
-  <q-layout view="hhh lpR lFr"
-    >
-    
-    <q-header reveal elevated>
+  <q-layout view="hhh lpR lFr">
+     <!-- <q-layout view="hHh lpR lff"> -->
+    <q-header >
       <watch-toolbar class="q-electron-drag">
         <template #toggle>
           <q-btn
@@ -19,12 +18,12 @@
       </watch-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawer" side="left" show-if-above bordered overlay>
+    <q-drawer v-model="leftDrawer" side="left" >
       <div
       class="row lt-md"
       >
         <q-btn
-          class="offset-10 col"
+          class="offset-5 col"
           flat
           size="xl"
           icon="mdi-code-less-than"
@@ -41,14 +40,13 @@
 </template>
 
 <script>
-import DynamicTab from "components/base/DynamicTab";
 import AuthButton from "components/base/AuthButton";
 import WatchToolbar from "components/watch/toolbar/Toolbar";
 import { mapState, mapActions } from "vuex";
 export default {
   name: "WatchLayout",
   components: {
-    DynamicTab,
+     DynamicTab: () => import(/* webpackMode: "lazy", webpackPrefetch: true, webpackPreload: true */"components/base/DynamicTab.vue"),
     WatchToolbar,
     AuthButton
   },
@@ -89,15 +87,15 @@ export default {
         componentName: "SegmentsManager",
         icon: "mdi-segment",
         iconOnly: true,
-        cmp: () => import("components/watch/sidebar/segmentTab/Segments"),
-        menu: () => import("components/watch/settings/playerSettings")
+        cmp: () => import(/* webpackChunkName: "watch-sidebar" */"components/watch/sidebar/segmentTab/Segments"),
+        menu: () => import(/* webpackChunkName: "watch-sidebar", webpackMode: "lazy" */"components/watch/settings/playerSettings")
       },
       {
         name: "Comments",
         componentName: "CommentsManager",
         icon: "mdi-comment-multiple-outline",
         iconOnly: true,
-        cmp: () => import("components/watch/sidebar/commentTab/Comments")
+        cmp: () => import(/* webpackChunkName: "watch-sidebar", webpackMode: "lazy" */"components/watch/sidebar/commentTab/Comments")
       }
     ]);
   },

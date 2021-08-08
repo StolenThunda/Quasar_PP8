@@ -1,6 +1,13 @@
 {
     "configurations": [
       {
+        "name": "Launch Microsoft Edge and open the Edge DevTools",
+        "request": "launch",
+        "type": "vscode-edge-devtools.debug",
+        "url": "http://localhost:3000",
+        "sourceMaps": true
+      },
+      {
         "name": "Attach to Edge",
         "port": 9222,
         "request": "attach",
@@ -9,20 +16,27 @@
         "sourceMaps": true
       },
       {
+        "type": "devtools-for-chrome",
+        "request": "attach",
+        "name": "Attach Chrome DevTools",
+        "url": "http://localhost:3000/"
+      },
+      {
         "name": "Vue: Attach to Chrome",
-        "port": 9222,
+        "port": 3000,
         "request": "attach",
         "type": "chrome",
-        "url": "http://localhost:3000",
+        "url": "http://localhost",
         "webRoot": "${workspaceFolder}/src",
-        "sourceMaps": true
+        "sourceMaps": true,
+        "trace": "verbose"
 
       },
     {
       "type": "chrome",
       "request": "launch",
       "name": "Quasar App: chrome",
-      "url": "https://localhost:3000",
+      "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}/src",
       "breakOnLoad": true,
       "sourceMapPathOverrides": {

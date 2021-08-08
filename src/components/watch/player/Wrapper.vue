@@ -34,10 +34,10 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "MediaPlayerWrapper",
   components: {
-    "pdf-renderer": () => import("components/watch/renderers/PDF.vue"),
+    "pdf-renderer": () => import(/* webpackChunkName: "watch-player" */"components/watch/renderers/PDF.vue"),
     "soundslice-renderer": () =>
-      import("components/watch/renderers/SoundSlice.vue"),
-    "media-player": () => import("src/components/watch/player/MediaPlayer.vue")
+      import(/* webpackChunkName: "watch-player" */"components/watch/renderers/SoundSlice.vue"),
+    "media-player": () => import(/* webpackChunkName: "watch-player" */"src/components/watch/player/MediaPlayer.vue")
   },
   data: () => ({
     componentKey: 0,

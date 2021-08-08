@@ -28,13 +28,12 @@
 </template>
 
 <script>
-import DynamicTab from "components/base/DynamicTab.vue";
 import BrowserToolbar from "src/components/browse/Toolbar.vue";
 import { mapState, mapActions } from "vuex";
 export default {
   name: "BrowserLayout",
   components: {
-    DynamicTab,
+    DynamicTab: () => import(/* webpackMode: "lazy", webpackPrefetch: true, webpackPreload: true */"components/base/DynamicTab.vue"),
     BrowserToolbar
   },
   data: () => ({

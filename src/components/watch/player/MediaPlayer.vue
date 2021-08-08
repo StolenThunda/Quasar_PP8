@@ -1,5 +1,6 @@
 <template>
-  <div class="column justify-between">
+  <div>
+    
     <!-- <pan-zoom> -->
     <vue-plyr ref="mediaPlayer">
       <!-- Begin Audio Interface -->
@@ -40,6 +41,7 @@
       <!-- End Video Interface -->
     </vue-plyr>
     <!-- </pan-zoom> -->
+    <!-- <button is="google-cast-button" id="cast">Cast</button> -->
     <player-controls :currentTime="ctime" >
       <template #slider>
         <media-progress-slider
@@ -52,7 +54,7 @@
 
 <script>
 import { utilities } from "../../../mixins/utilities";
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapActions} from "vuex";
 // Vue.use(panZoom);
 export default {
   name: "PlyerMediaPlayer",
@@ -119,9 +121,9 @@ export default {
   },
   components: {
     "media-progress-slider": () =>
-      import("src/components/watch/player/MediaProgressSlider.vue"),
+        import(/* webpackChunkName: "watch-player" */"src/components/watch/player/MediaProgressSlider.vue"),
     "player-controls": () =>
-      import("src/components/watch/player/PlayerControls.vue")
+      import(/* webpackChunkName: "watch-player" */"src/components/watch/player/PlayerControls.vue")
   },
   watch: {
     looping() {

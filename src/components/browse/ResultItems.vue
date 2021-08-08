@@ -97,7 +97,7 @@ export default {
     ...mapGetters("default", ["isFavorite"])
   },
   components: {
-    CurrentSearch: () => import("components/browse/CurrentSearch")
+    CurrentSearch: () => import(/* webpackChunkName: "browser", webpackMode: "lazy" */"components/browse/CurrentSearch")
   },
   methods: {
     lnk(entry) {

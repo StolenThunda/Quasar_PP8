@@ -91,7 +91,6 @@
 
 <script>
 import ControlButtons from "components/base/ControlButtons.vue";
-import DynamicTab from "components/base/DynamicTab.vue";
 import DrawerToggle from "components/base/DrawerToggle.vue";
 import AuthButton from "components/base/AuthButton.vue";
 import LoginRegister from "src/components/auth/LoginRegister.vue";
@@ -99,7 +98,7 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "MainLayout",
   components: {
-    DynamicTab,
+    DynamicTab: () => import(/* webpackMode: "lazy", webpackPrefetch: true, webpackPreload: true */"components/base/DynamicTab.vue"),
     DrawerToggle,
     AuthButton,
     LoginRegister,
