@@ -9,7 +9,12 @@
         <div class="col text-h6" v-if="description" v-html="description" />
         <div class="text-caption" v-if="overview !== ''" v-html="overview" />
       </div>
-      <q-img class="col fit q-ma-sm rounded-borders" :src="image" :ratio="4/3" contain>
+      <q-img
+        class="col fit q-ma-sm rounded-borders"
+        :src="image"
+        :ratio="4 / 3"
+        contain
+      >
         <template v-slot:loading>
           <q-spinner-bars color="white" />
         </template>
@@ -30,7 +35,7 @@ import { mapState } from "vuex";
 export default {
   name: "PackageInfo",
   mounted() {
-    this.$store.commit('watch/RESET_PACKAGE')
+    this.$store.commit("watch/RESET_PACKAGE");
   },
   computed: {
     title() {

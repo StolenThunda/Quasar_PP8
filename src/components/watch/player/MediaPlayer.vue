@@ -1,8 +1,6 @@
 <template>
-  <div>
-    
-    <!-- <pan-zoom> -->
-    <vue-plyr ref="mediaPlayer">
+  <q-page-container class="media-container" >
+          <vue-plyr ref="mediaPlayer" class='vue-plyr-container'>
       <!-- Begin Audio Interface -->
       <video
         v-if="this.type == 'audio'"
@@ -39,17 +37,20 @@
         />
       </video>
       <!-- End Video Interface -->
+      
     </vue-plyr>
     <!-- </pan-zoom> -->
     <!-- <button is="google-cast-button" id="cast">Cast</button> -->
-    <player-controls :currentTime="ctime" >
+   
+    <!-- <pan-zoom> -->
+        <!-- <player-controls :currentTime="ctime" >
       <template #slider>
         <media-progress-slider
           :ctime="ctime"
         />
       </template>
-    </player-controls>
-  </div>
+    </player-controls> -->
+  </q-page-container>
 </template>
 
 <script>
@@ -119,12 +120,6 @@ export default {
     this.player.on("clear-loop", this.clearLoop);
     this.player.on("playing play pause", this.stateChange);
   },
-  components: {
-    "media-progress-slider": () =>
-        import(/* webpackChunkName: "watch-player" */"src/components/watch/player/MediaProgressSlider.vue"),
-    "player-controls": () =>
-      import(/* webpackChunkName: "watch-player" */"src/components/watch/player/PlayerControls.vue")
-  },
   watch: {
     looping() {
       console.log("looptoggle");
@@ -142,6 +137,9 @@ export default {
         message: this.looping ? "Loop Active" : "Loop Stopped",
         icon: this.loopIcon
       });
+    },
+    ctime() {
+      this.$root.$emit('ctime-update', this.ctime)
     }
   },
   computed: {
@@ -277,11 +275,14 @@ export default {
 <style>
 @import "https://cdn.plyr.io/3.6.2/plyr.css";
 
-.container {
+.media-container {
   position: relative;
   width: 100%;
-  height: 0;
-  /* padding-bottom: 39%; */
+  height: 100%;
+  
+}
+.vue-plyr-container {
+  padding-bottom: 39%;
 }
 
 .videoWrapper {

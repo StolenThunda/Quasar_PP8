@@ -1,9 +1,9 @@
 <template>
   <q-list id="progressSliderWrapper" dense>
-    <q-item>
+    <q-item v-if="activeLoop">
       <q-item-section></q-item-section>
       <q-item-section side>
-        <q-badge v-if="activeLoop" color="accent" transparent rounded>
+        <q-badge color="accent" transparent rounded>
           <span class="text-center">
             <span class="text-caption">
               Current Loop
@@ -16,7 +16,7 @@
           </span>
         </q-badge>
       </q-item-section>
-      <q-item-section></q-item-section>
+      <q-item-section></q-item-section> 
     </q-item>
     <q-item>
       <q-item-section

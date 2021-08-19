@@ -9,9 +9,11 @@
           shrink
           class="text-h6 text-weight-bolder absolute-center"
         >
-        <div
-          v-html="packageTitle"
-        />
+        <div class="q-mt-md" v-html="packageTitle" />
+           <div  v-if="activeSegment" class="col-12 q-px-xs bg-accent  text-center text-overline text-weight-bolder shadow-up-6 rounded-borders">
+            {{ activeSegment.segmentFullTitle }}
+          </div>
+       
       </q-toolbar-title>
         <q-space />
         <q-fab
@@ -56,11 +58,6 @@
         @click="toggleFullScreen"
       />
       <slot name="auth"></slot>
-    </q-toolbar>
-    <q-toolbar v-if="activeSegment"  inset>
-      <q-toolbar-title class="offset-3 col-6 bg-accent text-center text-overline text-weight-bolder shadow-up-6" >
-        {{ activeSegment.segmentFullTitle }}
-      </q-toolbar-title>
     </q-toolbar>
     <course-info v-show="visible" @closeInfo="toggleInfo" />
   </div>

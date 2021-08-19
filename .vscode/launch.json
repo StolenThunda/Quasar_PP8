@@ -5,7 +5,16 @@
         "request": "launch",
         "type": "vscode-edge-devtools.debug",
         "url": "http://localhost:3000",
+        "console": "integratedTerminal",
+        "webRoot": "${workspaceFolder}/src",
         "sourceMaps": true
+      },
+      {
+        "name": "Launch Edge",
+        "request": "launch",
+        "type": "pwa-msedge",
+        "url": "http://localhost:3000",
+        "webRoot": "${workspaceFolder}/src",
       },
       {
         "name": "Attach to Edge",
@@ -25,15 +34,15 @@
         "name": "Vue: Attach to Chrome",
         "port": 3000,
         "request": "attach",
-        "type": "chrome",
         "url": "http://localhost",
         "webRoot": "${workspaceFolder}/src",
+        "type": "devtools-for-chrome",
         "sourceMaps": true,
         "trace": "verbose"
 
       },
     {
-      "type": "chrome",
+      "type": "devtools-for-chrome",
       "request": "launch",
       "name": "Quasar App: chrome",
       "url": "http://localhost:3000",

@@ -70,12 +70,12 @@ export default {
     loadSegment(seg) {
       const id = seg.segmentID;
       const route = `/watch/${this.packID}/${id}`;
+      console.log('route', route)
       this.$store.commit("watch/SET_ACTIVE_SEGMENT", seg);
       this.$router.push({ path: `${route}` }).catch(err => {});
     },
     getSegIco(seg) {
       var ico = {};
-      // switch (seg.sources[0].type) {
       switch (this.ProPlayer.getSegmentClass(seg)) {
         case "audio":
           ico = {

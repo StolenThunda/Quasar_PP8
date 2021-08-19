@@ -1,6 +1,14 @@
 <template>
-  <q-layout view="hhh lpR lFr">
-     <!-- <q-layout view="hHh lpR lff"> -->
+<q-layout
+    style="height: 100vh"
+    class="shadow-2 rounded-borders"
+    view="hhh lpR lFr"
+    >
+  <!-- 
+    <q-layout 
+    view="hHh lpR lff"
+    view="hHh Lpr lff"
+  > -->
     <q-header >
       <watch-toolbar class="q-electron-drag">
         <template #toggle>
@@ -36,6 +44,17 @@
     <q-page-container>
       <router-view :key="$route.fullPath" />
     </q-page-container>
+    <q-footer>
+      <q-toolbar>
+           <player-controls :currentTime="currentTime" >
+      <template #slider>
+        <media-progress-slider
+          :ctime="currentTime"
+        />
+      </template>
+    </player-controls>
+      </q-toolbar>
+    </q-footer>
   </q-layout>
 </template>
 
@@ -48,9 +67,14 @@ export default {
   components: {
      DynamicTab: () => import(/* webpackMode: "lazy", webpackPrefetch: true, webpackPreload: true */"components/base/DynamicTab.vue"),
     WatchToolbar,
-    AuthButton
+    AuthButton,
+    "media-progress-slider": () =>
+        import(/* webpackChunkName: "watch-player" */"src/components/watch/player/MediaProgressSlider.vue"),
+    "player-controls": () =>
+      import(/* webpackChunkName: "watch-player" */"src/components/watch/player/PlayerControls.vue")
   },
   data: () => ({
+    currentTime: -1,
     leftDrawer: true,
     currentTab: null,
     favs: false,
@@ -80,6 +104,7 @@ export default {
     }
   },
   created() {
+    this.$root.$on("ctime-update", this.currentTimeUpdate);
     this.getPackageData();
     this.addSidebarTabs([
       {
@@ -100,7 +125,7 @@ export default {
     ]);
   },
   methods: {
-    
+    currentTimeUpdate(val) { this.currentTime = val; }, 
     showTab(tab) {
       this.currentTab = tab;
     },

@@ -69,11 +69,7 @@
       :offset="[18, 10]"
       v-if="showCurrent"
     >
-      <!-- <q-fab label="Current Filters" title="View Current Filters" glossy color="primary" direction="left">
-        <q-fab-action hide-label square> -->
       <current-search />
-      <!-- </q-fab-action>
-      </q-fab> -->
     </q-page-sticky>
   </div>
 </template>
