@@ -1,6 +1,6 @@
 <template>
   <q-list>
-    <template v-for="section in sections">
+    <template v-for="(section, id) in sections">
       <q-expansion-item
         group="somegroup"
         :key="section.sectionID"
@@ -8,7 +8,7 @@
         header-style="background-color:#464646; min-width: 250px;"
         style="max-width: 350px"
         expand-separator
-        default-opened
+        :default-opened="id == 0"
         switch-toggle-side
       >
         <template #header>

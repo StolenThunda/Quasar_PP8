@@ -78,7 +78,7 @@ export default {
 </script>
 
 <style>
-#mediaWrapper {
+/* #mediaWrapper {
   position: absolute;
   top: 2.75rem;
   left: 0;
@@ -100,7 +100,7 @@ export default {
 }
 
 .media-content-wrapper {
-  position: absolute;
+  /* position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -151,7 +151,7 @@ export default {
 /*****************************************
 *************  Video Page   ************
 *****************************************/
-
+/* 
 #mediaPanZoomWrapper {
   position: absolute;
   left: 0;
@@ -195,11 +195,11 @@ ul#transportButtonsList li {
   width: 25%;
   float: left;
   padding: 0.1rem;
-}
+} */
 /*****************************************
 *************   Player Timeline  ************
 *****************************************/
-
+/*
 #current-time,
 #time-left {
   margin-top: -2rem;
@@ -215,10 +215,11 @@ ul#transportButtonsList li {
   float: right;
   margin-right: 0.5rem;
 }
-
+*/
 /*****************************************
 *************   Transport  ************
 *****************************************/
+/*
 #loop-display-wrapper {
   float: left;
   width: 100%;
@@ -391,11 +392,11 @@ button.control-button:hover {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5dcc94', endColorstr='#02cc67',GradientType=0 );
   border-color: transparent;
 }
-
+*/
 /*****************************************
 *********   Progress And Looping  ********
 *****************************************/
-
+/*
 div#playhead {
   background: white;
   position: absolute;
@@ -443,7 +444,7 @@ div#playhead {
 /*****************************************
 *************   Chapter Markers  ************
 *****************************************/
-
+/*
 #chapters-wrapper {
   width: 100%;
   height: 100%;
@@ -455,10 +456,10 @@ div#playhead {
   width: 1px;
   height: 100%;
   border-left: 1px solid #555;
-}
+}*/
 /*****************************************
 *************   Settings Panel  ************
-*****************************************/
+/*
 #videoControlsMenu {
   line-height: 1rem;
   color: white;
@@ -569,5 +570,5 @@ div#playhead {
 
 .small-text-left {
   text-align: left;
-}
+} */
 </style>

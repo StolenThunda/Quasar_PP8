@@ -1,6 +1,7 @@
 <template>
-  <q-page-container class="media-container" >
-          <vue-plyr ref="mediaPlayer" class='vue-plyr-container'>
+  <q-card>
+    <q-card-section class="q-ma-none q-pa-none">
+          <vue-plyr ref="mediaPlayer">
       <!-- Begin Audio Interface -->
       <video
         v-if="this.type == 'audio'"
@@ -43,14 +44,9 @@
     <!-- <button is="google-cast-button" id="cast">Cast</button> -->
    
     <!-- <pan-zoom> -->
-        <!-- <player-controls :currentTime="ctime" >
-      <template #slider>
-        <media-progress-slider
-          :ctime="ctime"
-        />
-      </template>
-    </player-controls> -->
-  </q-page-container>
+    </q-card-section>
+
+  </q-card>
 </template>
 
 <script>
@@ -242,6 +238,7 @@ export default {
       } else {
         this.player.play();
       }
+      this.$root.$emit('toggle_header');
       this.$store.commit('watch/TOGGLE_PLAYING', this.player.playing)
       console.log("isisPlaying?: ", this.isPlaying);
     },
@@ -275,15 +272,9 @@ export default {
 <style>
 @import "https://cdn.plyr.io/3.6.2/plyr.css";
 
-.media-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  
-}
-.vue-plyr-container {
-  padding-bottom: 39%;
-}
+/* .media-container { 
+ padding-bottom: 39% !important; 
+ } */
 
 .videoWrapper {
   position: relative;

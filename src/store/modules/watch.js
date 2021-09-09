@@ -224,11 +224,12 @@ export default {
       commit("TOGGLE_PLAYING", false);
     },
     setLoopStart({ commit, state }, time) {
-      console.log("start time", time);
+      console.log( "start time", time );
+      if ( time == state.playerSettings.loop_start ) return;
       const current = time; //? time : -1;
       console.log("set start:", current);
       commit("SET_LOOP_START", current);
-      if (state.playerSettings.loop_stop <= current)
+      if (state.playerSettings.loop_stop < current)
         commit("SET_LOOP_STOP", -1);
     },
     setLoopStop({ commit, state }, time) {
