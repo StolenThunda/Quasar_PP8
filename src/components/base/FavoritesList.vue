@@ -61,11 +61,6 @@ export default {
   },
   methods: {
     link(fav) {
-      // // this.fetchPackage(fav.id)
-      // this.fetchPackage(fav.id).then(() =>
-      // this.fetchDefaultMedia())
-      // return false
-      // this.setCurrentSegmentSetup(fav.id).then(id => {
       if (fav.src !== "Imported") {
         this.$router.push(`/watch/${fav.id}`);
       } else {
