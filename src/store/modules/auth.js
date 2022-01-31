@@ -43,7 +43,7 @@ export default {
         .signInWithEmailAndPassword(payload.email, payload.password)
         .then(userCredential => {
           // Signed in
-          var user = userCredential.user;
+          let _user = userCredential.user;
           // console.log("Login Successful", user);
           dispatch("setWithExpiry", "loggedIn");
           dismiss();

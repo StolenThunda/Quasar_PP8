@@ -7,7 +7,6 @@
           v-model="formKeywords"
           label="Keyword Search"
           name="keywords"
-          counter
           dense
         >
           <template v-slot:prepend>
@@ -31,9 +30,9 @@
           v-for="criterion in this.search.criteria"
           :set="(name = criterion.sectionId)"
           :key="criterion.sectionId"
-          :label="name"
-          :group="name"
-          :ref="name"
+          :label="criterion.sectionId"
+          :group="criterion.sectionId"
+          :ref="criterion.sectionId"
           class="text-capitalize text-body2 section-header"
           header-style="background-color:#464646"
           expand-icon-toggle
@@ -43,20 +42,12 @@
           @hide="filterCategory = ''"
         >
           <template #header>
-            <!-- <q-item-section avatar>
-              <q-btn
-                flat
-                icon="mdi-filter"
-                @click="toggleCategoryFilter(name)"
-              />
-            </q-item-section> -->
             <q-item-section>
               {{ criterion.sectionId }}
             </q-item-section>
           </template>
-          <!-- v-show="show(criterion.sectionId)" -->
           <div>
-            <q-select
+            <!-- <q-select
               outlined
               standout
               hide-dropdown-icon
@@ -80,7 +71,7 @@
                   </q-item-section>
                 </q-item>
               </template>
-            </q-select>
+            </q-select> -->
           </div>
 
           <q-card>
@@ -138,13 +129,13 @@ export default {
     Object.keys(this.search.criteria).forEach(k => {
       console.log("key", k);
       const options = this.search.criteria[k].chips.map(a => a.text);
-      this.showSearch[k] = { show: false, filterText: "", options: options };
+      this.showSearch[k] = { show: true, filterText: "", options: options };
     });
   },
   computed: {
     ...mapState(["filterStatus", "search", "keywords"]),
     show(name) {
-      console.log(name);
+      // console.log(name);
       return this.showSearch[name].show || false;
     }
   },
@@ -186,7 +177,7 @@ export default {
   }
 };
 </script>
-
+<!-- 
 <style lang="scss" scoped>
 .truncate-chip-labels > .q-chip {
   max-width: 50px;
@@ -194,4 +185,4 @@ export default {
 .filtered {
   display: none;
 }
-</style>
+</style> -->
