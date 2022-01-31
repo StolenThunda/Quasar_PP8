@@ -97,12 +97,12 @@ export default {
     this.$root.$on("zoom", this.toggleZoom);
     this.$root.$on("resetZoom", this.resetZoom);
     this.$root.$on("clear-loop", this.clearLoop);
-    // this.unsubscribe = this.$store.subscribe((mutation, state) => {
-    //   if (mutation.type === "watch/SET_SEEK_TIME") {
-    //     this.seekTo(state.watch.seekToTime);
-    //     this.player?.play();
-    //   }
-    // });
+    this.unsubscribe = this.$store.subscribe((mutation, state) => {
+      if (mutation.type === "watch/SET_SEEK_TIME") {
+        this.seekTo(state.watch.seekToTime);
+        this.player?.play();
+      }
+    });
   },
   beforeDestroy() {
     this.unsubscribe();
@@ -210,7 +210,7 @@ export default {
       this.$store.commit('watch/SET_SEGMENT_DURATION',  this.player.duration);
       this.ctime = this.player.currentTime;
       if (this.looping) {
-        if (this.ctime >= this.stop) {
+        if (this.ctime >= this.stop && this.stop > 0) {
           this.seekTo(this.start);
           this.showMessage({
             message: "Loop Rewound",

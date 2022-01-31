@@ -1,23 +1,23 @@
 <template>
   <q-list id="progressSliderWrapper" dense>
-    <q-item v-if="activeLoop">
+    <!-- <q-item v-if="activeLoop">
       <q-item-section></q-item-section>
       <q-item-section side>
         <q-badge color="accent" transparent rounded>
           <span class="text-center">
             <span class="text-caption">
-              Current Loop
+              {{ loopMessage }}
             </span>
             <br />
-            <span class="text-weight-bolder">
+            <span class="text-weight-lighter">
               Start: {{ minTime(Math.floor(getLoopStart)) }} to End:
               {{ maxTime(Math.floor(getLoopStop)) }}
             </span>
           </span>
         </q-badge>
       </q-item-section>
-      <q-item-section></q-item-section> 
-    </q-item>
+      <q-item-section></q-item-section>
+    </q-item> -->
     <q-item>
       <q-item-section
         id="current-time"
@@ -27,8 +27,20 @@
         {{ elapsedTime }}
       </q-item-section>
       <q-item-section id="progressSlider">
-        <!-- v-if="!activeLoop" -->
         <q-slider
+          v-if="!activeLoop"
+          dense
+          label
+          v-model="progress"
+          :color="trackColor"
+          :min="0"
+          :max="duration"
+          :label-value="elapsedTime"
+          @change="sliderChanged"
+          @pan="sliderSliding"
+        />
+        <q-slider
+          v-else
           dense
           label
           v-model="progress"
@@ -41,20 +53,6 @@
           @change="sliderChanged"
           @pan="sliderSliding"
         />
-        <!-- <div > -->
-        <!-- <q-range
-          id="loop-region"
-          v-else
-          color="accent"
-          v-model="activeLoop"
-          dense
-          label
-          :left-label-value="minTime(activeLoop.min)"
-          :right-label-value="maxTime(activeLoop.max)"
-          readonly
-        /> -->
-        <!-- </div> -->
-        <!-- <div id="chapters-wrapper"></div> -->
       </q-item-section>
       <q-item-section
         id="time-left"
@@ -83,19 +81,25 @@ export default {
   computed: {
     ...mapState("watch", ["playerSettings"]),
     ...mapGetters("watch", ["isValidLoop", "getLoopStart", "getLoopStop"]),
+
+    loopMessage() {
+      return this.playerSettings.looping ? "Currently Looping:" : "Loop Set";
+    },
     trackColor() {
-      return !this.activeLoop ? 'secondary' : this.playerSettings.playing ? 'accent' : 'secondary'
+      return !this.activeLoop
+        ? "secondary"
+        : this.playerSettings.playing && this.playerSettings.looping
+        ? "accent"
+        : "secondary";
     },
     duration() {
       return this.playerSettings.duration;
     },
-    getALMin(){
-      return this.activeLoop ? this.activeLoop.min :0
+    getALMin() {
+      return this.activeLoop ? this.activeLoop.min : 0;
     },
-    getALMax(){
-      
-      return this.activeLoop ? this.activeLoop.max : 0
-    
+    getALMax() {
+      return this.activeLoop ? this.activeLoop.max : 0;
     },
     activeLoop() {
       return this.isValidLoop
