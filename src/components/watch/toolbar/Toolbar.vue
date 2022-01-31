@@ -10,7 +10,7 @@
           class="text-h6 text-weight-bolder absolute-center"
         >
         <div class="q-mt-md" v-html="packageTitle" />
-           <div  v-if="activeSegment" class="col-12 q-px-xs bg-accent  text-center text-overline text-weight-bolder shadow-up-6 rounded-borders">
+           <div  v-if="activeSegment" class="q-ma-none q-pa-none bg-accent text-center text-overline text-weight-bolder shadow-up-6 rounded-borders">
             {{ activeSegment.segmentFullTitle }}
           </div>
        

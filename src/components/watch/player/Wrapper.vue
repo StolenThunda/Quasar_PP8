@@ -1,6 +1,6 @@
 <template>
   <q-page class="media-container">
-    Type: {{ mediaType }}
+    <!-- Type: {{ mediaType }} -->
     <div
       v-if="mediaType === 'html'"
       v-html="ProPlayer.theSegment.getHTMLContent().replaceAll('h2', 'h5')"

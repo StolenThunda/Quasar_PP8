@@ -27,20 +27,22 @@
         {{ elapsedTime }}
       </q-item-section>
       <q-item-section id="progressSlider">
+        <!-- v-if="!activeLoop" -->
         <q-slider
           dense
           label
-          v-if="!activeLoop"
           v-model="progress"
-          color="secondary"
-          :min="ctime"
+          :color="trackColor"
+          :min="0"
+          :inner-min="getLoopStart"
+          :inner-max="getLoopStop"
           :max="duration"
           :label-value="elapsedTime"
           @change="sliderChanged"
           @pan="sliderSliding"
         />
         <!-- <div > -->
-        <q-range
+        <!-- <q-range
           id="loop-region"
           v-else
           color="accent"
@@ -50,7 +52,7 @@
           :left-label-value="minTime(activeLoop.min)"
           :right-label-value="maxTime(activeLoop.max)"
           readonly
-        />
+        /> -->
         <!-- </div> -->
         <!-- <div id="chapters-wrapper"></div> -->
       </q-item-section>
@@ -81,10 +83,20 @@ export default {
   computed: {
     ...mapState("watch", ["playerSettings"]),
     ...mapGetters("watch", ["isValidLoop", "getLoopStart", "getLoopStop"]),
+    trackColor() {
+      return !this.activeLoop ? 'secondary' : this.playerSettings.playing ? 'accent' : 'secondary'
+    },
     duration() {
       return this.playerSettings.duration;
     },
-
+    getALMin(){
+      return this.activeLoop ? this.activeLoop.min :0
+    },
+    getALMax(){
+      
+      return this.activeLoop ? this.activeLoop.max : 0
+    
+    },
     activeLoop() {
       return this.isValidLoop
         ? this.playerSettings.looping

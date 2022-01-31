@@ -97,12 +97,12 @@ export default {
     this.$root.$on("zoom", this.toggleZoom);
     this.$root.$on("resetZoom", this.resetZoom);
     this.$root.$on("clear-loop", this.clearLoop);
-    this.unsubscribe = this.$store.subscribe((mutation, state) => {
-      if (mutation.type === "watch/SET_SEEK_TIME") {
-        this.seekTo(state.watch.seekToTime);
-        this.player?.play();
-      }
-    });
+    // this.unsubscribe = this.$store.subscribe((mutation, state) => {
+    //   if (mutation.type === "watch/SET_SEEK_TIME") {
+    //     this.seekTo(state.watch.seekToTime);
+    //     this.player?.play();
+    //   }
+    // });
   },
   beforeDestroy() {
     this.unsubscribe();
