@@ -1,22 +1,22 @@
 <template>
   <div>
-    <q-list v-if="chapterArray.length" bordered separator dense>
-      <template v-for="[index, loop] in chapterArray.entries()">
+    <q-list v-if="chapterArray.length"  bordered separator dense
+      class="q-mr-xs">
+      <template v-for="[index, chapter] in chapterArray.entries()">
         <q-item
           clickable
           v-ripple
           active-class="text-orange"
-          :id="getItemName(loop)"
-          :key="getItemName(loop) + collectionID + componentKey + index"
-          @click="loopSelected(index)"
+          :id="getItemName(chapter)"
+          :key="getItemName(chapter) + collectionID + componentKey + index"
+          @click.prevent="setSeekToTime(chapter[1])"
         >
-          <!-- @click="setSeekToTime(loop[1])" -->
           <q-item-section avatar>
             <q-icon name="mdi-bookmark" />
           </q-item-section>
           <q-item-section class="text-center">
             <q-item-label>
-              {{ loop[0] }}
+              {{ chapter[0] }}
             </q-item-label>
           </q-item-section>
         </q-item>
@@ -47,8 +47,8 @@ export default {
   data: () => ({ activeList: {}, componentKey: 0 }),
   created() {
     if (this.chapterArray.length) {
-      this.chapterArray.map(loop => {
-        const key = this.getActiveItemName(loop);
+      this.chapterArray.map(chapter => {
+        const key = this.getActiveItemName(chapter);
         this.activeList[key] = false;
         Object.assign({}, this, this.activeList);
       });
@@ -61,6 +61,7 @@ export default {
         nListIndex: 0,
         nLoopIndex: idx
       };
+      console.log('chap selection', selection)
       this.setLoopSelected(selection);
     },
     getActiveItemName(val) {

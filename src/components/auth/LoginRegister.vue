@@ -49,7 +49,6 @@
 <script>
 import { mapActions } from "vuex";
 export default {
-  // name: 'ComponentName',
   props: ['tab'],
   data: () => ({
     formData: {

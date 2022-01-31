@@ -17,7 +17,6 @@
         <q-list class="q-py-sm rounded-borders" bordered dense>
           <template v-for="fav in favs[item]">
             <q-item :key="fav.name" class="q-mx-none ">
-              <!-- <pre>{{fav}}</pre> -->
               <q-item-section avatar>
                 <q-btn
                   icon="play_circle_filled"
@@ -62,11 +61,6 @@ export default {
   },
   methods: {
     link(fav) {
-      // // this.fetchPackage(fav.id)
-      // this.fetchPackage(fav.id).then(() =>
-      // this.fetchDefaultMedia())
-      // return false
-      // this.setCurrentSegmentSetup(fav.id).then(id => {
       if (fav.src !== "Imported") {
         this.$router.push(`/watch/${fav.id}`);
       } else {

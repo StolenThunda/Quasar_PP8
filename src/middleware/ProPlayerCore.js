@@ -409,13 +409,13 @@ export class ProPlayer {
     }
   }
   waitForSegmentData() {
-    if (this.bSegmentDataLoadingFinished) {
+    // if (this.bSegmentDataLoadingFinished) {
       this.processOnlyNewSegmentData();
-    } else {
-      setTimeout(function() {
-        thePlayer.waitForSegmentData();
-      }, 250);
-    }
+    // } else {
+    //   setTimeout(function() {
+    //     thePlayer.waitForSegmentData();
+    //   }, 250);
+    // }
   }
   waitForPackageAndSegmentData() {
     if (this.bPackageDataLoadingFinished && this.bSegmentDataLoadingFinished) {
@@ -506,7 +506,7 @@ export class ProPlayer {
     // this.cleanUpLoading();
     // this.enableSidebarTabs();
     this.updateLocalHistory();
-    this.updateURL();
+    // this.updateURL();
     // this.reattachKeyboardEvents();
   }
   processOnlyNewSegmentData() {
@@ -515,20 +515,20 @@ export class ProPlayer {
     this.pushSelectedSegmentState();
     // this.pushSegmentChapters();
     this.extractSegmentLoops();
-    this.pushSegmentTitle();
-    this.pushSegmentDownloadsMenu();
-    this.pushFullscreenButtonState();
-    this.pushInfoPaneData();
-    this.enableSidebarTabs();
-    this.mobileSidebarCheck();
+    // this.pushSegmentTitle();
+    // this.pushSegmentDownloadsMenu();
+    // this.pushFullscreenButtonState();
+    // this.pushInfoPaneData();
+    // this.enableSidebarTabs();
+    // this.mobileSidebarCheck();
     this.updateLocalHistory();
-    this.cleanUpLoading();
+    // this.cleanUpLoading();
     this.commentsManager.setNewSegmentID(this.theSegment.getEntryID());
-    this.commentsManager.reloadComments();
+    // this.commentsManager.reloadComments();
     console.log('allowUserData')
     if (this.theSegment.allowUserData()) {
       this.userDataManager.setNewSegmentID(this.theSegment.getEntryID());
-      this.userDataManager.loadUserDataForm();
+      // this.userDataManager.loadUserDataForm();
     }
   }
   processBothNewPackageAndSegmentData() {
@@ -569,9 +569,9 @@ export class ProPlayer {
       // this.userDataManager.loadUserDataForm();
     }
     this.b_LoadingIsFinished = true;
-    if (this.b_UpdateURL) {
-      this.updateURL();
-    }
+    // if (this.b_UpdateURL) {
+    //   this.updateURL();
+    // }
 
     // this.cleanUpLoading();
     // this.enableSidebarTabs();
@@ -1686,7 +1686,7 @@ export class Engine {
       this.initializeVolumeSlider();
       this.initializeSpeedSlider();
       this.initializeZoomSlider();
-      this.initializePanZoom();
+      // this.initializePanZoom();
       //this.initializePlaybackSpeeds();
       this.createResolutionRadioButtons();
       //this.createPlaybackRateButtons();

@@ -1,41 +1,38 @@
 <template>
   <div v-if="ProPlayer.theSegment">
-    <loop-list v-if="TXBALoops" v-bind="loopData" />
-    <member-loop-list v-else v-bind="loopData" />
+    <loop-list v-bind="loopData" />
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import LoopList from "./LoopList.vue";
-import MemberLoopList  from "./MemberLoopList.vue";
+import LoopList from "components/watch/sidebar/loopTab/LoopList";
 export default {
   name: "ReadOnlyLoops",
-  props: {
-    TXBALoops: {
-      type: Boolean,
-      default: false
-    }
+  components: { LoopList },
+  mounted() {
+    this.ProPlayer.loopsManager.createNewCollection(
+      "loopList",
+      "system",
+      false
+    );
+    this.ProPlayer.loopsManager.addListToCollectionFromArray(
+      this.ProPlayer.theSegment.getLoopsArray(),
+      "system"
+    );
   },
-  components: { LoopList, MemberLoopList },
   computed: {
     loopData() {
-      const msg = this.TXBALoops
-        ? "This item does not have any instant loops."
-        : "There are no community loops for this item.";
-      const loops = this.TXBALoops
-        ? this.ProPlayer.theSegment.getLoopsArray() || []
-        : this.userLoops?.memberLoopCollections
-        ? this.userLoops.memberLoopCollections.filter((objLoop) => objLoop.memberLoops.length) // no empty list
-        : [];
-      // console.log("setting loopdata", loops);
+      const msg = "This item does not have any instant loops.";
+      const loops = this.ProPlayer.theSegment.getLoopsArray() || [];
+      console.info("setting loopdata", loops);
       return {
         altMessage: msg,
         loopArray: loops,
         collectionID: this.TXBALoops ? 0 : 2
       };
     },
-    ...mapState("watch", ["ProPlayer", "userLoops"])
+    ...mapState("watch", ["ProPlayer"])
   }
 };
 </script>

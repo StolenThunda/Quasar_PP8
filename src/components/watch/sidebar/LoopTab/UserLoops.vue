@@ -32,6 +32,7 @@
           class=" col"
           :color="saveEnabled ? 'negative' : 'primary'"
           :disable="!saveEnabled"
+          @click="prompt"
         />
         </div>
       <!-- </div> -->
@@ -55,7 +56,7 @@ export default {
     LoopList
   },
   created() {
-    this.$root.$on("valid-loop", this.toggleAdd);
+    // this.$root.$on("valid-loop", this.toggleAdd);
   },
   computed: {
     loopData() {
@@ -64,12 +65,30 @@ export default {
         loopsArray: this.ProPlayer.theSegment.getLoopsArray()
       };
     },
-    ...mapState("watch", ["ProPlayer"])
+    ...mapState("watch", ["ProPlayer", "loopStart", "loopStop"])
   },
   methods: {
     toggleAdd({status}) { 
       console.log('toggleAdd', status)
-      this.addEnabled = status }
+      this.addEnabled = status },
+      prompt () {
+      this.$q.dialog({
+        title: 'Loop Title?',
+        message: 'Enter loop name',
+        prompt: {
+          model: '',
+          type: 'text' // optional
+        },
+        cancel: true,
+        persistent: true
+      }).onOk(data => {
+        console.log('>>>> OK, received', data)
+      }).onCancel(() => {
+        console.log('>>>> Cancel')
+      }).onDismiss(() => {
+        console.log('I am triggered on both OK and Cancel')
+      })
+    }
   }
 };
 </script>

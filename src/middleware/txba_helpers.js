@@ -11,7 +11,7 @@ export default class TXBA_Utilities {
     this.filter_slug = "--ajax-browser-filters";
     this.package_slug = "--ajax-get-package-info";
     this.search_slug = "--ajax-browser-search-entries";
-    this.user_loops_slug = "--ajax-get-segment-user-loops";
+    this.member_loops_slug = "--ajax-get-segment-user-loops";
     this.segment_slug = "--ajax-get-segment-info";
     this.load_media_slug = "--ajax-load-media";
     this.load_vimeo_slug = "/--ajax-load-media/vimeo/";
@@ -54,7 +54,7 @@ export default class TXBA_Utilities {
       headers: { "Content-Type": "application/x-www-form-urlencoded" }
     })
       .then(response => {
-        console.log("response", response);
+        // console.log("response", response);
         return response;
       })
       .catch(function(response) {
@@ -64,17 +64,18 @@ export default class TXBA_Utilities {
   }
   async getFavs(id) {
     let url = this.favorites_slug + "/" + id ? id : "";
-    const data = await this.getAsyncData( url );
-    return this.parseFavoriteHtml( data );
+    return this.getAsyncData(url, this.parseFavoriteHtml);
   }
 
-  async getNotification() {
-    const data = await this.getAsyncData( this.notification_slug );
-    return this.parseNotificationHtml( data );
+  getNotification() {
+    return this.getAsyncData(
+      this.notification_slug,
+      this.parseNotificationHtml
+    );
   }
 
-  getUserLoops(segID) {
-    return this.getAsyncData(`${this.user_loops_slug}/${segID}`);
+  getMemberLoops(segID) {
+    return this.getAsyncData(`${this.member_loops_slug}/${segID}`);
   }
 
   getUserSegment(segID) {
@@ -82,8 +83,9 @@ export default class TXBA_Utilities {
   }
 
   async getDefaultSearchEntries() {
-    return this.getAsyncData(this.default_entries_slug).then(data =>
-      this.parseSearchResults(data)
+    return this.getAsyncData(
+      this.default_entries_slug,
+      this.parseSearchResults
     );
   }
 
@@ -100,9 +102,7 @@ export default class TXBA_Utilities {
     return this.getAsyncData(slug).then(data => this.parseSearchResults(data));
   }
   async getSearchFiltersByCategory(code) {
-    return this.getAsyncData(`${this.filter_slug}/${code}`).then(data =>
-      this.parseCriteria(data)
-    );
+    return this.getAsyncData(`${this.filter_slug}/${code}`, this.parseCriteria);
   }
 
   async getPackage(ID) {
@@ -118,52 +118,41 @@ export default class TXBA_Utilities {
   }
 
   async getSegment(ID) {
-    let slug = `${this.segment_slug}/${ID}`
+    let slug = `${this.segment_slug}/${ID}`;
     // console.log('getSeg', slug)
     return this.getAsyncData(slug);
   }
 
   async getComments(packageID, segmentID) {
-    const req = `${this.load_comments_slug}/?package_id=${packageID}&segment_id=${segmentID}&author=no`;
-    const finalComments = this.parseCommentHtml(this.getCommentString(1));
-    // const asyncComments = await this.getAsyncData(req)
-    // .then(data => this.parseCommentHtml(data))
-    // .then(data => {
-    //   console.log("asyncComm", data)
-    //   return data
-    // }
-    // );
-    return finalComments;
+    const slug = `${this.load_comments_slug}/?package_id=${packageID}&segment_id=${segmentID}&author=no`;
+    return this.getAsyncData(slug, this.parseCommentHtml);
+    return this.parseCommentHtml(this.getCommentString(1));
   }
 
   async loadMedia(slug, info) {
-    const html = await this.getAsyncData( `${slug}` );  
-    const $ = cheerio.load( html );
-    const text = $( "script" ).html();
+    const html = await this.getAsyncData(`${slug}`);
+    const $ = cheerio.load(html);
+    const text = $("script").html();
     // return html
-    const matchX = text.match( /var videoData = (.*);/ );
-    if (!matchX) return info
+    const matchX = text.match(/var videoData = (.*);/);
+    if (!matchX) return info;
     let strVidData = matchX[1];
     // replace single with double quotes
-    strVidData = strVidData.replace( /'/g, '"' );
+    strVidData = strVidData.replace(/'/g, '"');
     //match any variables (alphanumeric) that end with a colon :, but will ingore any matches that are found between quotes (i.e. data string values)
-    strVidData = strVidData.replace( /([^"]+)|("[^"]+")/g, function (
-      $0,
-      $1,
-      $2
-    ) {
-      if ( $1 ) {
+    strVidData = strVidData.replace(/([^"]+)|("[^"]+")/g, function($0, $1, $2) {
+      if ($1) {
         // Replace property names with quotes
-        return $1.replace( /([a-zA-Z0-9]+?):/g, '"$1":' );
+        return $1.replace(/([a-zA-Z0-9]+?):/g, '"$1":');
       } else {
         return $2;
       }
-    } );
-    strVidData = strVidData.replace( "},]", "}]" );
-    console.dir("loadingMedia", JSON.parse(strVidData), info);
-    var objReturn = JSON.parse( strVidData );
-    // if (typeof(info.data) !== 'undefined') objReturn = Object.assign({}, info, objReturn, info) 
-    return objReturn
+    });
+    strVidData = strVidData.replace("},]", "}]");
+    // console.dir("loadingMedia", JSON.parse(strVidData), info);
+    var objReturn = JSON.parse(strVidData);
+    // if (typeof(info.data) !== 'undefined') objReturn = Object.assign({}, info, objReturn, info)
+    return objReturn;
   }
   parseCommentHtml(strComments, lvl = null) {
     const $ = cheerio.load(strComments);
@@ -350,7 +339,7 @@ export default class TXBA_Utilities {
             type: "soundslice"
           }
         ],
-        color: "bluet"
+        color: "blue"
       };
     if (this.objectHaveKeyLike(seg, "PDF"))
       type = {
@@ -1561,7 +1550,7 @@ export default class TXBA_Utilities {
     const mockHtml = $(".accordion-title");
     return mockHtml;
   }
-  getCommentString(example) {
+  getCommentString(version) {
     var strComments = "";
     const staticWithoutComments = `<div id="add-cmt-wrapper" class="sidebar-controls-wrapper">
   <div class="row tight">
@@ -3023,7 +3012,7 @@ Drop me a note when u have a moment. Question about billing. No rush.</p>
   
 </ul>
 `;
-    switch (example) {
+    switch (version) {
       case 1:
       case true:
         strComments = staticWithComments;

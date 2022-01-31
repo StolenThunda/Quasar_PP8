@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :id="componentKey">
     <q-tabs v-model="selectedTab" inline-label>
       <q-tab
         v-for="tab in myTabs"
@@ -8,9 +8,6 @@
         :label="tab.iconOnly ? '' : tab.name"
         :icon="tab.labelOnly  ? '' : tab.icon"
         @click.prevent="selectedTab = tab.name"
-        inline-label
-        outside-arrows
-        mobile-arrows
       >
         <q-menu v-if="tab.menu">
           <component :is="tab.menu"></component>
@@ -19,10 +16,6 @@
     </q-tabs>
 
     <q-tab-panels
-      animated
-      transition-prev="scale"
-      transition-next="scale"
-      keep-alive
       v-model="selectedTab"
     >
       <q-tab-panel
@@ -31,7 +24,6 @@
         :key="tab.name"
         :name="tab.name"
       >
-      <!-- {{ tab.props ? tab.props : ''}} -->
         <component :is="tab.cmp" v-bind="tab.props"></component>
       </q-tab-panel>
     </q-tab-panels>
@@ -42,8 +34,9 @@
 export default {
   name: "DynamicTabs",
   data: () => ({
+    componentKey: 0,
     selectedTab: null,
-      myTabs: []
+      myTabs: [], 
   }),
   props: {
     tabList: {
@@ -54,6 +47,17 @@ export default {
   mounted() {
     this.myTabs = this.sortedTabs(this.tabList);
   },
+  watch: {
+    tabList: {
+      handler: function(val, old) {
+        // console.log('val', val)
+        // console.log('old', old)
+        this.getFirst();
+        this.componentKey++
+      },
+      deep: true
+    }
+  }, 
   methods: {
     sortedTabs(list) {
       const tabOrder = [
@@ -79,7 +83,7 @@ export default {
       const firstName = list[0]?.name || 0;
       // console.log(`Loading Tab: ${firstName} of ${JSON.stringify(list)}`)
       this.selectedTab = typeof list[0]?.name === "undefined" ? "" : firstName;
-      // console.log(`Selected Sidebar Tab: ${this.selectedTab}`)
+      console.log(`Selected Sidebar Tab: ${this.selectedTab}`)
     }
   }
 };

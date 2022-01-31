@@ -10,6 +10,7 @@ export const utilities = {
   } ),
   methods: {
     secondsToMinutes ( sec = 0 ) {
+      sec = (typeof sec !== NaN) ? sec : 0
       sec = Math.round( Number( sec ) );
       var hours = Math.floor( sec / 3600 );
       hours >= 1 ? ( sec = sec - hours * 3600 ) : ( hours = "00" );
@@ -24,9 +25,9 @@ export const utilities = {
     },
     showMessage ( objOptions ) {
       const defaults = {
-        group: false,
         message: "",
         timeout: 800,
+        group: 'arbitrary-group-name',
         position: "top",
         icon: "mdi-information-outline",
         classes: "glossy",
