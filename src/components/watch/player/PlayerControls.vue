@@ -64,21 +64,27 @@
         </div>
       </q-btn>
 
+        <!-- icon="mdi-autorenew" -->
       <q-btn-dropdown
-        id="looping-toggle"
+        class="transport-button col"
         split
+        id="looping-toggle"
         :disable-dropdown="!isValidLoop"
         title="Begin/End Looping."
-        class="transport-button col"
         :color="!isValidLoop ? 'primary' : 'green'"
         :disable="!isValidLoop"
-        icon="mdi-autorenew"
-        :class="{ rotate: looping }"
         @click="
           $store.commit('watch/TOGGLE_LOOPING');
           $root.$emit('togglePlay');
         "
       >
+      <template #label>
+        <q-icon 
+          name="mdi-autorenew" 
+        :class=" looping ? 'rotate': ''"
+        />
+      </template>
+      {{ this.looping }}
         <q-list>
           <q-item v-if="isValidLoop" class="bg-accent">
              <q-item-section avatar>
@@ -170,17 +176,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-i.mdi-autorenew.rotate {
+.rotate {
   display: inline-block !important;
-  animation: rotation 2s infinite linear !important;
+  animation: rotation 10s infinite linear !important;
 }
-
 @keyframes rotation {
   50% {
-    transform: rotate(360deg);
+    transform: rotate(720deg);
   }
   100% {
-    transform: rotate(0deg);
+    transform: rotate(-720deg);
   }
 }
 </style>
