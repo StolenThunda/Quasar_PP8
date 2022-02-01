@@ -232,14 +232,14 @@ export default {
       this.seekTo(0);
     },
     togglePlay() {
-      if (!this.player) return;
-      if (this.player.playing) {
-        this.player.pause();
+      // if (!this.player) return;
+      if (this.player?.playing) {
+        this.player?.pause();
       } else {
-        this.player.play();
+        this.player?.play();
       }
       this.$root.$emit('toggle_header');
-      this.$store.commit('watch/TOGGLE_PLAYING', this.player.playing)
+      this.$store.commit('watch/TOGGLE_PLAYING', this.player?.playing)
       console.log("isisPlaying?: ", this.isPlaying);
     },
     setloopStart(time) {

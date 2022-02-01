@@ -64,21 +64,27 @@
         </div>
       </q-btn>
 
+        <!-- icon="mdi-autorenew" -->
       <q-btn-dropdown
-        id="looping-toggle"
+        class="transport-button col"
         split
+        id="looping-toggle"
         :disable-dropdown="!isValidLoop"
         title="Begin/End Looping."
-        class="transport-button col"
         :color="!isValidLoop ? 'primary' : 'green'"
         :disable="!isValidLoop"
-        icon="mdi-autorenew"
-        :class="{ rotate: looping }"
         @click="
           $store.commit('watch/TOGGLE_LOOPING');
           $root.$emit('togglePlay');
         "
       >
+      <template #label>
+        <q-icon 
+          name="mdi-autorenew" 
+        :class="{rotate: rotating}"
+        /> {{ showLoopMessage }}
+      </template>
+      {{ this.looping }}
         <q-list>
           <q-item v-if="isValidLoop" class="bg-accent">
              <q-item-section avatar>
@@ -97,7 +103,7 @@
             clickable
             v-close-popup
             @click="
-              $store.dispatch('watch/clearLoop'), $root.$emit('togglePlay')
+              $store.dispatch('watch/clearLoop')
             "
           >
             <q-item-section avatar>
@@ -132,12 +138,6 @@ export default {
       )
   },
   props: ["currentTime"],
-  data: () => ({
-    objLoopSet: null
-  }),
-  created() {
-    this.$root.$on("loop-set", this.loopSet);
-  },
   computed: {
     ...mapState("watch", {
       start: state => state.playerSettings.loop_start,
@@ -149,13 +149,16 @@ export default {
     getLoopStopTime(){ return this.secondsToMinutes(Math.floor(this.getLoopStop))},
     getLoopStartTime(){ return this.secondsToMinutes(Math.floor(this.getLoopStart))},
     showLoopMessage(){
-      return !this.isValidLoop ? 'No Loop Set' : this.looping ? 'Currently Looping:': 'Loop Set'
+      return !this.isValidLoop ? 'No Loop Set' : this.looping ? 'Currently Looping': 'Loop Set'
     },
     isStartSet() {
       return this.start > -1 ? "green" : "primary";
     },
     isStopSet() {
       return this.stop > 1 ? "green" : "primary";
+    },
+    rotating() {
+      return this.looping && this.isValidLoop
     }
   },
   methods: {
@@ -170,17 +173,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-i.mdi-autorenew.rotate {
+.rotate {
   display: inline-block !important;
-  animation: rotation 2s infinite linear !important;
+  animation: rotation 10s infinite linear !important;
 }
-
 @keyframes rotation {
   50% {
-    transform: rotate(360deg);
+    transform: rotate(720deg);
   }
   100% {
-    transform: rotate(0deg);
+    transform: rotate(-720deg);
   }
 }
 </style>
