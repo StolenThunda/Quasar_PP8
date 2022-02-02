@@ -16,10 +16,11 @@ if (process.env.PROD) {
 
 let mainWindow
 
-function createWindow () {
+async function createWindow () {
   /**
    * Initial window options
    */
+ 
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 600,
