@@ -1,9 +1,9 @@
 <template>
   <q-card v-model="ProPlayer.thePackage" class=" q-pa-md">
-    <div
+    <!-- <div
       class="col-12 text-h4 text-center text-weight-bolder q-py-md"
       v-html="title"
-    />
+    /> -->
     <div class="row item-start q-px-xl">
       <div class="col text-caption q-pa-md">
         <div class="col text-h6" v-if="description" v-html="description" />

@@ -64,27 +64,45 @@
         </div>
       </q-btn>
 
+        <!-- icon="mdi-autorenew" -->
       <q-btn-dropdown
-        id="looping-toggle"
+        class="transport-button col"
         split
+        id="looping-toggle"
         :disable-dropdown="!isValidLoop"
         title="Begin/End Looping."
-        class="transport-button col"
         :color="!isValidLoop ? 'primary' : 'green'"
         :disable="!isValidLoop"
-        icon="mdi-autorenew"
-        :class="{ rotate: looping }"
         @click="
           $store.commit('watch/TOGGLE_LOOPING');
           $root.$emit('togglePlay');
         "
       >
+      <template #label>
+        <q-icon 
+          name="mdi-autorenew" 
+        :class="{rotate: rotating}"
+        /> {{ showLoopMessage }}
+      </template>
         <q-list>
+          <q-item v-if="isValidLoop" class="bg-accent">
+             <q-item-section avatar>
+              <q-avatar
+                icon="mdi-minus"
+                color="primary"
+                text-color="white"
+              />
+            </q-item-section>           
+            <q-item-section>
+              <q-item-label>{{ showLoopMessage}}</q-item-label>
+              <q-item-label>{{ getLoopStartTime }} -> {{ getLoopStopTime }}</q-item-label>
+            </q-item-section>
+          </q-item>
           <q-item
             clickable
             v-close-popup
             @click="
-              $store.dispatch('watch/clearLoop'), $root.$emit('togglePlay')
+              $store.dispatch('watch/clearLoop')
             "
           >
             <q-item-section avatar>
@@ -93,7 +111,7 @@
                 color="primary"
                 text-color="white"
               />
-            </q-item-section>
+            </q-item-section>           
             <q-item-section>
               <q-item-label>Clear Loop</q-item-label>
             </q-item-section>
@@ -107,13 +125,15 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
+import { utilities } from "../../../mixins/utilities";
 export default {
+  mixins: [utilities],
   name: "PlayerControls",
   components: {
     videoSettingsMenu: () =>
       import(
-        /* webpackChunkName: "watch-player" */ "components/watch/settings/VideoSettings.vue"
+        /* webpackChunkName: "watch-player" */ "components/watch/settings/VideoSettings"
       )
   },
   props: ["currentTime"],
@@ -124,18 +144,26 @@ export default {
       isPlaying: state => state.playerSettings.playing,
       looping: state => state.playerSettings.looping
     }),
-    ...mapGetters("watch", ["isValidLoop"]),
+    ...mapGetters("watch", ["isValidLoop", "getLoopStart", "getLoopStop"]),
+    getLoopStopTime(){ return this.secondsToMinutes(Math.floor(this.getLoopStop))},
+    getLoopStartTime(){ return this.secondsToMinutes(Math.floor(this.getLoopStart))},
+    showLoopMessage(){
+      return !this.isValidLoop ? 'No Loop Set' : this.looping ? 'Currently Looping': 'Loop Set'
+    },
     isStartSet() {
       return this.start > -1 ? "green" : "primary";
     },
     isStopSet() {
       return this.stop > 1 ? "green" : "primary";
+    },
+    rotating() {
+      return  this.isValidLoop && this.isPlaying && this.looping
     }
   },
   methods: {
     seekTime(val) {
       return this.currentTime + val;
-    }
+    },
     // toggleLooping(val) {
     //   this.looping = val ? val : !this.looping;
     // }
@@ -144,163 +172,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.rotate >>> i.mdi-autorenew {
+.rotate {
   display: inline-block !important;
-  animation: rotation 2s infinite linear !important;
+  animation: rotation 10s infinite linear !important;
 }
-
 @keyframes rotation {
   50% {
-    transform: rotate(360deg);
+    transform: rotate(720deg);
   }
   100% {
-    transform: rotate(0deg);
+    transform: rotate(-720deg);
   }
 }
-// #mediaWrapper {
-//   position: absolute;
-//   /* // top: 2.75rem; */
-//   left: 0;
-//   right: 0;
-//   bottom: 0;
-// }
-// #mediaPlayerWrapper {
-//   /* // bottom: 4.9rem; */
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   right: 0;
-//   /* // bottom: 7.5rem; */
-//   background: black;
-//   overflow: hidden;
-//   border: none;
-//   padding: 0;
-//   margin: 0;
-// }
-// #mediaControlsWrapper {
-//   position: absolute;
-//   bottom: 0;
-//   height: auto;
-//   width: 100%;
-//   background: #555;
-//   border-top: 1px solid #777;
-// }
-// #transportButtonsWrapper {
-//   float: left;
-//   width: 100%;
-//   background: linear-gradient(
-//     to bottom,
-//     rgba(40, 40, 40, 1) 0%,
-//     rgba(50, 50, 50, 1) 100%
-//   );
-//   z-index: 100;
-//   /* // padding-top: 0.25em; */
-//   /* // padding-bottom: 0.25em; */
-// }
-// ul#transportButtonsList {
-//   float: left;
-//   width: 100%;
-//   list-style: none;
-//   margin: 0;
-//   padding: 0;
-// }
-// ul#transportButtonsList li {
-//   width: 25%;
-//   float: left;
-//   padding: 0.1rem;
-// }
-// .transport-button {
-//   width: 100%;
-//   /* // line-height: 2.5em; */
-//   background: none;
-//   border: none;
-//   /* // font-size: 1rem; */
-//   -webkit-font-smoothing: antialiased;
-//   color: white;
-//   text-align: center;
-//   /* // font-weight: 600; */
-//   background: rgb(86, 86, 86);
-//   background: -moz-linear-gradient(
-//     top,
-//     rgba(86, 86, 86, 1) 0%,
-//     rgba(51, 51, 51, 1) 100%
-//   );
-//   background: -webkit-gradient(
-//     linear,
-//     left top,
-//     left bottom,
-//     color-stop(0%, rgba(86, 86, 86, 1)),
-//     color-stop(100%, rgba(51, 51, 51, 1))
-//   );
-//   background: -webkit-linear-gradient(
-//     top,
-//     rgba(86, 86, 86, 1) 0%,
-//     rgba(51, 51, 51, 1) 100%
-//   );
-//   background: linear-gradient(
-//     to bottom,
-//     rgba(86, 86, 86, 1) 0%,
-//     rgba(51, 51, 51, 1) 100%
-//   );
-//   white-space: nowrap;
-//   border-radius: 3px;
-//   box-shadow: 0px 0px 3px #111;
-// }
-// #videoControlsMenu {
-//   line-height: 1rem;
-//   color: white;
-//   position: absolute;
-//   text-align: left;
-//   display: none;
-//   top: 0;
-//   bottom: 3rem;
-//   background: #222;
-//   right: 0;
-//   width: 300px;
-//   color: #ccc;
-//   border: 1px solid #555;
-//   overflow: auto;
-//   -webkit-overflow-scrolling: touch;
-//   font-size: 0.9rem;
-//   z-index: 2;
-// }
-// ul#transportButtonsList li {
-//   width: 12.5%;
-// }
-// .transport-button.engaged {
-//   background: rgb(204, 108, 108);
-//   background: -moz-linear-gradient(
-//     top,
-//     rgba(204, 108, 108, 1) 0%,
-//     rgba(204, 0, 0, 1) 100%
-//   );
-//   background: -webkit-gradient(
-//     linear,
-//     left top,
-//     left bottom,
-//     color-stop(0%, rgba(204, 108, 108, 1)),
-//     color-stop(100%, rgba(204, 0, 0, 1))
-//   );
-//   background: -webkit-linear-gradient(
-//     top,
-//     rgba(204, 108, 108, 1) 0%,
-//     rgba(204, 0, 0, 1) 100%
-//   );
-//   background: -o-linear-gradient(
-//     top,
-//     rgba(204, 108, 108, 1) 0%,
-//     rgba(204, 0, 0, 1) 100%
-//   );
-//   background: -ms-linear-gradient(
-//     top,
-//     rgba(204, 108, 108, 1) 0%,
-//     rgba(204, 0, 0, 1) 100%
-//   );
-//   background: linear-gradient(
-//     to bottom,
-//     rgba(204, 108, 108, 1) 0%,
-//     rgba(204, 0, 0, 1) 100%
-//   );
-//   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cc6c6c', endColorstr='#cc0000',GradientType=0 );
-// }
 </style>

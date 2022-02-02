@@ -210,7 +210,7 @@ export default {
       this.$store.commit('watch/SET_SEGMENT_DURATION',  this.player.duration);
       this.ctime = this.player.currentTime;
       if (this.looping) {
-        if (this.ctime >= this.stop) {
+        if (this.ctime >= this.stop && this.stop > 0) {
           this.seekTo(this.start);
           this.showMessage({
             message: "Loop Rewound",
@@ -232,14 +232,14 @@ export default {
       this.seekTo(0);
     },
     togglePlay() {
-      if (!this.player) return;
-      if (this.player.playing) {
-        this.player.pause();
+      // if (!this.player) return;
+      if (this.player?.playing) {
+        this.player?.pause();
       } else {
-        this.player.play();
+        this.player?.play();
       }
       this.$root.$emit('toggle_header');
-      this.$store.commit('watch/TOGGLE_PLAYING', this.player.playing)
+      this.$store.commit('watch/TOGGLE_PLAYING', this.player?.playing)
       console.log("isisPlaying?: ", this.isPlaying);
     },
     setloopStart(time) {
