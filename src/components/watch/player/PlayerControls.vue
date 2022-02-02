@@ -84,7 +84,6 @@
         :class="{rotate: rotating}"
         /> {{ showLoopMessage }}
       </template>
-      {{ this.looping }}
         <q-list>
           <q-item v-if="isValidLoop" class="bg-accent">
              <q-item-section avatar>
@@ -158,7 +157,7 @@ export default {
       return this.stop > 1 ? "green" : "primary";
     },
     rotating() {
-      return this.looping && this.isValidLoop
+      return  this.isValidLoop && this.isPlaying && this.looping
     }
   },
   methods: {

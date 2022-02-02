@@ -39,8 +39,20 @@
           @change="sliderChanged"
           @pan="sliderSliding"
         />
-        <q-slider
+        <q-range
+          id="loop-region"
           v-else
+          color="accent"
+          v-model="activeLoop"
+          dense
+          label
+          :min="activeLoop.min"
+          :max="activeLoop.max"
+          :left-label-value="minTime(activeLoop.min)"
+          :right-label-value="maxTime(activeLoop.max)"
+          readonly
+        />
+        <!-- <q-slider
           dense
           label
           v-model="progress"
@@ -52,7 +64,7 @@
           :label-value="elapsedTime"
           @change="sliderChanged"
           @pan="sliderSliding"
-        />
+        /> -->
       </q-item-section>
       <q-item-section
         id="time-left"
