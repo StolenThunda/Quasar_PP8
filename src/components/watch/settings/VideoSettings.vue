@@ -1,10 +1,5 @@
 <template>
-  <q-btn
-    id="controls-toggle"
-    class="transport-button"
-    title="Video Settings"
-    icon="mdi-cogs"
-  >
+  
     <q-menu
       class="q-ma-lg"
       anchor="top left"
@@ -154,7 +149,6 @@
         </section>
       </q-list>
     </q-menu>
-  </q-btn>
 </template>
 
 <script>
