@@ -64,9 +64,7 @@
         </div>
       </q-btn>
 
-        <!-- icon="mdi-autorenew" -->
       <q-btn-dropdown
-        class="transport-button col"
         split
         id="looping-toggle"
         :disable-dropdown="!isValidLoop"
@@ -78,32 +76,26 @@
           $root.$emit('togglePlay');
         "
       >
-      <template #label>
-        <q-icon 
-          name="mdi-autorenew" 
-        :class="{rotate: rotating}"
-        /> {{ showLoopMessage }}
-      </template>
+        <template #label>
+          <q-icon name="mdi-autorenew" :class="{ rotate: rotating }" />
+          {{ showLoopMessage }}
+        </template>
         <q-list>
           <q-item v-if="isValidLoop" class="bg-accent">
-             <q-item-section avatar>
-              <q-avatar
-                icon="mdi-minus"
-                color="primary"
-                text-color="white"
-              />
-            </q-item-section>           
+            <q-item-section avatar>
+              <q-avatar icon="mdi-minus" color="primary" text-color="white" />
+            </q-item-section>
             <q-item-section>
-              <q-item-label>{{ showLoopMessage}}</q-item-label>
-              <q-item-label>{{ getLoopStartTime }} -> {{ getLoopStopTime }}</q-item-label>
+              <q-item-label>{{ showLoopMessage }}</q-item-label>
+              <q-item-label
+                >{{ getLoopStartTime }} -> {{ getLoopStopTime }}</q-item-label
+              >
             </q-item-section>
           </q-item>
           <q-item
             clickable
             v-close-popup
-            @click="
-              $store.dispatch('watch/clearLoop')
-            "
+            @click="$store.dispatch('watch/clearLoop')"
           >
             <q-item-section avatar>
               <q-avatar
@@ -111,15 +103,20 @@
                 color="primary"
                 text-color="white"
               />
-            </q-item-section>           
+            </q-item-section>
             <q-item-section>
               <q-item-label>Clear Loop</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
       </q-btn-dropdown>
-
-      <video-settings-menu class="col" />
+      <q-btn
+        id="controls-toggle"
+        title="Video Settings"
+        icon="mdi-cogs"
+      >
+        <video-settings-menu />
+      </q-btn>
     </div>
   </div>
 </template>
@@ -145,10 +142,18 @@ export default {
       looping: state => state.playerSettings.looping
     }),
     ...mapGetters("watch", ["isValidLoop", "getLoopStart", "getLoopStop"]),
-    getLoopStopTime(){ return this.secondsToMinutes(Math.floor(this.getLoopStop))},
-    getLoopStartTime(){ return this.secondsToMinutes(Math.floor(this.getLoopStart))},
-    showLoopMessage(){
-      return !this.isValidLoop ? 'No Loop Set' : this.looping ? 'Currently Looping': 'Loop Set'
+    getLoopStopTime() {
+      return this.secondsToMinutes(Math.floor(this.getLoopStop));
+    },
+    getLoopStartTime() {
+      return this.secondsToMinutes(Math.floor(this.getLoopStart));
+    },
+    showLoopMessage() {
+      return !this.isValidLoop
+        ? "No Loop Set"
+        : this.looping
+        ? "Currently Looping"
+        : "Loop Set";
     },
     isStartSet() {
       return this.start > -1 ? "green" : "primary";
@@ -157,13 +162,13 @@ export default {
       return this.stop > 1 ? "green" : "primary";
     },
     rotating() {
-      return  this.isValidLoop && this.isPlaying && this.looping
+      return this.isValidLoop && this.isPlaying && this.looping;
     }
   },
   methods: {
     seekTime(val) {
       return this.currentTime + val;
-    },
+    }
     // toggleLooping(val) {
     //   this.looping = val ? val : !this.looping;
     // }
