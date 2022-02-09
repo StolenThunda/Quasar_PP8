@@ -7,16 +7,18 @@
   >
     <!-- <q-layout view="lHh Lpr lff"> -->
     <q-header elevated>
-      <q-toolbar>
+      <q-toolbar class="q-electron-drag">
         <drawer-toggle
           v-if="loggedIn"
           @toggle-drawer="leftDrawerOpen = !leftDrawerOpen"
+          class="q-electron-drag--exception"
         />
         <q-btn
           v-else
           rounded
           color="grey-4"
           text-color="secondary"
+          class="q-electron-drag--exception"
           label="Click Here to Enter"
           @click="card = !card"
         />
@@ -35,6 +37,7 @@
           flat
         />
         <auth-button v-if="loggedIn" />
+        <control-buttons v-if="isElectron" />
 
         <q-dialog v-model="card">
           <q-card class="auth-tabs">
@@ -87,7 +90,7 @@
 </template>
 
 <script>
-import DynamicTab from "components/base/DynamicTab.vue";
+import ControlButtons from "components/base/ControlButtons.vue";
 import DrawerToggle from "components/base/DrawerToggle.vue";
 import AuthButton from "components/base/AuthButton.vue";
 import LoginRegister from "src/components/auth/LoginRegister.vue";
@@ -95,10 +98,11 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "MainLayout",
   components: {
-    DynamicTab,
+    DynamicTab: () => import(/* webpackMode: "lazy", webpackPrefetch: true, webpackPreload: true */"components/base/DynamicTab.vue"),
     DrawerToggle,
     AuthButton,
-    LoginRegister
+    LoginRegister,
+    ControlButtons
   },
   data: () => ({
     leftDrawerOpen: false,
@@ -107,7 +111,10 @@ export default {
   }),
   computed: {
     ...mapState("auth", ["loggedIn"]),
-    ...mapState("default", { tabs: state => state.sidebarTabs })
+    ...mapState("default", { tabs: state => state.sidebarTabs }),
+    isElectron() {
+      return process.env.MODE === 'electron'
+    }
   },
   mounted() {
     this.resetSideBar();

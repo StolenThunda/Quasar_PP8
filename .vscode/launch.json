@@ -1,6 +1,22 @@
 {
     "configurations": [
       {
+        "name": "Launch Microsoft Edge and open the Edge DevTools",
+        "request": "launch",
+        "type": "vscode-edge-devtools.debug",
+        "url": "http://localhost:3000",
+        "console": "integratedTerminal",
+        "webRoot": "${workspaceFolder}/src",
+        "sourceMaps": true
+      },
+      {
+        "name": "Launch Edge",
+        "request": "launch",
+        "type": "pwa-msedge",
+        "url": "http://localhost:3000",
+        "webRoot": "${workspaceFolder}/src",
+      },
+      {
         "name": "Attach to Edge",
         "port": 9222,
         "request": "attach",
@@ -9,20 +25,27 @@
         "sourceMaps": true
       },
       {
-        "name": "Vue: Attach to Chrome",
-        "port": 9222,
+        "type": "devtools-for-chrome",
         "request": "attach",
-        "type": "chrome",
-        "url": "http://localhost:3000",
+        "name": "Attach Chrome DevTools",
+        "url": "http://localhost:3000/"
+      },
+      {
+        "name": "Vue: Attach to Chrome",
+        "port": 3000,
+        "request": "attach",
+        "url": "http://localhost",
         "webRoot": "${workspaceFolder}/src",
-        "sourceMaps": true
+        "type": "devtools-for-chrome",
+        "sourceMaps": true,
+        "trace": "verbose"
 
       },
     {
-      "type": "chrome",
+      "type": "devtools-for-chrome",
       "request": "launch",
       "name": "Quasar App: chrome",
-      "url": "https://localhost:3000",
+      "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}/src",
       "breakOnLoad": true,
       "sourceMapPathOverrides": {

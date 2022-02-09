@@ -1,3 +1,4 @@
+
 <template>
   <div class="col">
     <q-tabs id="site-updates" v-model="tab">

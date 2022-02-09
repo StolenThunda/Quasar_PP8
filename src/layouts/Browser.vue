@@ -2,7 +2,7 @@
   <!-- <q-layout view="lHh Lpr lff"> -->
   <q-layout view="hHh Lpr lff">
     <q-header elevated>
-      <browser-toolbar @toggle-drawer="toggleDrawer">
+      <browser-toolbar @toggle-drawer="toggleDrawer" class="q-electron-drag">
         <template #toggleDrawer>
           <q-btn
             label="Toggle Filters"
@@ -28,13 +28,12 @@
 </template>
 
 <script>
-import DynamicTab from "components/base/DynamicTab.vue"
-import BrowserToolbar from "components/browse/BrowserToolbar.vue"
+import BrowserToolbar from "src/components/browse/Toolbar.vue";
 import { mapState, mapActions } from "vuex";
 export default {
   name: "BrowserLayout",
   components: {
-    DynamicTab,
+    DynamicTab: () => import(/* webpackMode: "lazy", webpackPrefetch: true, webpackPreload: true */"components/base/DynamicTab.vue"),
     BrowserToolbar
   },
   data: () => ({
@@ -42,7 +41,7 @@ export default {
     category: null
   }),
   created() {
-   this.$root.$on("toggle-drawer", this.toggleTruncate);
+    this.$root.$on("toggle-drawer", this.toggleTruncate);
     this.$root.$on("toggle-favorite", this.toggleFavorite);
     this.$root.$on("remove-favorite", this.delFav);
     this.$root.$on("add-favorite", this.addFavorite);
@@ -62,11 +61,15 @@ export default {
       this.removeDrawer(name);
     },
     delFav(data) {
-      console.log('favEmitted', data)
-      this.removeFavorite(data)
+      console.log("favEmitted", data);
+      this.removeFavorite(data);
     },
     ...mapActions("browser", ["removeDrawer"]),
-    ...mapActions("default", ["addFavorite", "removeFavorite", "toggleFavorite"])
+    ...mapActions("default", [
+      "addFavorite",
+      "removeFavorite",
+      "toggleFavorite"
+    ])
   }
 };
 </script>

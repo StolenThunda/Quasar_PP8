@@ -17,10 +17,6 @@
         <q-separator vertical inset class="q-mx-lg" />
 
         <div class="column items-center">
-          <!-- <q-avatar size="72px">
-            <img :src="this.$auth.user.picture" />
-          </q-avatar> -->
-
           <div class="text-center text-subtitle1 q-mt-md q-mb-xs">
             {{ userEmail }}
           </div>

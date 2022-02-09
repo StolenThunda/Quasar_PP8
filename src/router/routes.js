@@ -1,12 +1,12 @@
-// import { authGuard } from "../auth/authGuard.js";
 const routes = [
+  {
+    path: "/auth",
+    component: () => import("src/pages/AuthPage.vue")
+  },
   {
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
-    children: [
-      { path: "/auth", component: () => import("pages/PageAuth.vue") },
-      { path: "", component: () => import("pages/Index.vue") }
-  ]
+    children: [{ path: "", component: () => import("pages/Index.vue") }]
   },
   {
     path: "/tools",
@@ -16,8 +16,9 @@ const routes = [
       {
         name: "external",
         path: "/ex/:dest",
-        beforeEnter() { location.href = `https://texasbluesalley.com/${dest}`;
-}
+        beforeEnter() {
+          location.href = `https://texasbluesalley.com/${dest}`;
+        }
       },
       {
         name: "browser",
@@ -50,17 +51,15 @@ const routes = [
       }
     ]
   },
-
   {
     name: "watch",
     path: "/watch",
-    component: () => import("layouts/WatchLayout.vue"),
-    // beforeEnter: authGuard,
+    component: () => import("src/layouts/WatchDrawer.vue"),
     children: [
       {
         name: "player",
         path: "/watch/:packageID/:segmentID",
-        component: () => import("components/watch/PlayerWrapper")
+        component: () => import("components/watch/player/Wrapper")
       },
       {
         name: "package",
@@ -72,7 +71,6 @@ const routes = [
   {
     path: "/profile",
     component: () => import("layouts/MainLayout.vue"),
-    // beforeEnter: authGuard,/
     children: [{ path: "", component: () => import("pages/Profile.vue") }]
   },
   // Always leave this as last one,

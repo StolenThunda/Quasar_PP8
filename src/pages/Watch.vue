@@ -1,28 +1,29 @@
 <template>
   <q-card v-model="ProPlayer.thePackage" class=" q-pa-md">
-    <div class="row item-start ">
-      <q-img  class="col fit" :src="image">
+    <!-- <div
+      class="col-12 text-h4 text-center text-weight-bolder q-py-md"
+      v-html="title"
+    /> -->
+    <div class="row item-start q-px-xl">
+      <div class="col text-caption q-pa-md">
+        <div class="col text-h6" v-if="description" v-html="description" />
+        <div class="text-caption" v-if="overview !== ''" v-html="overview" />
+      </div>
+      <q-img
+        class="col fit q-ma-sm rounded-borders"
+        :src="image"
+        :ratio="4 / 3"
+        contain
+      >
         <template v-slot:loading>
           <q-spinner-bars color="white" />
         </template>
       </q-img>
-      <div
-        class="col text-h6 text-center q-pa-md"
-        v-html="overview"
-        v-if="overview !== ''"
-      >
-        Tuning: {{ tuning }}
-      </div>
-      <div class="col text-h6 text-center" v-else>
-        <p>Tuning: {{ tuning }}</p>
-        <p>
-          <!-- <q-avatar icon="mdi-arrow-left-bold" />  -->
-          <q-avatar color="secondary" icon="mdi-chevron-left" />
-          Choose a segment to the left
-        </p>
-      </div>
     </div>
-
+    <div class="">
+      <q-avatar icon="mdi-arrow-left-bold" />
+      Choose a segment to the left
+    </div>
     <q-inner-loading>
       <q-spinner-gears size="50px" color="primary" />
     </q-inner-loading>
@@ -33,6 +34,9 @@
 import { mapState } from "vuex";
 export default {
   name: "PackageInfo",
+  mounted() {
+    this.$store.commit("watch/RESET_PACKAGE");
+  },
   computed: {
     title() {
       return this.ProPlayer.thePackage.getTitle();
