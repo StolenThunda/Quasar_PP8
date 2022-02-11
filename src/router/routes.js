@@ -10,43 +10,46 @@ const routes = [
   },
   {
     path: "/tools",
-    component: () => import("layouts/Browser.vue"),
+    component: () => import("src/layouts/Tools.vue"),
     // beforeEnter: authGuard,
     children: [
       {
         name: "external",
-        path: "/ex/:dest",
+        path: "/tools/ex/:dest",
         beforeEnter() {
           location.href = `https://texasbluesalley.com/${dest}`;
         }
       },
       {
         name: "browser",
-        path: "/browser",
+        path: "/tools/browser",
         component: () => import("pages/Browser")
       },
       {
         name: "tuner",
-        path: "/tuner",
+        path: "/tools/tuner",
         component: () => import("pages/Tools"),
         meta: {
-          src: "/dev/tuner"
+          src: "/dev/tuner",
+          name: "Tuner"
         }
       },
       {
         name: "spider",
-        path: "/spider",
+        path: "/tools/spider",
         component: () => import("pages/Tools"),
         meta: {
-          src: "/dev/spider"
+          src: "/dev/spider",
+          name: "Spider Drills"
         }
       },
       {
         name: "fretboard",
-        path: "/fretboard",
-        component: () => import("pages/Tools"),
+        path: "/tools/fretboard",
+        component: () => import("components/tools/Fretboard"),
         meta: {
-          src: "/dev/fretboard"
+          src: "/dev/fretboard",
+          name: "Fretboard"
         }
       }
     ]

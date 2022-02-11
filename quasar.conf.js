@@ -7,7 +7,7 @@
 // https://quasar.dev/quasar-cli/quasar-conf-js
 /* eslint-env node */
 
-module.exports = function (/* ctx */) {
+module.exports = function (/* ctx */ ) {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
@@ -66,13 +66,13 @@ module.exports = function (/* ctx */) {
       // extractCSS: false,
 
       // https://quasar.dev/quasar-cli/handling-webpack
-      extendWebpack (cfg) {
-cfg.module.rules.push({
+      extendWebpack ( cfg ) {
+        cfg.module.rules.push( {
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
           exclude: /node_modules/
-        })
+        } )
       },
     },
 
@@ -87,7 +87,12 @@ cfg.module.rules.push({
         poll: 1000
       },
       open: true, // opens browser window automatically
-      // vueDevtools: true
+      headers: {
+        'Access-Control-Allow-Origin' : "*",
+        // 'X-Frame-Options': 'DENY',
+        'X-Frame-Options': 'SAMEORIGIN',
+        // 'X-Frame-Options': 'ALLOW-FROM *'
+      }
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
@@ -214,7 +219,7 @@ cfg.module.rules.push({
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
       nodeIntegration: true,
 
-      extendWebpack (/* cfg */) {
+      extendWebpack (/* cfg */ ) {
         // do something with Electron main process Webpack cfg
         // chainWebpack also available besides this extendWebpack
       }
