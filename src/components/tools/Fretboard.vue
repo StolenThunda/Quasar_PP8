@@ -576,14 +576,19 @@ export default {
     }
   },
   computed: {
-    currentLimit() {
-      return this.keyLimits[this.keyOptions.indexOf(this.key)];
-    },
     boxSelection() {
-      return this.boxFilters.map(({ label, id }) => ({
-        value: id,
-        label: label
-      }));
+      // let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
+
+      // let selection = this.boxFilters.map(({ label, id }) => ({
+      //   value: id,
+      //   label: label
+      // }));
+      // selection.forEach((sel, i) => {
+       
+      //       sel.disabled = ( i < theLimits[0] || i > theLimits[1])
+					
+      // })
+      return getAvailableSelections(this.boxFilters)
     },
     patternSelection() {
       return this.patternFilters.map(({ label, id }) => ({
@@ -602,6 +607,20 @@ export default {
     },
   },
   methods: {
+    getAvailableSelections(collection){
+let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
+
+      let availableSelections = collection.map(({ label, id }) => ({
+        value: id,
+        label: label
+      }));
+      availableSelections.forEach((sel, i) => {
+       
+            sel.disabled = ( i < theLimits[0] || i > theLimits[1])
+					
+      })
+      return availableSelections
+    },
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
