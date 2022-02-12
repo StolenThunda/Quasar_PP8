@@ -14,6 +14,9 @@
         id="page-wrapper"
         class="
           q-my-xl 
+          column 
+          items-stretch
+          content-stretch
         "
       >
         <q-expansion-item label="Selections" class="relative q-mt-xl">
@@ -33,7 +36,7 @@
           class="q-mx-lg bg-accent text-center"
           v-model="key"
           :options="keyOptions"
-          @update:model-value="processKeyChange"
+          @input="updateFretboard"
           transition-show="flip-up"
           transition-hide="flip-down"
           options-selected-class="text-deep-orange"
@@ -56,7 +59,7 @@
                 :options="boxSelection"
                 color="accent"
                 type="toggle"
-                @update:model-value="updateFretboard"
+                @input="updateFretboard"
               />
             </q-card-section>
           </q-card>
@@ -72,7 +75,7 @@
             :options="patternSelection"
             color="accent"
             type="toggle"
-            @update:model-value="drawFilterResults"
+            @input="updateFretboard"
           />
         </q-expansion-item>
         <q-expansion-item group="filters" icon="queue_music" label="Scales">
@@ -83,7 +86,7 @@
                 :options="scaleFilters"
                 color="accent"
                 type="toggle"
-                @update:model-value="drawFilterResults"
+                @input="updateFretboard"
               />
             </q-card-section>
           </q-card>
@@ -96,7 +99,7 @@
                 :options="rootNoteFilters"
                 color="accent"
                 type="toggle"
-                @update:model-value="drawFilterResults"
+                @input="updateFretboard"
               />
             </q-card-section>
           </q-card>
@@ -153,6 +156,16 @@
             </li>
           </ul> -->
         <!-- </div> -->
+      
+      <q-btn
+        class="glossy q-mb-xl self-center fixed-bottom "
+        icon="restart_alt"
+        color="accent"
+        @click="resetFretboard"
+       label="Reset Filters"
+        push
+      />
+          
       </div>
     </q-drawer>
 
@@ -292,68 +305,68 @@ export default {
       {
         id: "box2Lower",
         fretEnabled: "9",
-        rootOffset: "-9",
-        position: "2",
+        rootOffset: -9,
+        position: 2,
         shapeType: "box2",
         label: "Box 2 (lower)"
       },
       {
         id: "box3Lower",
-        fretEnabled: "9",
-        rootOffset: "-7",
-        position: "3",
+        fretEnabled: 9,
+        rootOffset: -7,
+        position: 3,
         shapeType: "box2",
         label: "Box 3 (lower)"
       },
       {
         id: "box4Lower",
-        fretEnabled: "9",
-        rootOffset: "-5",
-        position: "4",
+        fretEnabled: 9,
+        rootOffset: -5,
+        position: 4,
         shapeType: "box4",
         label: "Box 4 (lower)"
       },
       {
         id: "box5Lower",
-        fretEnabled: "9",
-        rootOffset: "-3",
-        position: "5",
+        fretEnabled: 9,
+        rootOffset: -3,
+        position: 5,
         shapeType: "box1",
         label: "Box 5 (lower)"
       },
       {
         id: "box1Root",
-        fretEnabled: "9",
-        rootOffset: "0",
-        position: "1",
+        fretEnabled: 9,
+        rootOffset: 0,
+        position: 1,
         shapeType: "box1",
         label: "Box 1"
       },
       {
         id: "box2Root",
-        rootOffset: "3",
-        position: "2",
+        rootOffset: 3,
+        position: 2,
         shapeType: "box2",
         label: "Box 2"
       },
       {
         id: "box3Root",
-        rootOffset: "5",
-        position: "3",
+        rootOffset: 5,
+        position: 3,
         shapeType: "box2",
         label: "Box 3"
       },
       {
         id: "box4Root",
-        rootOffset: "7",
-        position: "4",
+        rootOffset: 7,
+        position: 4,
         shapeType: "box4",
         label: "Box 4"
       },
       {
         id: "box5Root",
-        rootOffset: "9",
-        position: "5",
+        rootOffset: 9,
+        position: 5,
         shapeType: "box1",
         label: "Box 4"
       }
@@ -361,11 +374,13 @@ export default {
     scaleFilters: [
       {
         value: "majorScale",
-        label: "Major Scale"
+        label: "Major Scale",
+        disable: true
       },
       {
         value: "minorScale",
-        label: "Minor Scale"
+        label: "Minor Scale",
+        disable: true
       },
       {
         value: "majorPentatonic",
@@ -379,71 +394,71 @@ export default {
     patternFilters: [
       {
         shapeType: "backdoor1",
-        position: "2",
-        rootOffset: "-9",
+        position: 2,
+        rootOffset: -9,
         id: "backdoor2Lower",
         label: "Backdoor Pattern 2 (lower)"
       },
       {
         shapeType: "backdoor2",
-        position: "3",
-        rootOffset: "-5",
+        position: 3,
+        rootOffset: -5,
         id: "backdoor3Lower",
         label: "Backdoor Pattern 3 (lower)"
       },
       {
         shapeType: "backdoor2",
-        position: "4",
-        rootOffset: "-2",
+        position: 4,
+        rootOffset: -2,
         id: "backdoor4Lower",
         label: "Backdoor Pattern 1"
       },
       {
         shapeType: "backdoor1",
-        position: "1",
-        rootOffset: "0",
+        position: 1,
+      rootOffset: 0,
         id: "backdoor1Root",
         label: "Backdoor Pattern 1"
       },
       {
         shapeType: "backdoor2",
-        position: "2",
-        rootOffset: "3",
+        position: 2,
+        rootOffset: 3,
         id: "backdoor2Root",
         label: "Backdoor Pattern 2"
       },
       {
         shapeType: "backdoor1",
-        position: "3",
-        rootOffset: "7",
+        position: 3,
+        rootOffset: 7,
         id: "backdoor3Root",
         label: "Backdoor Pattern 3"
       },
       {
         shapeType: "backdoor2",
-        position: "4",
-        rootOffset: "20",
+        position: 4,
+        rootOffset: 20,
         id: "backdoor4Root",
         label: "Backdoor Pattern 4"
       },
       {
         shapeType: "backdoor1",
-        position: "1",
-        rootOffset: "12",
+        position: 1,
+        rootOffset: 12,
         id: "backdoor1Upper",
         label: "Backdoor Pattern 1 (upper)"
       },
       {
         shapeType: "backdoor1",
-        position: "2",
-        rootOffset: "15",
+        position: 2,
+        rootOffset: 15,
         id: "backdoor2Upper",
         label: "Backdoor Pattern 2 (upper)"
       },
       {
         shapeType: "backdoor2",
-        position: "3",
-        rootOffset: "19",
+        position: 3,
+        rootOffset: 19,
         id: "backdoor3Upper",
         label: "Backdoor Pattern 3 (upper)"
       }
@@ -547,15 +562,15 @@ export default {
     this.processKeyChange();
   },
   watch: {
-    accBoxes() {
-      this.updateFretboard();
-    },
-    accScales() {
-      this.updateFretboard();
-    },
-    accRootNotes() {
-      this.updateFretboard();
-    },
+    // accBoxes() {
+    //   this.updateFretboard();
+    // },
+    // accScales() {
+    //   this.updateFretboard();
+    // },
+    // accRootNotes() {
+    //   this.updateFretboard();
+    // },
     fetchDrawer(v) {
       if (v) this.toggleLeftDrawer();
     }
@@ -575,12 +590,20 @@ export default {
         value: id,
         label: label
       }));
-    }
+    },
+    selections(){
+      let theShapes = []
+      let box
+      this.accBoxes.forEach(box_id => {
+        box = this.boxFilters.filter(item => item.id == box_id);
+        theShapes.push(box);
+      });
+      return theShapes
+    },
   },
   methods: {
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
-      console.log("drawer");
     },
     processKeyChange() {
       //  let theKey = $( 'select#keyFilter' ).val();
@@ -619,22 +642,18 @@ export default {
       console.log("sf", e);
     },
     updateFretboard() {
-      this.resetFretboard();
-      //  this.rootFret = parseInt($("select[name=key]").val());
-      this.rootFret = parseInt(this.key);
-
       let theShapes = [];
-      // let theInputs = $('input[type="checkbox"]:checked');
-      // for (let i = 0; i < theInputs.length; i++) {
-      //   let newShape = {};
-      //   newShape.shapeType = $(theInputs[i]).data("shape-type");
-      //   newShape.rootOffset = $(theInputs[i]).data("root-offset");
-      //   newShape.position = $(theInputs[i]).data("position");
-      //   theShapes.push(newShape);
-      // }
+      this.resetFretboard();
+      this.rootFret = parseInt(this.keyOptions.indexOf(this.key));
       this.accBoxes.forEach(box_id => {
-        let box = this.boxFilters.filter(item => item.id == boxid);
-        this.theShapes.push(box);
+        let box = this.boxFilters.filter(item => item.id == box_id);
+        theShapes = [...theShapes, ...box];
+        console.log(`boxes: ${JSON.stringify(theShapes)}`);
+      });
+      this.accPatterns.forEach(box_id => {
+        let box = this.patternFilters.filter(item => item.id == box_id);
+        theShapes = [...theShapes, ...box];
+        console.log(`boxes: ${JSON.stringify(theShapes)}`);
       });
 
       this.drawFretMarker(this.rootFret - 7, this.CHORDIV);
@@ -650,29 +669,36 @@ export default {
         let theShape = theShapes[i];
         switch (theShape.shapeType) {
           case "box1":
-            this.drawBox1(rootFret + theShape.rootOffset, theShape.position);
+            this.drawBox1(this.rootFret + theShape.rootOffset, theShape.position);
             break;
           case "box2":
-            this.drawBox2(rootFret + theShape.rootOffset, theShape.position);
+            this.drawBox2(this.rootFret + theShape.rootOffset, theShape.position);
             break;
           case "box4":
-            this.drawBox4(rootFret + theShape.rootOffset);
+            this.drawBox4(this.rootFret + theShape.rootOffset);
             break;
           case "backdoor1":
             this.drawBackdoorPattern1(
-              rootFret + theShape.rootOffset,
+              this.rootFret + theShape.rootOffset,
               theShape.position
             );
             break;
           case "backdoor2":
             this.drawBackdoorPattern2(
-              rootFret + theShape.rootOffset,
+              this.rootFret + theShape.rootOffset,
               theShape.position
             );
             break;
         }
       }
-
+      if (this.accScales.includes('majorScale')) this.drawMajorScale(this.rootFret)
+      if (this.accScales.includes('minorScale')) this.drawMinorScale(this.rootFret)
+      if (this.accScales.includes('majorPentatonic')) this.drawMajorPentatonic(this.rootFret)
+      if (this.accScales.includes('minorPentatonic')) this.drawMinorPentatonic(this.rootFret)
+      
+      if (this.accRootNotes.includes('root1Notes')) this.drawRootNotes(this.rootFret, 1, false)
+      if (this.accRootNotes.includes('root4Notes')) this.drawRootNotes(this.rootFret, 4, false)
+      if (this.accRootNotes.includes('root5Notes')) this.drawRootNotes(this.rootFret, 5, false)
       // if ($("input#majorScale").prop("checked")) {
       //   drawMajorScale(rootFret);
       // }
@@ -1240,14 +1266,15 @@ export default {
         } else {
           polygonString += this.CORNERRADIUS;
         }
-        polygonString += addPointToString(
-          this.notes[fret + data[i][1]][data[i][2]].box[data[i][3]].x,
-          this.notes[fret + data[i][1]][data[i][2]].box[data[i][3]].y
+        
+        polygonString += this.addPointToString(
+          this.notes[fret + data[i][1]][data[i][2]]?.box[data[i][3]].x,
+          this.notes[fret + data[i][1]][data[i][2]]?.box[data[i][3]].y
         );
       }
       polygonString += "Z";
-      //console.log(polygonString);
-      var theBox = allShapes
+      console.log('strPoly', polygonString);
+      var theBox = this.allShapes
         .path(polygonString)
         .fill(this.SHAPEFILL)
         .stroke(this.SHAPESTROKE);
@@ -1360,61 +1387,61 @@ export default {
       this.showNote(theFret + 3, this.ESTRING2, strType);
 
       //Position 2
-      showNote(theFret + 5, this.ESTRING2, strType);
-      showNote(theFret + 5, this.BSTRING, strType);
-      showNote(theFret + 4, this.GSTRING, strType);
-      showNote(theFret + 5, this.DSTRING, strType);
-      showNote(theFret + 5, this.ASTRING, strType);
-      showNote(theFret + 5, this.ESTRING1, strType);
+      this.showNote(theFret + 5, this.ESTRING2, strType);
+      this.showNote(theFret + 5, this.BSTRING, strType);
+      this.showNote(theFret + 4, this.GSTRING, strType);
+      this.showNote(theFret + 5, this.DSTRING, strType);
+      this.showNote(theFret + 5, this.ASTRING, strType);
+      this.showNote(theFret + 5, this.ESTRING1, strType);
 
       //Position 3
-      showNote(theFret + 7, this.ESTRING2, strType);
-      showNote(theFret + 8, this.BSTRING, strType);
-      showNote(theFret + 7, this.GSTRING, strType);
-      showNote(theFret + 7, this.DSTRING, strType);
-      showNote(theFret + 7, this.ASTRING, strType);
-      showNote(theFret + 7, this.ESTRING1, strType);
+      this.showNote(theFret + 7, this.ESTRING2, strType);
+      this.showNote(theFret + 8, this.BSTRING, strType);
+      this.showNote(theFret + 7, this.GSTRING, strType);
+      this.showNote(theFret + 7, this.DSTRING, strType);
+      this.showNote(theFret + 7, this.ASTRING, strType);
+      this.showNote(theFret + 7, this.ESTRING1, strType);
 
       // Position 4
-      showNote(theFret + 10, this.ESTRING2, strType);
-      showNote(theFret + 10, this.BSTRING, strType);
-      showNote(theFret + 9, this.GSTRING, strType);
-      showNote(theFret + 9, this.DSTRING, strType);
-      showNote(theFret + 10, this.ASTRING, strType);
-      showNote(theFret + 10, this.ESTRING1, strType);
+      this.showNote(theFret + 10, this.ESTRING2, strType);
+      this.showNote(theFret + 10, this.BSTRING, strType);
+      this.showNote(theFret + 9, this.GSTRING, strType);
+      this.showNote(theFret + 9, this.DSTRING, strType);
+      this.showNote(theFret + 10, this.ASTRING, strType);
+      this.showNote(theFret + 10, this.ESTRING1, strType);
 
-      showNote(theFret + 12, this.ESTRING2, strType);
-      showNote(theFret + 12, this.BSTRING, strType);
-      showNote(theFret + 12, this.GSTRING, strType);
-      showNote(theFret + 12, this.DSTRING, strType);
-      showNote(theFret + 12, this.ASTRING, strType);
-      showNote(theFret + 12, this.ESTRING1, strType);
+      this.showNote(theFret + 12, this.ESTRING2, strType);
+      this.showNote(theFret + 12, this.BSTRING, strType);
+      this.showNote(theFret + 12, this.GSTRING, strType);
+      this.showNote(theFret + 12, this.DSTRING, strType);
+      this.showNote(theFret + 12, this.ASTRING, strType);
+      this.showNote(theFret + 12, this.ESTRING1, strType);
 
       if (theFret < 7) {
-        showNote(theFret + 15, this.ESTRING1, strType);
-        showNote(theFret + 15, this.BSTRING, strType);
-        showNote(theFret + 14, this.GSTRING, strType);
-        showNote(theFret + 14, this.DSTRING, strType);
-        showNote(theFret + 14, this.ASTRING, strType);
-        showNote(theFret + 15, this.ESTRING2, strType);
+        this.showNote(theFret + 15, this.ESTRING1, strType);
+        this.showNote(theFret + 15, this.BSTRING, strType);
+        this.showNote(theFret + 14, this.GSTRING, strType);
+        this.showNote(theFret + 14, this.DSTRING, strType);
+        this.showNote(theFret + 14, this.ASTRING, strType);
+        this.showNote(theFret + 15, this.ESTRING2, strType);
       }
       if (theFret < 5) {
-        showNote(theFret + 17, this.ESTRING2, strType);
-        showNote(theFret + 17, this.BSTRING, strType);
-        showNote(theFret + 16, this.GSTRING, strType);
-        showNote(theFret + 17, this.DSTRING, strType);
-        showNote(theFret + 17, this.ASTRING, strType);
-        showNote(theFret + 17, this.ESTRING1, strType);
+        this.showNote(theFret + 17, this.ESTRING2, strType);
+        this.showNote(theFret + 17, this.BSTRING, strType);
+        this.showNote(theFret + 16, this.GSTRING, strType);
+        this.showNote(theFret + 17, this.DSTRING, strType);
+        this.showNote(theFret + 17, this.ASTRING, strType);
+        this.showNote(theFret + 17, this.ESTRING1, strType);
       }
 
       if (theFret < 3) {
         //Position 3
-        showNote(theFret + 19, this.ESTRING2, strType);
-        showNote(theFret + 20, this.BSTRING, strType);
-        showNote(theFret + 19, this.GSTRING, strType);
-        showNote(theFret + 19, this.DSTRING, strType);
-        showNote(theFret + 19, this.ASTRING, strType);
-        showNote(theFret + 19, this.ESTRING1, strType);
+        this.showNote(theFret + 19, this.ESTRING2, strType);
+        this.showNote(theFret + 20, this.BSTRING, strType);
+        this.showNote(theFret + 19, this.GSTRING, strType);
+        this.showNote(theFret + 19, this.DSTRING, strType);
+        this.showNote(theFret + 19, this.ASTRING, strType);
+        this.showNote(theFret + 19, this.ESTRING1, strType);
       }
     },
     drawBox1(fret, chordInterval) {
@@ -1424,18 +1451,18 @@ export default {
         return;
       }
 
-      showNote(theFret, this.ESTRING1);
-      showNote(theFret, this.BSTRING);
-      showNote(theFret, this.GSTRING);
-      showNote(theFret, this.DSTRING);
-      showNote(theFret, this.ASTRING);
-      showNote(theFret, this.ESTRING2);
-      showNote(theFret + 3, this.ESTRING1);
-      showNote(theFret + 3, this.BSTRING);
-      showNote(theFret + 2, this.GSTRING);
-      showNote(theFret + 2, this.DSTRING);
-      showNote(theFret + 2, this.ASTRING);
-      showNote(theFret + 3, this.ESTRING2);
+      this.showNote(theFret, this.ESTRING1);
+      this.showNote(theFret, this.BSTRING);
+      this.showNote(theFret, this.GSTRING);
+      this.showNote(theFret, this.DSTRING);
+      this.showNote(theFret, this.ASTRING);
+      this.showNote(theFret, this.ESTRING2);
+      this.showNote(theFret + 3, this.ESTRING1);
+      this.showNote(theFret + 3, this.BSTRING);
+      this.showNote(theFret + 2, this.GSTRING);
+      this.showNote(theFret + 2, this.DSTRING);
+      this.showNote(theFret + 2, this.ASTRING);
+      this.showNote(theFret + 3, this.ESTRING2);
 
       var data = {
         name: "Box 1",
@@ -1476,49 +1503,49 @@ export default {
         ]
       };
 
-      drawShape(fret, data.points);
+      this.drawShape(fret, data.points);
     },
     drawBox2(fret, chordInterval) {
       //	//console.log('Drawing box 2 at ' + fret );
-      theFret = parseInt(fret);
+      let theFret = parseInt(fret);
       if (fret < 0 || fret > 19) {
         return;
       }
 
-      showNote(theFret, this.ESTRING1);
-      showNote(theFret, this.BSTRING);
-      showNote(theFret + 1, this.GSTRING);
-      showNote(theFret + 2, this.ESTRING1);
-      showNote(theFret + 2, this.BSTRING);
+      this.showNote(theFret, this.ESTRING1);
+      this.showNote(theFret, this.BSTRING);
+      this.showNote(theFret + 1, this.GSTRING);
+      this.showNote(theFret + 2, this.ESTRING1);
+      this.showNote(theFret + 2, this.BSTRING);
 
-      var note1 = this.notes[theFret][ESTRING1];
-      var note2 = this.notes[theFret + 2][ESTRING1];
+      var note1 = this.notes[theFret][this.ESTRING1];
+      var note2 = this.notes[theFret + 2][this.ESTRING1];
       var note3 = this.notes[theFret + 2][this.BSTRING];
       var note4 = this.notes[theFret + 1][this.GSTRING];
       var note5 = this.notes[theFret][this.BSTRING];
 
       //Mark the start point
       var polygonString =
-        "M" + addPointToString(note1.box[1].x, note1.box[1].y);
-      polygonString += "L" + addPointToString(note2.box[1].x, note2.box[1].y);
+        "M" + this.addPointToString(note1.box[1].x, note1.box[1].y);
+      polygonString += "L" + this.addPointToString(note2.box[1].x, note2.box[1].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note2.box[3].x, note2.box[3].y);
-      polygonString += "L" + addPointToString(note3.box[3].x, note3.box[3].y);
+        this.CORNERRADIUS + this.addPointToString(note2.box[3].x, note2.box[3].y);
+      polygonString += "L" + this.addPointToString(note3.box[3].x, note3.box[3].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note3.box[5].x, note3.box[5].y);
-      polygonString += "L" + addPointToString(note4.box[2].x, note4.box[2].y);
-      polygonString += "L" + addPointToString(note4.box[3].x, note4.box[3].y);
+        this.CORNERRADIUS + this.addPointToString(note3.box[5].x, note3.box[5].y);
+      polygonString += "L" + this.addPointToString(note4.box[2].x, note4.box[2].y);
+      polygonString += "L" + this.addPointToString(note4.box[3].x, note4.box[3].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note4.box[5].x, note4.box[5].y);
+        this.CORNERRADIUS + this.addPointToString(note4.box[5].x, note4.box[5].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note4.box[7].x, note4.box[7].y);
-      polygonString += "L" + addPointToString(note4.box[0].x, note4.box[0].y);
-      polygonString += "L" + addPointToString(note5.box[5].x, note5.box[5].y);
+        this.CORNERRADIUS + this.addPointToString(note4.box[7].x, note4.box[7].y);
+      polygonString += "L" + this.addPointToString(note4.box[0].x, note4.box[0].y);
+      polygonString += "L" + this.addPointToString(note5.box[5].x, note5.box[5].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note5.box[7].x, note5.box[7].y);
-      polygonString += "L" + addPointToString(note1.box[7].x, note1.box[7].y);
+        this.CORNERRADIUS + this.addPointToString(note5.box[7].x, note5.box[7].y);
+      polygonString += "L" + this.addPointToString(note1.box[7].x, note1.box[7].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note1.box[1].x, note1.box[1].y);
+        this.CORNERRADIUS + this.addPointToString(note1.box[1].x, note1.box[1].y);
       polygonString += "Z";
 
       var data = {
@@ -1541,23 +1568,23 @@ export default {
         ]
       };
 
-      drawShape(fret, data.points);
+      this.drawShape(fret, data.points);
     },
     drawBox3(fret) {
-      drawBox2(fret, 3);
+      this.drawBox2(fret, 3);
     },
     drawBox4(fret) {
-      //console.log('Drawing box 4 at ' + fret );
-      theFret = parseInt(fret);
+      console.log('Drawing box 4 at ' + fret );
+      let theFret = parseInt(fret);
       if (fret < 0 || fret > 18) {
         return;
       }
 
-      showNote(theFret, this.ESTRING1);
-      showNote(theFret + 3, this.ESTRING1);
-      showNote(theFret + 1, this.BSTRING);
-      showNote(theFret + 3, this.BSTRING);
-      showNote(theFret + 2, this.GSTRING);
+      this.showNote(theFret, this.ESTRING1);
+      this.showNote(theFret + 3, this.ESTRING1);
+      this.showNote(theFret + 1, this.BSTRING);
+      this.showNote(theFret + 3, this.BSTRING);
+      this.showNote(theFret + 2, this.GSTRING);
 
       var data = {
         name: "Box 2",
@@ -1581,28 +1608,28 @@ export default {
         ]
       };
 
-      drawShape(fret, data.points);
+      this.drawShape(fret, data.points);
     },
     drawBox5(fret) {
       //console.log('Drawing box 5 at ' + fret );
-      drawBox1(fret);
+      this.drawBox1(fret);
     },
     drawBackdoorPattern1(fret, shapePosition) {
-      theFret = parseInt(fret);
+      let theFret = parseInt(fret);
       if (fret < 0 || fret > 14) {
         return;
       }
-      showNote(theFret, this.ESTRING2);
-      showNote(theFret + 2, this.ESTRING2);
-      showNote(theFret + 4, this.ESTRING2);
-      showNote(theFret + 2, this.ASTRING);
-      showNote(theFret + 4, this.ASTRING);
-      showNote(theFret + 2, this.DSTRING);
-      showNote(theFret + 4, this.DSTRING);
-      showNote(theFret + 6, this.DSTRING);
-      showNote(theFret + 4, this.GSTRING);
-      showNote(theFret + 6, this.GSTRING);
-      showNote(theFret + 5, this.BSTRING);
+      this.showNote(theFret, this.ESTRING2);
+      this.showNote(theFret + 2, this.ESTRING2);
+      this.showNote(theFret + 4, this.ESTRING2);
+      this.showNote(theFret + 2, this.ASTRING);
+      this.showNote(theFret + 4, this.ASTRING);
+      this.showNote(theFret + 2, this.DSTRING);
+      this.showNote(theFret + 4, this.DSTRING);
+      this.showNote(theFret + 6, this.DSTRING);
+      this.showNote(theFret + 4, this.GSTRING);
+      this.showNote(theFret + 6, this.GSTRING);
+      this.showNote(theFret + 5, this.BSTRING);
 
       var data = {
         name: "Backdoor Pattern (1)",
@@ -1632,27 +1659,27 @@ export default {
         ]
       };
 
-      drawShape(fret, data.points);
+      this.drawShape(fret, data.points);
     },
     drawBackdoorPattern2(fret, shapePosition) {
-      theFret = parseInt(fret);
+      let theFret = parseInt(fret);
       if (fret < 0 || fret > 15) {
         return;
       }
 
-      showNote(theFret, this.ESTRING2);
-      showNote(theFret + 2, this.ESTRING2);
-      showNote(theFret, this.ASTRING);
-      showNote(theFret + 2, this.ASTRING);
-      showNote(theFret + 4, this.ASTRING);
-      showNote(theFret + 2, this.DSTRING);
-      showNote(theFret + 4, this.DSTRING);
-      showNote(theFret + 2, this.GSTRING);
-      showNote(theFret + 4, this.GSTRING);
-      showNote(theFret + 6, this.GSTRING);
-      showNote(theFret + 5, this.BSTRING);
+      this.showNote(theFret, this.ESTRING2);
+      this.showNote(theFret + 2, this.ESTRING2);
+      this.showNote(theFret, this.ASTRING);
+      this.showNote(theFret + 2, this.ASTRING);
+      this.showNote(theFret + 4, this.ASTRING);
+      this.showNote(theFret + 2, this.DSTRING);
+      this.showNote(theFret + 4, this.DSTRING);
+      this.showNote(theFret + 2, this.GSTRING);
+      this.showNote(theFret + 4, this.GSTRING);
+      this.showNote(theFret + 6, this.GSTRING);
+      this.showNote(theFret + 5, this.BSTRING);
 
-      var note1 = this.notes[theFret][ESTRING2];
+      var note1 = this.notes[theFret][this.ESTRING2];
       var note2 = this.notes[theFret][this.ASTRING];
       var note3 = this.notes[theFret + 2][this.DSTRING];
       var note4 = this.notes[theFret + 2][this.GSTRING];
@@ -1663,40 +1690,40 @@ export default {
       var note9 = this.notes[theFret + 2][ESTRING2];
 
       var polygonString =
-        "M" + addPointToString(note1.box[7].x, note1.box[7].y);
-      polygonString += "L" + addPointToString(note2.box[7].x, note2.box[7].y);
+        "M" + this.addPointToString(note1.box[7].x, note1.box[7].y);
+      polygonString += "L" + this.addPointToString(note2.box[7].x, note2.box[7].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note2.box[1].x, note2.box[1].y);
-      polygonString += "L" + addPointToString(note3.box[6].x, note3.box[6].y);
-      polygonString += "L" + addPointToString(note4.box[7].x, note4.box[7].y);
+        this.CORNERRADIUS + this.addPointToString(note2.box[1].x, note2.box[1].y);
+      polygonString += "L" + this.addPointToString(note3.box[6].x, note3.box[6].y);
+      polygonString += "L" + this.addPointToString(note4.box[7].x, note4.box[7].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note4.box[1].x, note4.box[1].y);
-      polygonString += "L" + addPointToString(note5.box[6].x, note5.box[6].y);
-      polygonString += "L" + addPointToString(note5.box[7].x, note5.box[7].y);
+        this.CORNERRADIUS + this.addPointToString(note4.box[1].x, note4.box[1].y);
+      polygonString += "L" + this.addPointToString(note5.box[6].x, note5.box[6].y);
+      polygonString += "L" + this.addPointToString(note5.box[7].x, note5.box[7].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note5.box[1].x, note5.box[1].y);
+        this.CORNERRADIUS + this.addPointToString(note5.box[1].x, note5.box[1].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note5.box[3].x, note5.box[3].y);
-      polygonString += "L" + addPointToString(note5.box[4].x, note5.box[4].y);
-      polygonString += "L" + addPointToString(note6.box[1].x, note6.box[1].y);
+        this.CORNERRADIUS + this.addPointToString(note5.box[3].x, note5.box[3].y);
+      polygonString += "L" + this.addPointToString(note5.box[4].x, note5.box[4].y);
+      polygonString += "L" + this.addPointToString(note6.box[1].x, note6.box[1].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note6.box[3].x, note6.box[3].y);
+        this.CORNERRADIUS + this.addPointToString(note6.box[3].x, note6.box[3].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note6.box[5].x, note6.box[5].y);
+        this.CORNERRADIUS + this.addPointToString(note6.box[5].x, note6.box[5].y);
 
-      polygonString += "L" + addPointToString(note7.box[2].x, note7.box[2].y);
-      polygonString += "L" + addPointToString(note8.box[3].x, note8.box[3].y);
+      polygonString += "L" + this.addPointToString(note7.box[2].x, note7.box[2].y);
+      polygonString += "L" + this.addPointToString(note8.box[3].x, note8.box[3].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note8.box[5].x, note8.box[5].y);
+        this.CORNERRADIUS + this.addPointToString(note8.box[5].x, note8.box[5].y);
 
-      polygonString += "L" + addPointToString(note9.box[2].x, note9.box[2].y);
-      polygonString += "L" + addPointToString(note9.box[3].x, note9.box[3].y);
+      polygonString += "L" + this.addPointToString(note9.box[2].x, note9.box[2].y);
+      polygonString += "L" + this.addPointToString(note9.box[3].x, note9.box[3].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note9.box[5].x, note9.box[5].y);
+        this.CORNERRADIUS + this.addPointToString(note9.box[5].x, note9.box[5].y);
 
-      polygonString += "L" + addPointToString(note1.box[5].x, note1.box[5].y);
+      polygonString += "L" + this.addPointToString(note1.box[5].x, note1.box[5].y);
       polygonString +=
-        this.CORNERRADIUS + addPointToString(note1.box[7].x, note1.box[7].y);
+        this.CORNERRADIUS + this.addPointToString(note1.box[7].x, note1.box[7].y);
 
       polygonString += "Z";
 
@@ -1709,95 +1736,95 @@ export default {
       if (fret < 0 || fret > 21) {
         return;
       }
-      notes[fret][string].svgElement.show();
+      this.notes[fret][string].svgElement.show();
 
       if (strType !== undefined) {
-        notes[fret][string].svgElement.fill(strType);
+        this.notes[fret][string].svgElement.fill(strType);
       } else {
-        notes[fret][string].svgElement.fill(this.NOTECOLOR);
+        this.notes[fret][string].svgElement.fill(this.NOTECOLOR);
       }
     },
     drawBoxes(fret) {
-      drawBox1(fret);
-      drawBox2(fret + 3);
-      drawBox3(fret + 5);
-      drawBox4(fret + 7);
-      drawBox5(fret + 9);
+      this.drawBox1(fret);
+      this.drawBox2(fret + 3);
+      this.drawBox3(fret + 5);
+      this.drawBox4(fret + 7);
+      this.drawBox5(fret + 9);
     },
     drawRootNotes(nRootFret, nScaleDegree, bMinor) {
       if (!bMinor) {
         switch (nScaleDegree) {
           case 1:
-            showNote(nRootFret, this.ESTRING1, this.CHORDI);
-            showNote(nRootFret + 12, this.ESTRING1, this.CHORDI);
+            this.showNote(nRootFret, this.ESTRING1, this.CHORDI);
+            this.showNote(nRootFret + 12, this.ESTRING1, this.CHORDI);
 
-            showNote(nRootFret + 5, this.BSTRING, this.CHORDI);
-            showNote(nRootFret + 17, this.this.BSTRING, this.CHORDI);
+            this.showNote(nRootFret + 5, this.BSTRING, this.CHORDI);
+            this.showNote(nRootFret + 17, this.BSTRING, this.CHORDI);
 
-            showNote(nRootFret + 9, this.GSTRING, this.CHORDI);
-            showNote(nRootFret + 21, this.GSTRING, this.CHORDI);
-            showNote(nRootFret - 3, this.GSTRING, this.CHORDI);
+            this.showNote(nRootFret + 9, this.GSTRING, this.CHORDI);
+            this.showNote(nRootFret + 21, this.GSTRING, this.CHORDI);
+            this.showNote(nRootFret - 3, this.GSTRING, this.CHORDI);
 
-            showNote(nRootFret + 2, this.DSTRING, this.CHORDI);
-            showNote(nRootFret + 14, this.DSTRING, this.CHORDI);
-            showNote(nRootFret - 10, this.DSTRING, this.CHORDI);
+            this.showNote(nRootFret + 2, this.DSTRING, this.CHORDI);
+            this.showNote(nRootFret + 14, this.DSTRING, this.CHORDI);
+            this.showNote(nRootFret - 10, this.DSTRING, this.CHORDI);
 
-            showNote(nRootFret + 7, this.ASTRING, this.CHORDI);
-            showNote(nRootFret + 19, this.ASTRING, this.CHORDI);
-            showNote(nRootFret - 5, this.ASTRING, this.CHORDI);
+            this.showNote(nRootFret + 7, this.ASTRING, this.CHORDI);
+            this.showNote(nRootFret + 19, this.ASTRING, this.CHORDI);
+            this.showNote(nRootFret - 5, this.ASTRING, this.CHORDI);
 
-            showNote(nRootFret, this.ESTRING2, this.CHORDI);
-            showNote(nRootFret + 12, this.ESTRING2, this.CHORDI);
+            this.showNote(nRootFret, this.ESTRING2, this.CHORDI);
+            this.showNote(nRootFret + 12, this.ESTRING2, this.CHORDI);
 
             break;
           case 4:
-            showNote(nRootFret + 5, this.ESTRING1, this.CHORDIV);
-            showNote(nRootFret + 17, this.ESTRING1, this.CHORDIV);
-            showNote(nRootFret - 7, this.ESTRING1, this.CHORDIV);
+            this.showNote(nRootFret + 5, this.ESTRING1, this.CHORDIV);
+            this.showNote(nRootFret + 17, this.ESTRING1, this.CHORDIV);
+            this.showNote(nRootFret - 7, this.ESTRING1, this.CHORDIV);
 
-            showNote(nRootFret + 10, this.this.BSTRING, this.CHORDIV);
-            showNote(nRootFret + 22, this.this.BSTRING, this.CHORDIV);
-            showNote(nRootFret - 2, this.this.BSTRING, this.CHORDIV);
+            this.showNote(nRootFret + 10, this.BSTRING, this.CHORDIV);
+            this.showNote(nRootFret + 22, this.BSTRING, this.CHORDIV);
+            this.showNote(nRootFret - 2, this.BSTRING, this.CHORDIV);
 
-            showNote(nRootFret + 2, this.GSTRING, this.CHORDIV);
-            showNote(nRootFret + 14, this.GSTRING, this.CHORDIV);
-            showNote(nRootFret - 10, this.GSTRING, this.CHORDIV);
+            this.showNote(nRootFret + 2, this.GSTRING, this.CHORDIV);
+            this.showNote(nRootFret + 14, this.GSTRING, this.CHORDIV);
+            this.showNote(nRootFret - 10, this.GSTRING, this.CHORDIV);
 
-            showNote(nRootFret + 7, this.DSTRING, this.CHORDIV);
-            showNote(nRootFret + 19, this.DSTRING, this.CHORDIV);
-            showNote(nRootFret - 5, this.DSTRING, this.CHORDIV);
+            this.showNote(nRootFret + 7, this.DSTRING, this.CHORDIV);
+            this.showNote(nRootFret + 19, this.DSTRING, this.CHORDIV);
+            this.showNote(nRootFret - 5, this.DSTRING, this.CHORDIV);
 
-            showNote(nRootFret, this.ASTRING, this.CHORDIV);
-            showNote(nRootFret + 12, this.ASTRING, this.CHORDIV);
+            this.showNote(nRootFret, this.ASTRING, this.CHORDIV);
+            this.showNote(nRootFret + 12, this.ASTRING, this.CHORDIV);
 
-            showNote(nRootFret + 5, this.ESTRING2, this.CHORDIV);
-            showNote(nRootFret + 17, this.ESTRING2, this.CHORDIV);
-            showNote(nRootFret - 7, this.ESTRING2, this.CHORDIV);
+            this.showNote(nRootFret + 5, this.ESTRING2, this.CHORDIV);
+            this.showNote(nRootFret + 17, this.ESTRING2, this.CHORDIV);
+            this.showNote(nRootFret - 7, this.ESTRING2, this.CHORDIV);
 
             break;
           case 5:
-            showNote(nRootFret + 7, this.ESTRING1, this.CHORDV);
-            showNote(nRootFret + 19, this.ESTRING1, this.CHORDV);
-            showNote(nRootFret - 5, this.ESTRING1, this.CHORDV);
+            this.showNote(nRootFret + 7, this.ESTRING1, this.CHORDV);
+            this.showNote(nRootFret + 19, this.ESTRING1, this.CHORDV);
+            this.showNote(nRootFret - 5, this.ESTRING1, this.CHORDV);
 
-            showNote(nRootFret, this.this.BSTRING, this.CHORDV);
-            showNote(nRootFret + 12, this.this.BSTRING, this.CHORDV);
+            this.showNote(nRootFret, this.BSTRING, this.CHORDV);
+            this.showNote(nRootFret + 12, this.BSTRING, this.CHORDV);
 
-            showNote(nRootFret + 4, this.GSTRING, this.CHORDV);
-            showNote(nRootFret + 16, this.GSTRING, this.CHORDV);
-            showNote(nRootFret - 8, this.GSTRING, this.CHORDV);
+            this.showNote(nRootFret + 4, this.GSTRING, this.CHORDV);
+            this.showNote(nRootFret + 16, this.GSTRING, this.CHORDV);
+            this.showNote(nRootFret - 8, this.GSTRING, this.CHORDV);
 
-            showNote(nRootFret - 3, this.DSTRING, this.CHORDV);
-            showNote(nRootFret + 9, this.DSTRING, this.CHORDV);
-            showNote(nRootFret + 21, this.DSTRING, this.CHORDV);
+            this.showNote(nRootFret - 3, this.DSTRING, this.CHORDV);
+            this.showNote(nRootFret + 9, this.DSTRING, this.CHORDV);
+            this.showNote(nRootFret + 21, this.DSTRING, this.CHORDV);
 
-            showNote(nRootFret + 2, this.ASTRING, this.CHORDV);
-            showNote(nRootFret + 14, this.ASTRING, this.CHORDV);
-            showNote(nRootFret - 10, this.ASTRING, this.CHORDV);
+            this.showNote(nRootFret + 2, this.ASTRING, this.CHORDV);
+            this.showNote(nRootFret + 14, this.ASTRING, this.CHORDV);
+            this.showNote(nRootFret - 10, this.ASTRING, this.CHORDV);
 
-            showNote(nRootFret + 7, this.ESTRING2, this.CHORDV);
-            showNote(nRootFret + 19, this.ESTRING2, this.CHORDV);
-            showNote(nRootFret - 5, this.ESTRING2, this.CHORDV);
+            this.showNote(nRootFret + 7, this.ESTRING2, this.CHORDV);
+            this.showNote(nRootFret + 19, this.ESTRING2, this.CHORDV);
+            this.showNote(nRootFret - 5, this.ESTRING2, this.CHORDV);
 
             break;
         }
@@ -1810,15 +1837,20 @@ export default {
         }
       }
 
-      for (let i = 0; i < this.fretMarkers.length; i++) {
-        this.fretMarkers[i].hide();
-      }
+      // for (let i = 0; i < this.fretMarkers.length; i++) {
+      //   this.fretMarkers[i].hide();
+      // }
 
       this.allShapes.clear();
     },
     resetFilters() {
-      $("input[type=radio]").prop("checked", false);
-      $("input[type=checkbox]").prop("checked", false);
+      this.accBoxes = []
+      this.accBoxes = []
+    this.accPatterns = []
+    this.accScales = []
+    this.accRootNotes = []
+      // $("input[type=radio]").prop("checked", false);
+      // $("input[type=checkbox]").prop("checked", false);
     },
     getDotID(fret, offset, string) {
       return "#Dot-" + (fret + offset) + "-" + string;
@@ -1827,7 +1859,7 @@ export default {
       if (fret >= 0 && fret < 22) {
         this.fretMarkers[fret].fill({
           color: chord,
-          opacity: thisCHORDOPACITY
+          opacity: this.CHORDOPACITY
         });
         this.fretMarkers[fret].show();
       }
