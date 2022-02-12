@@ -1837,9 +1837,9 @@ export default {
         }
       }
 
-      // for (let i = 0; i < this.fretMarkers.length; i++) {
-      //   this.fretMarkers[i].hide();
-      // }
+      for (let i = 0; i < this.fretMarkers.length; i++) {
+        this.fretMarkers[i].hide();
+      }
 
       this.allShapes.clear();
     },
