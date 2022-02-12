@@ -1,52 +1,105 @@
 <template>
-  <q-layout view="hHh lpR fFf" container>
-    <q-drawer v-model="leftDrawerOpen" side="left">
-      <!-- <div id="page-wrapper" class="q-pt-lg"> -->
-      <div id="filters">
-        <div
-          class="q-page-sticky row flex-center fixed-bottom-right q-page-sticky--shrink"
-          style="transform: translate(0px, 0px); margin: 18px;"
-        >
-          <!-- <q-page-sticky position="bottom-right" :offset="[18, 18]"> -->
-          <q-btn
-            fab
-            icon="keyboard_arrow_left"
-            color="accent"
-            class="
-              float-right 
-              q-ma-sm
-              "
-            @click="toggleLeftDrawer"
-          />
-          <!-- </q-page-sticky> -->
-        </div>
+  <q-layout view="hHh lpR fFf">
+    <q-drawer v-model="leftDrawerOpen" side="left" overlay elevated bordered>
+      <q-btn
+        class="fixed-top-right glossy q-my-sm q-mr-md"
+        icon="keyboard_arrow_left"
+        color="accent"
+        @click="toggleLeftDrawer"
+        fab-mini
+        push
+      />
+
+      <div
+        id="page-wrapper"
+        class="
+          q-my-xl 
+        "
+      >
+        <q-expansion-item label="Selections" class="relative q-mt-xl">
+          <q-card class="bg-grey-9 ">
+            <q-card-section>
+              <div class="text-subtitle2">
+                <p>Boxes: {{ accBoxes }}</p>
+                <p>Patterns: {{ accPatterns }}</p>
+                <p>Scales: {{ accScales }}</p>
+                <p>Root Notes: {{ accRootNotes }}</p>
+              </div>
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
 
         <q-select
-          class="q-mx-lg inset-shadow bg-white"
+          class="q-mx-lg bg-accent text-center"
           v-model="key"
           :options="keyOptions"
-          label="Select Key"
-          standout
-          outlined
           @update:model-value="processKeyChange"
-        />
+          transition-show="flip-up"
+          transition-hide="flip-down"
+          options-selected-class="text-deep-orange"
+          :display-value="`Selected Key: ${key ? key : '*none*'}`"
+          options-dense
+          rounded
+          dense
+        >
+        
+        <template v-slot:before>
+          <q-btn round dense flat icon="mdi-key-variant" />
+        </template>
+        </q-select>
+
         <q-expansion-item group="filters" icon="widgets" label="Boxes">
+          <q-card class="bg-grey-9 ">
+            <q-card-section>
+              <q-option-group
+                v-model="accBoxes"
+                :options="boxSelection"
+                color="accent"
+                type="toggle"
+                @update:model-value="updateFretboard"
+              />
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+        <q-expansion-item
+          group="filters"
+          icon="rounded_corner"
+          label="Patterns"
+          class="bg-grey-9"
+        >
           <q-option-group
-            v-model="accBoxes"
-            :options="boxSelection"
+            v-model="accPatterns"
+            :options="patternSelection"
             color="accent"
             type="toggle"
-            @update:model-value="updateFretboard"
+            @update:model-value="drawFilterResults"
           />
         </q-expansion-item>
-        <q-expansion-item group="filters" icon="widgets" label="Scales">
-          <q-option-group
-            v-model="accScales"
-            :options="scaleFilters"
-            color="accent"
-            type="toggle"
-            @update:model-value="drawScaleFilters"
-          />
+        <q-expansion-item group="filters" icon="queue_music" label="Scales">
+          <q-card class="bg-grey-9 ">
+            <q-card-section>
+              <q-option-group
+                v-model="accScales"
+                :options="scaleFilters"
+                color="accent"
+                type="toggle"
+                @update:model-value="drawFilterResults"
+              />
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+        <q-expansion-item group="filters" icon="music_note" label="Root Notes">
+          <q-card class="bg-grey-9 ">
+            <q-card-section>
+              <q-option-group
+                v-model="accRootNotes"
+                :options="rootNoteFilters"
+                color="accent"
+                type="toggle"
+                @update:model-value="drawFilterResults"
+              />
+            </q-card-section>
+          </q-card>
         </q-expansion-item>
 
         <!-- <li class="accordion-item" data-accordion-item data-section-id="2">
@@ -126,6 +179,12 @@ import { SVG } from "@svgdotjs/svg.js";
 import "@svgdotjs/svg.panzoom.js";
 export default {
   name: "FretboardTool",
+  props: {
+    fetchDrawer: {
+      type: Boolean,
+      default: false
+    }
+  },
   data: () => ({
     leftDrawerOpen: true,
     key: "E",
@@ -157,8 +216,9 @@ export default {
     xoffsets: [],
     yoffsets: [],
     accBoxes: [],
+    accPatterns: [],
     accScales: [],
-    accRootNoteFilters: [],
+    accRootNotes: [],
     allShapes: null,
     allNotes: null,
     allMarkers: null,
@@ -209,10 +269,10 @@ export default {
     CHORDOPACITY: 0.4,
     STRINGFILL: "#555",
     FRETBOARDFILL:
-      "https:/,txba-media.s3.us-east-1.     ,onaws.com/misc/RosewoodTexture,jpg", //"#222",
+      "https://txba-media.s3.us-east-1.amazonaws.com/misc/RosewoodTexture.jpg", //"#222";
     HEADSTOCKFILL:
-      "https:/,txba-media.s3.us-east-1.     ,onaws.com/misc/LayeredMaple.jpg",
-    BODYFILL: "https://txba-media.s3,us-east-1.amazonaws.com/misc,DarkWood.jpg",
+      "https://txba-media.s3.us-east-1.amazonaws.com/misc/LayeredMaple.jpg",
+    BODYFILL: "https://txba-media.s3.us-east-1.amazonaws.com/misc/DarkWood.jpg",
 
     keyLimits: [
       [4, 11, 3, 8], //E
@@ -298,26 +358,119 @@ export default {
         label: "Box 4"
       }
     ],
-    scaleFilters: [{
-      value: "majorScale",
-      label: "Major Scale",
-    },
-    {
-      value:'minorScale',
-      label: "Minor Scale",
-    },{
-      value: 'majorPentatonic',
-      label: "Major Pentatonic",
-    },{
-      value:'minorPentatonic',
-      label: "Minor Pentatonic",
-    }]
+    scaleFilters: [
+      {
+        value: "majorScale",
+        label: "Major Scale"
+      },
+      {
+        value: "minorScale",
+        label: "Minor Scale"
+      },
+      {
+        value: "majorPentatonic",
+        label: "Major Pentatonic"
+      },
+      {
+        value: "minorPentatonic",
+        label: "Minor Pentatonic"
+      }
+    ],
+    patternFilters: [
+      {
+        shapeType: "backdoor1",
+        position: "2",
+        rootOffset: "-9",
+        id: "backdoor2Lower",
+        label: "Backdoor Pattern 2 (lower)"
+      },
+      {
+        shapeType: "backdoor2",
+        position: "3",
+        rootOffset: "-5",
+        id: "backdoor3Lower",
+        label: "Backdoor Pattern 3 (lower)"
+      },
+      {
+        shapeType: "backdoor2",
+        position: "4",
+        rootOffset: "-2",
+        id: "backdoor4Lower",
+        label: "Backdoor Pattern 1"
+      },
+      {
+        shapeType: "backdoor1",
+        position: "1",
+        rootOffset: "0",
+        id: "backdoor1Root",
+        label: "Backdoor Pattern 1"
+      },
+      {
+        shapeType: "backdoor2",
+        position: "2",
+        rootOffset: "3",
+        id: "backdoor2Root",
+        label: "Backdoor Pattern 2"
+      },
+      {
+        shapeType: "backdoor1",
+        position: "3",
+        rootOffset: "7",
+        id: "backdoor3Root",
+        label: "Backdoor Pattern 3"
+      },
+      {
+        shapeType: "backdoor2",
+        position: "4",
+        rootOffset: "20",
+        id: "backdoor4Root",
+        label: "Backdoor Pattern 4"
+      },
+      {
+        shapeType: "backdoor1",
+        position: "1",
+        rootOffset: "12",
+        id: "backdoor1Upper",
+        label: "Backdoor Pattern 1 (upper)"
+      },
+      {
+        shapeType: "backdoor1",
+        position: "2",
+        rootOffset: "15",
+        id: "backdoor2Upper",
+        label: "Backdoor Pattern 2 (upper)"
+      },
+      {
+        shapeType: "backdoor2",
+        position: "3",
+        rootOffset: "19",
+        id: "backdoor3Upper",
+        label: "Backdoor Pattern 3 (upper)"
+      }
+    ],
+    rootNoteFilters: [
+      {
+        value: "root1Notes",
+        label: "I Chord Root Notes"
+      },
+      {
+        value: "root4Notes",
+        label: "IV Chord Root Notes"
+      },
+      {
+        value: "root5Notes",
+        label: "V Chord Root Notes"
+      }
+    ]
   }),
   mounted() {
     var FastClick = require("fastclick");
     FastClick.attach(document.body, {});
     window.canvas = SVG().addTo("body");
-    this.Drawing = SVG("#fretboard-wrapper").panZoom({ zoomMin: 0.3, zoomMax: 1.5 })
+    this.Drawing = SVG("#fretboard-wrapper").panZoom({
+      zoomMin: 0.3,
+      zoomMax: 1.5
+    });
     this.Body = this.Drawing.path(
       "M2832.6,721.7 C2744.0,725.3 2674.1,735.3 2623.1,751.7 C2546.6,776.2 2299.6,869.2 2178.5,877.7 C2060.6,886.0 1892.3,886.0 1821.0,786.2 C1783.5,733.7 1782.0,696.6 1806.0,670.1 C1830.0,643.6 1953.5,647.6 2025.5,624.6 C2097.5,601.6 2173.0,515.6 2186.5,451.1 C2200.0,386.6 2186.3,340.7 2145.0,309.5 C2078.0,258.8 2070.2,157.7 2121.5,15.9 C2203.8,12.3 2278.7,10.4 2346.1,10.4 C2379.6,10.4 2428.1,-109.1 2420.6,-167.6 C2413.1,-226.1 2386.6,-301.2 2306.1,-341.7 C2225.5,-382.2 2114.5,-352.2 2097.5,-437.2 C2083.9,-505.3 2161.0,-544.7 2248.1,-568.7 C2335.1,-592.7 2439.6,-571.2 2540.1,-539.2 C2640.6,-507.2 2751.5,-445.2 2828.6,-445.2 C2832.4,-445.2 2833.7,-56.2 2832.6,721.7 Z"
     );
@@ -393,12 +546,32 @@ export default {
 
     this.processKeyChange();
   },
+  watch: {
+    accBoxes() {
+      this.updateFretboard();
+    },
+    accScales() {
+      this.updateFretboard();
+    },
+    accRootNotes() {
+      this.updateFretboard();
+    },
+    fetchDrawer(v) {
+      if (v) this.toggleLeftDrawer();
+    }
+  },
   computed: {
     currentLimit() {
       return this.keyLimits[this.keyOptions.indexOf(this.key)];
     },
     boxSelection() {
       return this.boxFilters.map(({ label, id }) => ({
+        value: id,
+        label: label
+      }));
+    },
+    patternSelection() {
+      return this.patternFilters.map(({ label, id }) => ({
         value: id,
         label: label
       }));
@@ -442,8 +615,8 @@ export default {
       // }
       this.updateFretboard();
     },
-    drawScaleFilters(e){
-      console.log('sf', e)
+    drawFilterResults(e) {
+      console.log("sf", e);
     },
     updateFretboard() {
       this.resetFretboard();
@@ -464,14 +637,14 @@ export default {
         this.theShapes.push(box);
       });
 
-      this.drawFretMarker(this.rootFret - 7,  this.CHORDIV);
-      this.drawFretMarker(this.rootFret - 5,  this.CHORDV);
-      this.drawFretMarker(this.rootFret,  this.CHORDI);
-      this.drawFretMarker(this.rootFret + 5,  this.CHORDIV);
-      this.drawFretMarker(this.rootFret + 7,  this.CHORDV);
-      this.drawFretMarker(this.rootFret + 12,  this.CHORDI);
-      this.drawFretMarker(this.rootFret + 17,  this.CHORDIV);
-      this.drawFretMarker(this.rootFret + 19,  this.CHORDV);
+      this.drawFretMarker(this.rootFret - 7, this.CHORDIV);
+      this.drawFretMarker(this.rootFret - 5, this.CHORDV);
+      this.drawFretMarker(this.rootFret, this.CHORDI);
+      this.drawFretMarker(this.rootFret + 5, this.CHORDIV);
+      this.drawFretMarker(this.rootFret + 7, this.CHORDV);
+      this.drawFretMarker(this.rootFret + 12, this.CHORDI);
+      this.drawFretMarker(this.rootFret + 17, this.CHORDIV);
+      this.drawFretMarker(this.rootFret + 19, this.CHORDV);
 
       for (let i = 0; i < theShapes.length; i++) {
         let theShape = theShapes[i];
@@ -524,20 +697,16 @@ export default {
       // }
 
       this.allShapes.filterWith(function(add) {
-        var blur = add
-          .offset(5, 5)
-          .gaussianBlur(5);
-          blur.in(add.sourceAlpha)
+        var blur = add.offset(5, 5).gaussianBlur(5);
+        blur.in(add.sourceAlpha);
         add.blend(add.source, blur);
         this.size("200%", "200%").move("-50%", "-50%");
       });
       this.allNotes.front();
 
       this.allNotes.filterWith(function(add) {
-        var blur = add
-          .offset(2, 2)
-          .gaussianBlur(2);
-          blur.in(add.sourceAlpha)
+        var blur = add.offset(2, 2).gaussianBlur(2);
+        blur.in(add.sourceAlpha);
         add.blend(add.source, blur);
         this.size("200%", "200%").move("-50%", "-50%");
       });
@@ -706,7 +875,7 @@ export default {
 
       var stringWidths = [3, 4, 5, 6, 7, 8];
 
-       for (let i = 0; i < this.Strings.length; i++) {
+      for (let i = 0; i < this.Strings.length; i++) {
         var stringString =
           this.Strings[i].pt1.x +
           "," +
@@ -728,17 +897,15 @@ export default {
           (this.Strings[i].pt1.y + stringWidths[i] / 2.0) +
           " ";
 
-        var theString =  this.allStrings.polygon(stringString);
+        var theString = this.allStrings.polygon(stringString);
 
-        theString.fill( this.STRINGFILL);
+        theString.fill(this.STRINGFILL);
 
         this.Strings[i].svgElement = theString;
       }
-       this.allStrings.filterWith(function(add) {
-        var blur = add
-          .offset(5, 5)
-          .gaussianBlur(5);
-          blur.in(add.sourceAlpha)
+      this.allStrings.filterWith(function(add) {
+        var blur = add.offset(5, 5).gaussianBlur(5);
+        blur.in(add.sourceAlpha);
         add.blend(add.source, blur);
         this.size("200%", "200%").move("-50%", "-50%");
       });
@@ -954,12 +1121,15 @@ export default {
       fretNotes.push({ x: 2402.5, y: 277.5 });
       this.notes.push(fretNotes);
 
-       for (let i = 0; i < this.notes.length; i++) {
+      for (let i = 0; i < this.notes.length; i++) {
         for (let j = 0; j < this.notes[i].length; j++) {
           var theNote = this.allNotes
-            .circle( this.NOTERADIUS * 2)
-            .move(this.notes[i][j].x -  this.NOTERADIUS, this.notes[i][j].y -  this.NOTERADIUS);
-          theNote.fill( this.NOTECOLOR);
+            .circle(this.NOTERADIUS * 2)
+            .move(
+              this.notes[i][j].x - this.NOTERADIUS,
+              this.notes[i][j].y - this.NOTERADIUS
+            );
+          theNote.fill(this.NOTECOLOR);
           theNote.stroke(this.NOTESTROKE);
           this.notes[i][j].svgElement = theNote;
         }
@@ -988,7 +1158,7 @@ export default {
       return radians * (180 / pi);
     },
     computeNoteBoxes() {
-       for (let i = 0; i < this.notes.length; i++) {
+      for (let i = 0; i < this.notes.length; i++) {
         for (let j = 0; j < this.notes[i].length; j++) {
           // J is for strings
           var stringIndex = j;
@@ -1040,7 +1210,7 @@ export default {
 
           // pt8 - Center Left
           ptX = xCenter - boxOffset;
-          ptY =  this.computeYOnString(stringIndex, ptX);
+          ptY = this.computeYOnString(stringIndex, ptX);
           theBox.push({ x: ptX, y: ptY });
 
           this.notes[i][j].box = theBox;
@@ -1050,7 +1220,7 @@ export default {
     drawBoundingBox(fret, string) {
       var theBox = this.notes[fret][string].box;
 
-       for (let i = 0; i < theBox.length; i++) {
+      for (let i = 0; i < theBox.length; i++) {
         this.Drawing.circle(10)
           .move(theBox[i].x - 5, theBox[i].y - 5)
           .fill("#fff");
@@ -1064,7 +1234,7 @@ export default {
     },
     drawShape(fret, data) {
       var polygonString = "";
-       for (let i = 0; i < data.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         if (data[i][0] != "R") {
           polygonString += data[i][0];
         } else {
@@ -1127,7 +1297,7 @@ export default {
           break;
         case 6:
           ptX = noteX + this.BOXPADDING;
-          ptY =  this.computeYOnString(nString, ptX);
+          ptY = this.computeYOnString(nString, ptX);
           break;
         case 7:
           ptX = noteX + this.BOXPADDING;
@@ -1159,7 +1329,7 @@ export default {
           break;
         case 14:
           ptX = noteX - this.BOXPADDING;
-          ptY =  this.computeYOnString(nString, ptX);
+          ptY = this.computeYOnString(nString, ptX);
           break;
         case 15:
           ptX = noteX - this.BOXPADDING;
@@ -1167,81 +1337,83 @@ export default {
           break;
       }
     },
-    drawMinorPentatonic(theFret) {
-      this.drawPentatonic(theFret, this.MINOR);
+    drawMajorScale: () => ({}),
+    drawMinorScale: () => ({}),
+    drawMinorPentatonic() {
+      this.drawPentatonic(this.rootFret, this.MINOR);
     },
-    drawMajorPentatonic(theFret) {
-      this.drawPentatonic(theFret - 3, this.MAJOR);
+    drawMajorPentatonic() {
+      this.drawPentatonic(this.rootFret - 3, this.MAJOR);
     },
     drawPentatonic(theFret, strType) {
       this.showNote(theFret, this.ESTRING1, strType);
-      this.showNote(theFret,  this.BSTRING, strType);
-      this.showNote(theFret,  this.GSTRING, strType);
-      this.showNote(theFret,  this.DSTRING, strType);
-      this.showNote(theFret,  this.ASTRING, strType);
+      this.showNote(theFret, this.BSTRING, strType);
+      this.showNote(theFret, this.GSTRING, strType);
+      this.showNote(theFret, this.DSTRING, strType);
+      this.showNote(theFret, this.ASTRING, strType);
       this.showNote(theFret, this.ESTRING2, strType);
       this.showNote(theFret + 3, this.ESTRING1, strType);
-      this.showNote(theFret + 3,  this.BSTRING, strType);
-      this.showNote(theFret + 2,  this.GSTRING, strType);
-      this.showNote(theFret + 2,  this.DSTRING, strType);
-      this.showNote(theFret + 2,  this.ASTRING, strType);
+      this.showNote(theFret + 3, this.BSTRING, strType);
+      this.showNote(theFret + 2, this.GSTRING, strType);
+      this.showNote(theFret + 2, this.DSTRING, strType);
+      this.showNote(theFret + 2, this.ASTRING, strType);
       this.showNote(theFret + 3, this.ESTRING2, strType);
 
       //Position 2
       showNote(theFret + 5, this.ESTRING2, strType);
-      showNote(theFret + 5,  this.BSTRING, strType);
-      showNote(theFret + 4,  this.GSTRING, strType);
-      showNote(theFret + 5,  this.DSTRING, strType);
-      showNote(theFret + 5,  this.ASTRING, strType);
+      showNote(theFret + 5, this.BSTRING, strType);
+      showNote(theFret + 4, this.GSTRING, strType);
+      showNote(theFret + 5, this.DSTRING, strType);
+      showNote(theFret + 5, this.ASTRING, strType);
       showNote(theFret + 5, this.ESTRING1, strType);
 
       //Position 3
       showNote(theFret + 7, this.ESTRING2, strType);
-      showNote(theFret + 8,  this.BSTRING, strType);
-      showNote(theFret + 7,  this.GSTRING, strType);
-      showNote(theFret + 7,  this.DSTRING, strType);
-      showNote(theFret + 7,  this.ASTRING, strType);
+      showNote(theFret + 8, this.BSTRING, strType);
+      showNote(theFret + 7, this.GSTRING, strType);
+      showNote(theFret + 7, this.DSTRING, strType);
+      showNote(theFret + 7, this.ASTRING, strType);
       showNote(theFret + 7, this.ESTRING1, strType);
 
       // Position 4
       showNote(theFret + 10, this.ESTRING2, strType);
-      showNote(theFret + 10,  this.BSTRING, strType);
-      showNote(theFret + 9,  this.GSTRING, strType);
-      showNote(theFret + 9,  this.DSTRING, strType);
-      showNote(theFret + 10,  this.ASTRING, strType);
+      showNote(theFret + 10, this.BSTRING, strType);
+      showNote(theFret + 9, this.GSTRING, strType);
+      showNote(theFret + 9, this.DSTRING, strType);
+      showNote(theFret + 10, this.ASTRING, strType);
       showNote(theFret + 10, this.ESTRING1, strType);
 
       showNote(theFret + 12, this.ESTRING2, strType);
-      showNote(theFret + 12,  this.BSTRING, strType);
-      showNote(theFret + 12,  this.GSTRING, strType);
-      showNote(theFret + 12,  this.DSTRING, strType);
-      showNote(theFret + 12,  this.ASTRING, strType);
+      showNote(theFret + 12, this.BSTRING, strType);
+      showNote(theFret + 12, this.GSTRING, strType);
+      showNote(theFret + 12, this.DSTRING, strType);
+      showNote(theFret + 12, this.ASTRING, strType);
       showNote(theFret + 12, this.ESTRING1, strType);
 
       if (theFret < 7) {
         showNote(theFret + 15, this.ESTRING1, strType);
-        showNote(theFret + 15,  this.BSTRING, strType);
-        showNote(theFret + 14,  this.GSTRING, strType);
-        showNote(theFret + 14,  this.DSTRING, strType);
-        showNote(theFret + 14,  this.ASTRING, strType);
+        showNote(theFret + 15, this.BSTRING, strType);
+        showNote(theFret + 14, this.GSTRING, strType);
+        showNote(theFret + 14, this.DSTRING, strType);
+        showNote(theFret + 14, this.ASTRING, strType);
         showNote(theFret + 15, this.ESTRING2, strType);
       }
       if (theFret < 5) {
         showNote(theFret + 17, this.ESTRING2, strType);
-        showNote(theFret + 17,  this.BSTRING, strType);
-        showNote(theFret + 16,  this.GSTRING, strType);
-        showNote(theFret + 17,  this.DSTRING, strType);
-        showNote(theFret + 17,  this.ASTRING, strType);
+        showNote(theFret + 17, this.BSTRING, strType);
+        showNote(theFret + 16, this.GSTRING, strType);
+        showNote(theFret + 17, this.DSTRING, strType);
+        showNote(theFret + 17, this.ASTRING, strType);
         showNote(theFret + 17, this.ESTRING1, strType);
       }
 
       if (theFret < 3) {
         //Position 3
         showNote(theFret + 19, this.ESTRING2, strType);
-        showNote(theFret + 20,  this.BSTRING, strType);
-        showNote(theFret + 19,  this.GSTRING, strType);
-        showNote(theFret + 19,  this.DSTRING, strType);
-        showNote(theFret + 19,  this.ASTRING, strType);
+        showNote(theFret + 20, this.BSTRING, strType);
+        showNote(theFret + 19, this.GSTRING, strType);
+        showNote(theFret + 19, this.DSTRING, strType);
+        showNote(theFret + 19, this.ASTRING, strType);
         showNote(theFret + 19, this.ESTRING1, strType);
       }
     },
@@ -1253,16 +1425,16 @@ export default {
       }
 
       showNote(theFret, this.ESTRING1);
-      showNote(theFret,  this.BSTRING);
-      showNote(theFret,  this.GSTRING);
-      showNote(theFret,  this.DSTRING);
-      showNote(theFret,  this.ASTRING);
+      showNote(theFret, this.BSTRING);
+      showNote(theFret, this.GSTRING);
+      showNote(theFret, this.DSTRING);
+      showNote(theFret, this.ASTRING);
       showNote(theFret, this.ESTRING2);
       showNote(theFret + 3, this.ESTRING1);
-      showNote(theFret + 3,  this.BSTRING);
-      showNote(theFret + 2,  this.GSTRING);
-      showNote(theFret + 2,  this.DSTRING);
-      showNote(theFret + 2,  this.ASTRING);
+      showNote(theFret + 3, this.BSTRING);
+      showNote(theFret + 2, this.GSTRING);
+      showNote(theFret + 2, this.DSTRING);
+      showNote(theFret + 2, this.ASTRING);
       showNote(theFret + 3, this.ESTRING2);
 
       var data = {
@@ -1314,16 +1486,16 @@ export default {
       }
 
       showNote(theFret, this.ESTRING1);
-      showNote(theFret,  this.BSTRING);
-      showNote(theFret + 1,  this.GSTRING);
+      showNote(theFret, this.BSTRING);
+      showNote(theFret + 1, this.GSTRING);
       showNote(theFret + 2, this.ESTRING1);
-      showNote(theFret + 2,  this.BSTRING);
+      showNote(theFret + 2, this.BSTRING);
 
       var note1 = this.notes[theFret][ESTRING1];
       var note2 = this.notes[theFret + 2][ESTRING1];
-      var note3 = this.notes[theFret + 2][ this.BSTRING];
-      var note4 = this.notes[theFret + 1][ this.GSTRING];
-      var note5 = this.notes[theFret][ this.BSTRING];
+      var note3 = this.notes[theFret + 2][this.BSTRING];
+      var note4 = this.notes[theFret + 1][this.GSTRING];
+      var note5 = this.notes[theFret][this.BSTRING];
 
       //Mark the start point
       var polygonString =
@@ -1383,9 +1555,9 @@ export default {
 
       showNote(theFret, this.ESTRING1);
       showNote(theFret + 3, this.ESTRING1);
-      showNote(theFret + 1,  this.BSTRING);
-      showNote(theFret + 3,  this.BSTRING);
-      showNote(theFret + 2,  this.GSTRING);
+      showNote(theFret + 1, this.BSTRING);
+      showNote(theFret + 3, this.BSTRING);
+      showNote(theFret + 2, this.GSTRING);
 
       var data = {
         name: "Box 2",
@@ -1423,14 +1595,14 @@ export default {
       showNote(theFret, this.ESTRING2);
       showNote(theFret + 2, this.ESTRING2);
       showNote(theFret + 4, this.ESTRING2);
-      showNote(theFret + 2,  this.ASTRING);
-      showNote(theFret + 4,  this.ASTRING);
-      showNote(theFret + 2,  this.DSTRING);
-      showNote(theFret + 4,  this.DSTRING);
-      showNote(theFret + 6,  this.DSTRING);
-      showNote(theFret + 4,  this.GSTRING);
-      showNote(theFret + 6,  this.GSTRING);
-      showNote(theFret + 5,  this.BSTRING);
+      showNote(theFret + 2, this.ASTRING);
+      showNote(theFret + 4, this.ASTRING);
+      showNote(theFret + 2, this.DSTRING);
+      showNote(theFret + 4, this.DSTRING);
+      showNote(theFret + 6, this.DSTRING);
+      showNote(theFret + 4, this.GSTRING);
+      showNote(theFret + 6, this.GSTRING);
+      showNote(theFret + 5, this.BSTRING);
 
       var data = {
         name: "Backdoor Pattern (1)",
@@ -1470,24 +1642,24 @@ export default {
 
       showNote(theFret, this.ESTRING2);
       showNote(theFret + 2, this.ESTRING2);
-      showNote(theFret,  this.ASTRING);
-      showNote(theFret + 2,  this.ASTRING);
-      showNote(theFret + 4,  this.ASTRING);
-      showNote(theFret + 2,  this.DSTRING);
-      showNote(theFret + 4,  this.DSTRING);
-      showNote(theFret + 2,  this.GSTRING);
-      showNote(theFret + 4,  this.GSTRING);
-      showNote(theFret + 6,  this.GSTRING);
-      showNote(theFret + 5,  this.BSTRING);
+      showNote(theFret, this.ASTRING);
+      showNote(theFret + 2, this.ASTRING);
+      showNote(theFret + 4, this.ASTRING);
+      showNote(theFret + 2, this.DSTRING);
+      showNote(theFret + 4, this.DSTRING);
+      showNote(theFret + 2, this.GSTRING);
+      showNote(theFret + 4, this.GSTRING);
+      showNote(theFret + 6, this.GSTRING);
+      showNote(theFret + 5, this.BSTRING);
 
       var note1 = this.notes[theFret][ESTRING2];
-      var note2 = this.notes[theFret][ this.ASTRING];
-      var note3 = this.notes[theFret + 2][ this.DSTRING];
-      var note4 = this.notes[theFret + 2][ this.GSTRING];
-      var note5 = this.notes[theFret + 5][ this.BSTRING];
-      var note6 = this.notes[theFret + 6][ this.GSTRING];
-      var note7 = this.notes[theFret + 4][ this.DSTRING];
-      var note8 = this.notes[theFret + 4][ this.ASTRING];
+      var note2 = this.notes[theFret][this.ASTRING];
+      var note3 = this.notes[theFret + 2][this.DSTRING];
+      var note4 = this.notes[theFret + 2][this.GSTRING];
+      var note5 = this.notes[theFret + 5][this.BSTRING];
+      var note6 = this.notes[theFret + 6][this.GSTRING];
+      var note7 = this.notes[theFret + 4][this.DSTRING];
+      var note8 = this.notes[theFret + 4][this.ASTRING];
       var note9 = this.notes[theFret + 2][ESTRING2];
 
       var polygonString =
@@ -1542,7 +1714,7 @@ export default {
       if (strType !== undefined) {
         notes[fret][string].svgElement.fill(strType);
       } else {
-        notes[fret][string].svgElement.fill( this.NOTECOLOR);
+        notes[fret][string].svgElement.fill(this.NOTECOLOR);
       }
     },
     drawBoxes(fret) {
@@ -1556,76 +1728,76 @@ export default {
       if (!bMinor) {
         switch (nScaleDegree) {
           case 1:
-            showNote(nRootFret, this.ESTRING1,  this.CHORDI);
-            showNote(nRootFret + 12, this.ESTRING1,  this.CHORDI);
+            showNote(nRootFret, this.ESTRING1, this.CHORDI);
+            showNote(nRootFret + 12, this.ESTRING1, this.CHORDI);
 
-            showNote(nRootFret + 5,  this.BSTRING,  this.CHORDI);
-            showNote(nRootFret + 17,  this. this.BSTRING,  this.CHORDI);
+            showNote(nRootFret + 5, this.BSTRING, this.CHORDI);
+            showNote(nRootFret + 17, this.this.BSTRING, this.CHORDI);
 
-            showNote(nRootFret + 9,  this.GSTRING,  this.CHORDI);
-            showNote(nRootFret + 21,  this.GSTRING,  this.CHORDI);
-            showNote(nRootFret - 3,  this.GSTRING,  this.CHORDI);
+            showNote(nRootFret + 9, this.GSTRING, this.CHORDI);
+            showNote(nRootFret + 21, this.GSTRING, this.CHORDI);
+            showNote(nRootFret - 3, this.GSTRING, this.CHORDI);
 
-            showNote(nRootFret + 2,  this.DSTRING,  this.CHORDI);
-            showNote(nRootFret + 14,  this.DSTRING,  this.CHORDI);
-            showNote(nRootFret - 10,  this.DSTRING,  this.CHORDI);
+            showNote(nRootFret + 2, this.DSTRING, this.CHORDI);
+            showNote(nRootFret + 14, this.DSTRING, this.CHORDI);
+            showNote(nRootFret - 10, this.DSTRING, this.CHORDI);
 
-            showNote(nRootFret + 7,  this.ASTRING,  this.CHORDI);
-            showNote(nRootFret + 19,  this.ASTRING,  this.CHORDI);
-            showNote(nRootFret - 5,  this.ASTRING,  this.CHORDI);
+            showNote(nRootFret + 7, this.ASTRING, this.CHORDI);
+            showNote(nRootFret + 19, this.ASTRING, this.CHORDI);
+            showNote(nRootFret - 5, this.ASTRING, this.CHORDI);
 
-            showNote(nRootFret, this.ESTRING2,  this.CHORDI);
-            showNote(nRootFret + 12, this.ESTRING2,  this.CHORDI);
+            showNote(nRootFret, this.ESTRING2, this.CHORDI);
+            showNote(nRootFret + 12, this.ESTRING2, this.CHORDI);
 
             break;
           case 4:
-            showNote(nRootFret + 5, this.ESTRING1,  this.CHORDIV);
-            showNote(nRootFret + 17, this.ESTRING1,  this.CHORDIV);
-            showNote(nRootFret - 7, this.ESTRING1,  this.CHORDIV);
+            showNote(nRootFret + 5, this.ESTRING1, this.CHORDIV);
+            showNote(nRootFret + 17, this.ESTRING1, this.CHORDIV);
+            showNote(nRootFret - 7, this.ESTRING1, this.CHORDIV);
 
-            showNote(nRootFret + 10,  this. this.BSTRING,  this.CHORDIV);
-            showNote(nRootFret + 22,  this. this.BSTRING,  this.CHORDIV);
-            showNote(nRootFret - 2,  this. this.BSTRING,  this.CHORDIV);
+            showNote(nRootFret + 10, this.this.BSTRING, this.CHORDIV);
+            showNote(nRootFret + 22, this.this.BSTRING, this.CHORDIV);
+            showNote(nRootFret - 2, this.this.BSTRING, this.CHORDIV);
 
-            showNote(nRootFret + 2,  this.GSTRING,  this.CHORDIV);
-            showNote(nRootFret + 14,  this.GSTRING,  this.CHORDIV);
-            showNote(nRootFret - 10,  this.GSTRING,  this.CHORDIV);
+            showNote(nRootFret + 2, this.GSTRING, this.CHORDIV);
+            showNote(nRootFret + 14, this.GSTRING, this.CHORDIV);
+            showNote(nRootFret - 10, this.GSTRING, this.CHORDIV);
 
-            showNote(nRootFret + 7,  this.DSTRING,  this.CHORDIV);
-            showNote(nRootFret + 19,  this.DSTRING,  this.CHORDIV);
-            showNote(nRootFret - 5,  this.DSTRING,  this.CHORDIV);
+            showNote(nRootFret + 7, this.DSTRING, this.CHORDIV);
+            showNote(nRootFret + 19, this.DSTRING, this.CHORDIV);
+            showNote(nRootFret - 5, this.DSTRING, this.CHORDIV);
 
-            showNote(nRootFret,  this.ASTRING,  this.CHORDIV);
-            showNote(nRootFret + 12,  this.ASTRING,  this.CHORDIV);
+            showNote(nRootFret, this.ASTRING, this.CHORDIV);
+            showNote(nRootFret + 12, this.ASTRING, this.CHORDIV);
 
-            showNote(nRootFret + 5, this.ESTRING2,  this.CHORDIV);
-            showNote(nRootFret + 17, this.ESTRING2,  this.CHORDIV);
-            showNote(nRootFret - 7, this.ESTRING2,  this.CHORDIV);
+            showNote(nRootFret + 5, this.ESTRING2, this.CHORDIV);
+            showNote(nRootFret + 17, this.ESTRING2, this.CHORDIV);
+            showNote(nRootFret - 7, this.ESTRING2, this.CHORDIV);
 
             break;
           case 5:
-            showNote(nRootFret + 7, this.ESTRING1,  this.CHORDV);
-            showNote(nRootFret + 19, this.ESTRING1,  this.CHORDV);
-            showNote(nRootFret - 5, this.ESTRING1,  this.CHORDV);
+            showNote(nRootFret + 7, this.ESTRING1, this.CHORDV);
+            showNote(nRootFret + 19, this.ESTRING1, this.CHORDV);
+            showNote(nRootFret - 5, this.ESTRING1, this.CHORDV);
 
-            showNote(nRootFret,  this. this.BSTRING,  this.CHORDV);
-            showNote(nRootFret + 12,  this. this.BSTRING,  this.CHORDV);
+            showNote(nRootFret, this.this.BSTRING, this.CHORDV);
+            showNote(nRootFret + 12, this.this.BSTRING, this.CHORDV);
 
-            showNote(nRootFret + 4,  this.GSTRING,  this.CHORDV);
-            showNote(nRootFret + 16,  this.GSTRING,  this.CHORDV);
-            showNote(nRootFret - 8,  this.GSTRING,  this.CHORDV);
+            showNote(nRootFret + 4, this.GSTRING, this.CHORDV);
+            showNote(nRootFret + 16, this.GSTRING, this.CHORDV);
+            showNote(nRootFret - 8, this.GSTRING, this.CHORDV);
 
-            showNote(nRootFret - 3,  this.DSTRING,  this.CHORDV);
-            showNote(nRootFret + 9,  this.DSTRING,  this.CHORDV);
-            showNote(nRootFret + 21,  this.DSTRING,  this.CHORDV);
+            showNote(nRootFret - 3, this.DSTRING, this.CHORDV);
+            showNote(nRootFret + 9, this.DSTRING, this.CHORDV);
+            showNote(nRootFret + 21, this.DSTRING, this.CHORDV);
 
-            showNote(nRootFret + 2,  this.ASTRING,  this.CHORDV);
-            showNote(nRootFret + 14,  this.ASTRING,  this.CHORDV);
-            showNote(nRootFret - 10,  this.ASTRING,  this.CHORDV);
+            showNote(nRootFret + 2, this.ASTRING, this.CHORDV);
+            showNote(nRootFret + 14, this.ASTRING, this.CHORDV);
+            showNote(nRootFret - 10, this.ASTRING, this.CHORDV);
 
-            showNote(nRootFret + 7, this.ESTRING2,  this.CHORDV);
-            showNote(nRootFret + 19, this.ESTRING2,  this.CHORDV);
-            showNote(nRootFret - 5, this.ESTRING2,  this.CHORDV);
+            showNote(nRootFret + 7, this.ESTRING2, this.CHORDV);
+            showNote(nRootFret + 19, this.ESTRING2, this.CHORDV);
+            showNote(nRootFret - 5, this.ESTRING2, this.CHORDV);
 
             break;
         }
@@ -1653,12 +1825,15 @@ export default {
     },
     drawFretMarker(fret, chord) {
       if (fret >= 0 && fret < 22) {
-        this.fretMarkers[fret].fill({ color: chord, opacity: thisCHORDOPACITY });
+        this.fretMarkers[fret].fill({
+          color: chord,
+          opacity: thisCHORDOPACITY
+        });
         this.fretMarkers[fret].show();
       }
     },
     computeOffsets() {
-       for (let i = 0; i < this.Frets.length; i++) {
+      for (let i = 0; i < this.Frets.length; i++) {
         this.yoffsets.push(
           (this.notes[i][this.BSTRING].y - this.notes[i][this.ESTRING1].y) / 2.0
         );
@@ -1675,117 +1850,132 @@ export default {
         pt1: { x: 47.33, y: 54.2 },
         pt2: { x: 47.33, y: 264.5 }
       });
-       this.Frets.push({ pt1: { x: 241.33, y: 48 }, pt2: { x: 241.33, y: 265 } });
-       this.Frets.push({ pt1: { x: 417.33, y: 46 }, pt2: { x: 417.33, y: 270 } });
-       this.Frets.push({ pt1: { x: 583.33, y: 41 }, pt2: { x: 583.33, y: 273 } });
-       this.Frets.push({
+      this.Frets.push({
+        pt1: { x: 241.33, y: 48 },
+        pt2: { x: 241.33, y: 265 }
+      });
+      this.Frets.push({
+        pt1: { x: 417.33, y: 46 },
+        pt2: { x: 417.33, y: 270 }
+      });
+      this.Frets.push({
+        pt1: { x: 583.33, y: 41 },
+        pt2: { x: 583.33, y: 273 }
+      });
+      this.Frets.push({
         pt1: { x: 743.33, y: 37.36 },
         pt2: { x: 743.33, y: 276.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 892.33, y: 35 },
         pt2: { x: 892.33, y: 279.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 1036.33, y: 31 },
         pt2: { x: 1036.33, y: 281.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 1171.33, y: 29 },
         pt2: { x: 1171.33, y: 282.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 1298.33, y: 27 },
         pt2: { x: 1298.33, y: 283.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 1417.33, y: 23 },
         pt2: { x: 1417.33, y: 284.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 1531.33, y: 22 },
         pt2: { x: 1531.33, y: 287.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 1640.33, y: 19 },
         pt2: { x: 1640.33, y: 287.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 1740.33, y: 18.41 },
         pt2: { x: 1740.33, y: 290.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 1836.33, y: 16 },
         pt2: { x: 1836.33, y: 291.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 1926.33, y: 14 },
         pt2: { x: 1926.33, y: 292.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 2012.33, y: 12 },
         pt2: { x: 2012.33, y: 293.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 2093.33, y: 10 },
         pt2: { x: 2093.33, y: 294.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 2168.33, y: 9 },
         pt2: { x: 2168.33, y: 296.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 2241.33, y: 5 },
         pt2: { x: 2241.33, y: 297.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 2308.33, y: 6 },
         pt2: { x: 2308.33, y: 297.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 2372.33, y: 6 },
         pt2: { x: 2372.33, y: 299.49 }
       });
-       this.Frets.push({
+      this.Frets.push({
         pt1: { x: 2433.33, y: 5 },
         pt2: { x: 2433.33, y: 299.49 }
       });
 
-      for (let i = 0; i <  this.Frets.length; i++) {
+      for (let i = 0; i < this.Frets.length; i++) {
         //var theFret = this.allFrets.line(  this.Frets[i].pt1.x,  this.Frets[i].pt1.y,  this.Frets[i].pt2.x,  this.Frets[i].pt2.y );
         var theFret;
         if (i == 0) {
           theFret = this.allFrets.rect(
-             this.FRETWIDTH * 1.5,
-             this.Frets[i].pt2.y -  this.Frets[i].pt1.y
+            this.FRETWIDTH * 1.5,
+            this.Frets[i].pt2.y - this.Frets[i].pt1.y
           );
-          theFret.move( this.Frets[i].pt1.x -  this.FRETWIDTH / 2.0,  this.Frets[i].pt1.y);
+          theFret.move(
+            this.Frets[i].pt1.x - this.FRETWIDTH / 2.0,
+            this.Frets[i].pt1.y
+          );
           theFret.fill("#555");
         } else {
           theFret = this.allFrets.rect(
-             this.FRETWIDTH,
-             this.Frets[i].pt2.y -  this.Frets[i].pt1.y
+            this.FRETWIDTH,
+            this.Frets[i].pt2.y - this.Frets[i].pt1.y
           );
-          theFret.radius( this.FRETWIDTH / 4);
-          theFret.move( this.Frets[i].pt1.x -  this.FRETWIDTH / 2.0,  this.Frets[i].pt1.y);
+          theFret.radius(this.FRETWIDTH / 4);
+          theFret.move(
+            this.Frets[i].pt1.x - this.FRETWIDTH / 2.0,
+            this.Frets[i].pt1.y
+          );
           theFret.fill(this.fretGradient);
         }
 
-         this.Frets[i].svgElement = theFret;
+        this.Frets[i].svgElement = theFret;
       }
     },
     createFretMarkers() {
       this.allMarkers = this.Drawing.group();
 
-      let markerOffset =  this.FRETWIDTH / 2;
+      let markerOffset = this.FRETWIDTH / 2;
       let markerVOffset = 60;
-      let theMarkers =  this.Frets;
+      let theMarkers = this.Frets;
 
       theMarkers = [];
       theMarkers.push({ pt1: { x: -17, y: 54 }, pt2: { x: -17, y: 264 } });
 
-      for (let i = 0; i <  this.Frets.length; i++) {
-        theMarkers.push( this.Frets[i]);
+      for (let i = 0; i < this.Frets.length; i++) {
+        theMarkers.push(this.Frets[i]);
       }
       for (let i = 1; i < theMarkers.length; i++) {
         var polygonString =
@@ -1820,145 +2010,8 @@ export default {
   }
 };
 </script>
-
-<style>
-body,
-html {
-  padding: 0;
-  margin: 0;
-  font-family: Verdana;
-  font-size: 83%;
-  color: #ccc;
-}
-
-#filters {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 250px;
-  background: #444;
-  border-bottom: 1px solid #777;
-  z-index: 1;
-}
-
-#fretboard-container {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 250px;
-  width: 100%;
-  overflow: auto;
-  z-index: 0;
-  box-shadow: inset 5px 5px 15px #000;
-  background: black;
-}
-
-#rotation-controls {
-  position: absolute;
-  bottom: 0;
-  left: 250px;
-  right: 0px;
-  height: 6.5rem;
-  background: #333;
-  border-top: 1px solid #777;
-  padding-top: 0.5rem;
-  z-index: 1;
-}
-
-#fretboard {
-  backface-visibility: hidden;
-}
-
-.slider-group {
-  float: left;
-  width: 50%;
-  padding: 0;
-  font-size: 1.7rem;
-}
-
-.slider-wrapper {
-  float: left;
-  width: 100%;
-  margin-bottom: 0.25em;
-}
-
-.slider-wrapper .slider-label {
-  float: left;
-  width: 25%;
-  white-space: nowrap;
-  font-size: 1rem;
-  text-align: right;
-}
-
-.slider-wrapper .noUi-target {
-  float: right;
-  width: 74%;
-  margin: 0;
-}
-
-a.small-button,
-a.small-button:visited {
-  color: #0af;
-  display: inline-block;
-  font-size: 0.9rem;
-  display: block;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.filter-section {
-  display: block;
-  margin: 1rem;
-}
-
-.filter-group input[type="checkbox"] {
-  display: none;
-}
-
-.filter-section select {
-  width: 100%;
-  line-height: 2em !important;
-  height: 2em;
-  border-radius: 4px;
-  background: white;
-}
-
-.filter-group-title {
-  font-size: 1.2rem;
-  color: white;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
-}
-
-.filter-group input[type="checkbox"] + label {
-  display: block;
-  line-height: 1.5em;
-  font-size: 1rem;
-}
-
-.filter-group input[type="checkbox"] + label:hover,
-.filter-group input[type="checkbox"] + label:hover:before {
-  color: white;
-  cursor: pointer;
-}
-
-.filter-group input[type="checkbox"] + label:before {
-  font-family: FontAwesome;
-  content: "\f0c8";
-  margin-right: 0.5rem;
-  color: #ddd;
-}
-
-.filter-group input[type="checkbox"]:checked + label {
-  color: white;
-  font-weight: bold;
-}
-
-.filter-group input[type="checkbox"]:checked + label:before {
-  content: "\f14a";
-  color: white;
-}
+<style lang="sass" scoped>
+.my-card
+  width: 100%
+  max-width: 250px
 </style>
