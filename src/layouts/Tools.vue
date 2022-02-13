@@ -5,11 +5,9 @@
     <q-header elevated reveal>
       <q-toolbar >
         <q-btn
-        title="Toggle Filters"
         color="secondary"
-        icon-right="keyboard_double_arrow_right"
-        icon="mdi-filter-plus-outline"
-        aria-label="Filters"
+        icon="menu"
+        aria-label="menu"
         @click="retrieveDrawer = !retrieveDrawer"
       />
         <q-toolbar-title class="text-capitalize text-subtitle2">
