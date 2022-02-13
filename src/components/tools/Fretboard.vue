@@ -45,10 +45,9 @@
           rounded
           dense
         >
-        
-        <template v-slot:before>
-          <q-btn round dense flat icon="mdi-key-variant" />
-        </template>
+          <template v-slot:before>
+            <q-btn round dense flat icon="mdi-key-variant" />
+          </template>
         </q-select>
 
         <q-expansion-item group="filters" icon="widgets" label="Boxes">
@@ -156,16 +155,15 @@
             </li>
           </ul> -->
         <!-- </div> -->
-      
-      <q-btn
-        class="glossy q-mb-xl self-center fixed-bottom "
-        icon="restart_alt"
-        color="accent"
-        @click="resetFretboard"
-       label="Reset Filters"
-        push
-      />
-          
+
+        <q-btn
+          class="glossy q-mb-xl self-center fixed-bottom "
+          icon="restart_alt"
+          color="accent"
+          @click="resetFretboard"
+          label="Reset Filters"
+          push
+        />
       </div>
     </q-drawer>
 
@@ -303,19 +301,17 @@ export default {
     ],
     boxFilters: [
       {
-        id: "box2Lower",
-        fretEnabled: "9",
-        rootOffset: -9,
-        position: 2,
         shapeType: "box2",
+        position: 2,
+        rootOffset: -9,
+        id: "box2Lower",
         label: "Box 2 (lower)"
       },
       {
-        id: "box3Lower",
-        fretEnabled: 9,
-        rootOffset: -7,
-        position: 3,
         shapeType: "box2",
+        position: 3,
+        rootOffset: -7,
+        id: "box3Lower",
         label: "Box 3 (lower)"
       },
       {
@@ -327,40 +323,38 @@ export default {
         label: "Box 4 (lower)"
       },
       {
-        id: "box5Lower",
-        fretEnabled: 9,
-        rootOffset: -3,
-        position: 5,
         shapeType: "box1",
+        position: 5,
+        rootOffset: -3,
+        id: "box5Lower",
         label: "Box 5 (lower)"
       },
       {
-        id: "box1Root",
-        fretEnabled: 9,
-        rootOffset: 0,
-        position: 1,
         shapeType: "box1",
+        position: 1,
+        rootOffset: 0,
+        id: "box1Root",
         label: "Box 1"
       },
       {
-        id: "box2Root",
-        rootOffset: 3,
-        position: 2,
         shapeType: "box2",
+        position: 2,
+        rootOffset: 3,
+        id: "box2Root",
         label: "Box 2"
       },
       {
-        id: "box3Root",
-        rootOffset: 5,
-        position: 3,
         shapeType: "box2",
+        position: 3,
+        rootOffset: 5,
+        id: "box3Root",
         label: "Box 3"
       },
       {
-        id: "box4Root",
-        rootOffset: 7,
-        position: 4,
         shapeType: "box4",
+        position: 4,
+        rootOffset: 7,
+        id: "box4Root",
         label: "Box 4"
       },
       {
@@ -368,7 +362,35 @@ export default {
         rootOffset: 9,
         position: 5,
         shapeType: "box1",
-        label: "Box 4"
+        label: "Box 5"
+      },
+      {
+        shapeType: "box1",
+        position: 1,
+        rootOffset: 12,
+        id: "box1Upper",
+        label: "Box 1 (upper)"
+      },
+      {
+        shapeType: "box2",
+        position: 2,
+        rootOffset: 15,
+        id: "box2Upper",
+        label: "Box 2 (upper)"
+      },
+      {
+        shapeType: "box2",
+        position: 3,
+        rootOffset: 17,
+        id: "box3Upper",
+        label: "Box 3 (upper)"
+      },
+      {
+        shapeType: "box1",
+        position: 4,
+        rootOffset: 19,
+        id: "box4Upper",
+        label: "Box 4 (upper)"
       }
     ],
     scaleFilters: [
@@ -416,7 +438,7 @@ export default {
       {
         shapeType: "backdoor1",
         position: 1,
-      rootOffset: 0,
+        rootOffset: 0,
         id: "backdoor1Root",
         label: "Backdoor Pattern 1"
       },
@@ -544,22 +566,18 @@ export default {
 
     this.resetFretboard();
 
-    // $("select#keyFilter").change(function() {
-    //   processKeyChange();
-    // });
-
-    // $("input[type=checkbox]").change(function() {
-    //   updateFretboard();
-    // });
-
     var area = document.querySelector("#fretboard-zoom-wrapper");
-    // And pass it to panzoom
-    // this.PanZoom = panzoom(area, {
-    //   maxZoom: 1.5,
-    //   minZoom: 0.3
-    // });
-
-    this.processKeyChange();
+    
+    // hide disabled toggles
+    (() => {
+      let disabledSelections = document.querySelectorAll(
+        "[role=checkbox].disabled"
+      );
+      disabledSelections.forEach((node, i) => {
+        console.log("node", node.classList);
+        node.classList.add("hidden");
+      });
+    })();
   },
   watch: {
     // accBoxes() {
@@ -573,22 +591,32 @@ export default {
     // },
     fetchDrawer(v) {
       if (v) this.toggleLeftDrawer();
+    },
+    boxSelection: {
+      handler(val) {
+        let disabledSelections = document.querySelectorAll(
+          "[role=checkbox].disabled"
+        );
+        disabledSelections.forEach((node, i) => {
+          console.log("node", node.classList);
+          node.classList.add("hidden");
+        });
+      },
+      immediate: true
     }
   },
   computed: {
     boxSelection() {
-      // let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
+      let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
 
-      // let selection = this.boxFilters.map(({ label, id }) => ({
-      //   value: id,
-      //   label: label
-      // }));
-      // selection.forEach((sel, i) => {
-       
-      //       sel.disabled = ( i < theLimits[0] || i > theLimits[1])
-					
-      // })
-      return getAvailableSelections(this.boxFilters)
+      let selection = this.boxFilters.map(({ label, id }) => ({
+        value: id,
+        label: label
+      }));
+      selection.forEach((sel, i) => {
+        sel.disable = i < theLimits[0] || i > theLimits[1];
+      });
+      return selection;
     },
     patternSelection() {
       return this.patternFilters.map(({ label, id }) => ({
@@ -596,30 +624,28 @@ export default {
         label: label
       }));
     },
-    selections(){
-      let theShapes = []
-      let box
+    selections() {
+      let theShapes = [];
+      let box;
       this.accBoxes.forEach(box_id => {
         box = this.boxFilters.filter(item => item.id == box_id);
         theShapes.push(box);
       });
-      return theShapes
-    },
+      return theShapes;
+    }
   },
   methods: {
-    getAvailableSelections(collection){
-let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
+    getAvailableSelections(collection) {
+      let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
 
       let availableSelections = collection.map(({ label, id }) => ({
         value: id,
         label: label
       }));
       availableSelections.forEach((sel, i) => {
-       
-            sel.disabled = ( i < theLimits[0] || i > theLimits[1])
-					
-      })
-      return availableSelections
+        sel.disabled = i < theLimits[0] || i > theLimits[1];
+      });
+      return availableSelections;
     },
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
@@ -688,10 +714,16 @@ let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
         let theShape = theShapes[i];
         switch (theShape.shapeType) {
           case "box1":
-            this.drawBox1(this.rootFret + theShape.rootOffset, theShape.position);
+            this.drawBox1(
+              this.rootFret + theShape.rootOffset,
+              theShape.position
+            );
             break;
           case "box2":
-            this.drawBox2(this.rootFret + theShape.rootOffset, theShape.position);
+            this.drawBox2(
+              this.rootFret + theShape.rootOffset,
+              theShape.position
+            );
             break;
           case "box4":
             this.drawBox4(this.rootFret + theShape.rootOffset);
@@ -710,14 +742,21 @@ let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
             break;
         }
       }
-      if (this.accScales.includes('majorScale')) this.drawMajorScale(this.rootFret)
-      if (this.accScales.includes('minorScale')) this.drawMinorScale(this.rootFret)
-      if (this.accScales.includes('majorPentatonic')) this.drawMajorPentatonic(this.rootFret)
-      if (this.accScales.includes('minorPentatonic')) this.drawMinorPentatonic(this.rootFret)
-      
-      if (this.accRootNotes.includes('root1Notes')) this.drawRootNotes(this.rootFret, 1, false)
-      if (this.accRootNotes.includes('root4Notes')) this.drawRootNotes(this.rootFret, 4, false)
-      if (this.accRootNotes.includes('root5Notes')) this.drawRootNotes(this.rootFret, 5, false)
+      if (this.accScales.includes("majorScale"))
+        this.drawMajorScale(this.rootFret);
+      if (this.accScales.includes("minorScale"))
+        this.drawMinorScale(this.rootFret);
+      if (this.accScales.includes("majorPentatonic"))
+        this.drawMajorPentatonic(this.rootFret);
+      if (this.accScales.includes("minorPentatonic"))
+        this.drawMinorPentatonic(this.rootFret);
+
+      if (this.accRootNotes.includes("root1Notes"))
+        this.drawRootNotes(this.rootFret, 1, false);
+      if (this.accRootNotes.includes("root4Notes"))
+        this.drawRootNotes(this.rootFret, 4, false);
+      if (this.accRootNotes.includes("root5Notes"))
+        this.drawRootNotes(this.rootFret, 5, false);
       // if ($("input#majorScale").prop("checked")) {
       //   drawMajorScale(rootFret);
       // }
@@ -1285,14 +1324,14 @@ let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
         } else {
           polygonString += this.CORNERRADIUS;
         }
-        
+
         polygonString += this.addPointToString(
           this.notes[fret + data[i][1]][data[i][2]]?.box[data[i][3]].x,
           this.notes[fret + data[i][1]][data[i][2]]?.box[data[i][3]].y
         );
       }
       polygonString += "Z";
-      console.log('strPoly', polygonString);
+      console.log("strPoly", polygonString);
       var theBox = this.allShapes
         .path(polygonString)
         .fill(this.SHAPEFILL)
@@ -1546,25 +1585,38 @@ let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
       //Mark the start point
       var polygonString =
         "M" + this.addPointToString(note1.box[1].x, note1.box[1].y);
-      polygonString += "L" + this.addPointToString(note2.box[1].x, note2.box[1].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note2.box[3].x, note2.box[3].y);
-      polygonString += "L" + this.addPointToString(note3.box[3].x, note3.box[3].y);
+        "L" + this.addPointToString(note2.box[1].x, note2.box[1].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note3.box[5].x, note3.box[5].y);
-      polygonString += "L" + this.addPointToString(note4.box[2].x, note4.box[2].y);
-      polygonString += "L" + this.addPointToString(note4.box[3].x, note4.box[3].y);
+        this.CORNERRADIUS +
+        this.addPointToString(note2.box[3].x, note2.box[3].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note4.box[5].x, note4.box[5].y);
+        "L" + this.addPointToString(note3.box[3].x, note3.box[3].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note4.box[7].x, note4.box[7].y);
-      polygonString += "L" + this.addPointToString(note4.box[0].x, note4.box[0].y);
-      polygonString += "L" + this.addPointToString(note5.box[5].x, note5.box[5].y);
+        this.CORNERRADIUS +
+        this.addPointToString(note3.box[5].x, note3.box[5].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note5.box[7].x, note5.box[7].y);
-      polygonString += "L" + this.addPointToString(note1.box[7].x, note1.box[7].y);
+        "L" + this.addPointToString(note4.box[2].x, note4.box[2].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note1.box[1].x, note1.box[1].y);
+        "L" + this.addPointToString(note4.box[3].x, note4.box[3].y);
+      polygonString +=
+        this.CORNERRADIUS +
+        this.addPointToString(note4.box[5].x, note4.box[5].y);
+      polygonString +=
+        this.CORNERRADIUS +
+        this.addPointToString(note4.box[7].x, note4.box[7].y);
+      polygonString +=
+        "L" + this.addPointToString(note4.box[0].x, note4.box[0].y);
+      polygonString +=
+        "L" + this.addPointToString(note5.box[5].x, note5.box[5].y);
+      polygonString +=
+        this.CORNERRADIUS +
+        this.addPointToString(note5.box[7].x, note5.box[7].y);
+      polygonString +=
+        "L" + this.addPointToString(note1.box[7].x, note1.box[7].y);
+      polygonString +=
+        this.CORNERRADIUS +
+        this.addPointToString(note1.box[1].x, note1.box[1].y);
       polygonString += "Z";
 
       var data = {
@@ -1593,7 +1645,7 @@ let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
       this.drawBox2(fret, 3);
     },
     drawBox4(fret) {
-      console.log('Drawing box 4 at ' + fret );
+      console.log("Drawing box 4 at " + fret);
       let theFret = parseInt(fret);
       if (fret < 0 || fret > 18) {
         return;
@@ -1710,39 +1762,60 @@ let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
 
       var polygonString =
         "M" + this.addPointToString(note1.box[7].x, note1.box[7].y);
-      polygonString += "L" + this.addPointToString(note2.box[7].x, note2.box[7].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note2.box[1].x, note2.box[1].y);
-      polygonString += "L" + this.addPointToString(note3.box[6].x, note3.box[6].y);
-      polygonString += "L" + this.addPointToString(note4.box[7].x, note4.box[7].y);
+        "L" + this.addPointToString(note2.box[7].x, note2.box[7].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note4.box[1].x, note4.box[1].y);
-      polygonString += "L" + this.addPointToString(note5.box[6].x, note5.box[6].y);
-      polygonString += "L" + this.addPointToString(note5.box[7].x, note5.box[7].y);
+        this.CORNERRADIUS +
+        this.addPointToString(note2.box[1].x, note2.box[1].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note5.box[1].x, note5.box[1].y);
+        "L" + this.addPointToString(note3.box[6].x, note3.box[6].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note5.box[3].x, note5.box[3].y);
-      polygonString += "L" + this.addPointToString(note5.box[4].x, note5.box[4].y);
-      polygonString += "L" + this.addPointToString(note6.box[1].x, note6.box[1].y);
+        "L" + this.addPointToString(note4.box[7].x, note4.box[7].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note6.box[3].x, note6.box[3].y);
+        this.CORNERRADIUS +
+        this.addPointToString(note4.box[1].x, note4.box[1].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note6.box[5].x, note6.box[5].y);
+        "L" + this.addPointToString(note5.box[6].x, note5.box[6].y);
+      polygonString +=
+        "L" + this.addPointToString(note5.box[7].x, note5.box[7].y);
+      polygonString +=
+        this.CORNERRADIUS +
+        this.addPointToString(note5.box[1].x, note5.box[1].y);
+      polygonString +=
+        this.CORNERRADIUS +
+        this.addPointToString(note5.box[3].x, note5.box[3].y);
+      polygonString +=
+        "L" + this.addPointToString(note5.box[4].x, note5.box[4].y);
+      polygonString +=
+        "L" + this.addPointToString(note6.box[1].x, note6.box[1].y);
+      polygonString +=
+        this.CORNERRADIUS +
+        this.addPointToString(note6.box[3].x, note6.box[3].y);
+      polygonString +=
+        this.CORNERRADIUS +
+        this.addPointToString(note6.box[5].x, note6.box[5].y);
 
-      polygonString += "L" + this.addPointToString(note7.box[2].x, note7.box[2].y);
-      polygonString += "L" + this.addPointToString(note8.box[3].x, note8.box[3].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note8.box[5].x, note8.box[5].y);
+        "L" + this.addPointToString(note7.box[2].x, note7.box[2].y);
+      polygonString +=
+        "L" + this.addPointToString(note8.box[3].x, note8.box[3].y);
+      polygonString +=
+        this.CORNERRADIUS +
+        this.addPointToString(note8.box[5].x, note8.box[5].y);
 
-      polygonString += "L" + this.addPointToString(note9.box[2].x, note9.box[2].y);
-      polygonString += "L" + this.addPointToString(note9.box[3].x, note9.box[3].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note9.box[5].x, note9.box[5].y);
+        "L" + this.addPointToString(note9.box[2].x, note9.box[2].y);
+      polygonString +=
+        "L" + this.addPointToString(note9.box[3].x, note9.box[3].y);
+      polygonString +=
+        this.CORNERRADIUS +
+        this.addPointToString(note9.box[5].x, note9.box[5].y);
 
-      polygonString += "L" + this.addPointToString(note1.box[5].x, note1.box[5].y);
       polygonString +=
-        this.CORNERRADIUS + this.addPointToString(note1.box[7].x, note1.box[7].y);
+        "L" + this.addPointToString(note1.box[5].x, note1.box[5].y);
+      polygonString +=
+        this.CORNERRADIUS +
+        this.addPointToString(note1.box[7].x, note1.box[7].y);
 
       polygonString += "Z";
 
@@ -1863,11 +1936,11 @@ let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
       this.allShapes.clear();
     },
     resetFilters() {
-      this.accBoxes = []
-      this.accBoxes = []
-    this.accPatterns = []
-    this.accScales = []
-    this.accRootNotes = []
+      this.accBoxes = [];
+      this.accBoxes = [];
+      this.accPatterns = [];
+      this.accScales = [];
+      this.accRootNotes = [];
       // $("input[type=radio]").prop("checked", false);
       // $("input[type=checkbox]").prop("checked", false);
     },
