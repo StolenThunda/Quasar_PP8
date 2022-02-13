@@ -5,9 +5,13 @@ const routes = [
   },
   {
     path: "/",
-    component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Index.vue") }]
+    component: () => import("components/tools/Fretboard")
   },
+  // {
+  //   path: "/",
+  //   component: () => import("layouts/MainLayout.vue"),
+  //   children: [{ path: "", component: () => import("pages/Index.vue") }]
+  // },
   {
     path: "/tools",
     component: () => import("src/layouts/Tools.vue"),
