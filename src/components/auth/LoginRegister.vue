@@ -1,4 +1,4 @@
-<template>
+l<template>
   <form @submit.prevent="submitForm" @keyup.enter="submitForm">
     <div class="row q-mb-md">
       <q-banner >

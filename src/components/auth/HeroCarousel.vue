@@ -1,8 +1,10 @@
 <template>
-  <q-page padding>
+  <div class="q-pa-xl q-mt-md">
+    <div class="q-gutter-md">
     <q-carousel
       v-model="slide"
       height="85vh"
+      class=""
       transition-prev="fade"
       transition-next="fade"
       @mouseenter="autoplay = false"
@@ -30,7 +32,8 @@
         </div>
       </q-carousel-slide>
     </q-carousel>
-  </q-page>
+    </div>
+  </div>
 </template>
 
 <script>

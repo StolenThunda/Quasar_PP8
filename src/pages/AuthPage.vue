@@ -9,10 +9,11 @@
       <q-toolbar class="q-electron-drag">
         <q-btn
           rounded
+          icon="key"
+          label="Enter"
           color="grey-4"
           text-color="secondary"
           class="q-electron-drag--exception"
-          label="Click Here to Enter"
           @click="card = !card"
         />
 

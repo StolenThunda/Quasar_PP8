@@ -32,8 +32,8 @@
           label="Close"
           color="secondary"
           icon="close"
-          to="/"
           size="md"
+          @click.prevent="logout_user"
           flat
           dense
         />
@@ -166,14 +166,12 @@
               <q-item-section avatar>
                 <q-icon name="done_all" />
               </q-item-section>
-//TODO: close button logs out!
-              <q-item-section class="text-h4 ">
-                Selections
-              </q-item-section>
+              Selections
+              <q-item-section class="text-h4"> Selections </q-item-section>
             </q-item>
           </q-list>
-          </q-card-section>
-          <q-card-section v-if="selectionsAvaliable">
+        </q-card-section>
+        <q-card-section v-if="selectionsAvaliable">
           <q-list>
             <q-item>
               <div>
@@ -188,16 +186,11 @@
             </q-item>
           </q-list>
         </q-card-section>
-         <q-card-section v-else>
-        <div
-          class="
-          text-body1 
-          text-justify
-          text-uppercase 
-          text-white
-          ">
-          No Filters Selected</div>
-      </q-card-section>
+        <q-card-section v-else>
+          <div class="text-body1 text-justify text-uppercase text-white">
+            No Filters Selected
+          </div>
+        </q-card-section>
         <q-card-actions align="right">
           <q-btn flat label="Close" @click="nextMorph" />
         </q-card-actions>
@@ -222,7 +215,7 @@
 import "@svgdotjs/svg.filter.js";
 import { SVG } from "@svgdotjs/svg.js";
 import "@svgdotjs/svg.panzoom.js";
-
+import { mapActions } from "vuex";
 function hideDisabled() {
   let disabledSelections = document.querySelectorAll(
     "[role=checkbox].disabled"
@@ -744,6 +737,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions("auth", ["logout_user"]),
     drawerClick(e) {
       // if in "mini" state and user
       // click on drawer, we switch it to "normal" mode
