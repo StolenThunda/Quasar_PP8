@@ -52,20 +52,7 @@
       overlay
       elevated
     >
-      <!-- <div class=""> -->
-      <!-- <q-scroll-area class="fit"> -->
-
-      <q-list dense class="q-gutter-y-xl">
-        <q-item class="q-mini-drawer-hide content-center" v-show="selectionsAvaliable">
-          <q-btn
-            class="glossy"
-            icon="restart_alt"
-            color="accent"
-            @click="resetFilters"
-            label="Reset Filters"
-            push
-          />
-        </q-item>
+         <q-list  padding>
         <q-expansion-item group="filters">
           <template v-slot:header>
             <q-item-section avatar class="">
@@ -151,8 +138,6 @@
           </div>
         </q-expansion-item>
 
-      
-
         <div
           class="q-mini-drawer-hide absolute"
           style="top: 15px; right: -40px"
@@ -182,7 +167,6 @@
               @click="miniState = true"
               icon="drag_handle"
               label="Mini Mode"
-              
             />
             <q-fab-action
               v-morph:btn:mygroup:300.resize="morphGroupModel"
@@ -190,70 +174,75 @@
               icon="rule"
               label="Selections"
               @click="toggleResultPanel"
-             
             />
           </q-fab>
         </div>
       </q-list>
-      <!-- </q-scroll-area> -->
-      <!-- </div> -->
+   <q-card-actions 
+    class="q-mini-drawer-hide content-center" v-show="selectionsAvaliable" 
+    vertical>
+        <q-btn
+            class="glossy"
+            icon="restart_alt"
+            color="accent"
+            @click="resetFilters"
+            label="Reset Filters"
+            push
+          />
+      </q-card-actions>
     </q-drawer>
 
     <q-drawer side="right" v-model="rightDrawerOpen" overlay>
-     <div class="q-pa-md">
-      <q-card
-        v-morph:selections:mygroup:500.resize="morphGroupModel"
-        class="q-mx-md bottom-left column wrap justify-evenly items-center bg-black text-white content-around"
-        style="
-          
+      <div class="q-py-md">
+        <q-card
+          v-morph:selections:mygroup:800.resize="morphGroupModel"
+          class="q-mx-sm bottom-left column wrap justify-evenly items-center bg-black text-white content-around"
+          style="
           width: 275px;
           border-top-right-radius: 2.75em;
           border-bottom-left-radius: 2.75em;
         "
-      >
-        <q-card-section>
-          <q-list dense>
-            <q-item class="text-accent">
-              <q-item-section avatar>
-                <q-icon size='lg' name="done_all" />
-              </q-item-section>
-              <q-item-section class="text-h5 text-weight-bolder">
-                Selections
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card-section>
-        <q-card-section v-if="selectionsAvaliable">
-          <q-list>
-            <q-item>
-              <div>
-                <q-chip
-                square
-                class="glossy "
-                  v-for="(sel, i) in selectedOptions"
-                  :key="i"
-                  @remove="removeFilter(sel)"
-                  color="primary"
-                  removable
-                  dense
-                >
-                   <q-avatar :icon="sel.icon" :color="sel.color || 'deep-orange'" text-color="white" />
-                   {{ sel.label}}
-                </q-chip>
-              </div>
-            </q-item>
-          </q-list>
-        </q-card-section>
-        <q-card-section v-else>
-          <div class="text-body1 text-justify text-uppercase text-white">
-            No Filters Selected
-          </div>
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn flat label="Close" @click="toggleResultPanel" />
-        </q-card-actions>
-      </q-card>
-    </div>
+        >
+          <q-card-section>
+            <q-list dense>
+              <q-item class="text-accent" dense>
+                <q-item-section avatar>
+                  <q-icon name="done_all" />
+                </q-item-section>
+                <q-item-label class="text-h5">Selections</q-item-label>
+              </q-item>
+              <q-item  class="q-py-md column" dense>
+                <div v-if="selectedOptions.length > 0" class="col-12">
+                  <q-chip
+                    square
+                    class="glossy "
+                    v-for="(sel, i) in selectedOptions"
+                    :key="i"
+                    @remove="removeFilter(sel)"
+                    color="primary"
+                    removable
+                    dense
+                  >
+                    <q-avatar
+                      :icon="sel.icon"
+                      :color="sel.color || 'deep-orange'"
+                      text-color="white"
+                    />
+                    {{ sel.label }}
+                  </q-chip>
+                </div>
+                <div v-else class="col-12 text-right">
+                  NO FILTERS SELECTED
+                </div>
+              </q-item>
+            </q-list>
+          </q-card-section>
+
+          <q-card-actions vertical align="center">
+            <q-btn flat label="Close" @click="toggleResultPanel" />
+          </q-card-actions>
+        </q-card>
+      </div>
     </q-drawer>
 
     <q-page-container>
@@ -283,7 +272,7 @@ function hideDisabled() {
     "[role=checkbox].disabled"
   );
   disabledSelections.forEach((node, i) => {
-    // console.log("node", node.classList);
+    console.log("node", node.classList);
     node.classList.add("hidden");
   });
 }
@@ -670,11 +659,7 @@ export default {
 
     this.allShapes = this.Drawing.group();
 
-    this.resetFretboard();
-    // hide disabled toggles
-    hideDisabled();
-
-    this.updateFretboard();
+    this.refreshUI();
   },
   watch: {
     fetchDrawer(v) {
@@ -706,7 +691,6 @@ export default {
         ...this.rootsSelected
       ];
     },
-
     selectionsAvaliable() {
       return (
         this.accBoxes.length +
@@ -788,7 +772,6 @@ export default {
       });
       return selection;
     },
-
     selectedBoxData() {
       let theShapes = [];
       let box;
@@ -804,29 +787,6 @@ export default {
     log(desert) {
       console.log(`${JSON.stringify(desert)} has been removed`);
     },
-    removeFilter(chip) {
-      let val = chip.value;
-      if (val.includes("box")) {
-        console.log(`Removing type: box`)
-        this.accBoxes = [...this.accBoxes.filter(e => e != val)];
-      } else if (val.includes("backdoor")) {
-        console.log(`Removing type: backdoor`)
-        this.accPatterns = [...this.accPatterns.filter(e => e != val)];
-      } else if (["minor", "major"].some((el => val.includes(el)))) {
-        console.log(`Removing type: scales `)
-        this.accScales = [...this.accScales.filter(e => e != val)];
-      } else {
-        console.log(`Removing type: roots `)
-        this.accRootNotes = [...this.accRootNotes.filter(e => e != val)];
-      }
-    },
-    toggleResultPanel() {
-      this.nextMorph();
-      this.rightDrawerOpen = !this.rightDrawerOpen;
-    },
-    toggleLeftDrawer() {
-      this.leftDrawerOpen = !this.leftDrawerOpen;
-    },
     drawerClick(e) {
       // if in "mini" state and user
       // click on drawer, we switch it to "normal" mode
@@ -839,6 +799,33 @@ export default {
         e.stopPropagation();
       }
     },
+    nextMorph() {
+      this.morphGroupModel = this.nextMorphStep[this.morphGroupModel];
+    },
+    removeFilter(chip) {
+      let val = chip.value;
+      if (val.includes("box")) {
+        console.log(`Removing type: box`);
+        this.accBoxes = [...this.accBoxes.filter(e => e != val)];
+      } else if (val.includes("backdoor")) {
+        console.log(`Removing type: backdoor`);
+        this.accPatterns = [...this.accPatterns.filter(e => e != val)];
+      } else if (["minor", "major"].some(el => val.includes(el))) {
+        console.log(`Removing type: scales `);
+        this.accScales = [...this.accScales.filter(e => e != val)];
+      } else {
+        console.log(`Removing type: roots `);
+        this.accRootNotes = [...this.accRootNotes.filter(e => e != val)];
+      }
+    },
+    toggleResultPanel(val) {
+      this.nextMorph();
+      this.rightDrawerOpen = val ? val : !this.rightDrawerOpen;
+    },
+    toggleLeftDrawer() {
+      this.leftDrawerOpen = !this.leftDrawerOpen;
+    },
+
     getAvailableSelections(collection) {
       let theLimits = this.keyLimits[this.keyOptions.indexOf(this.key)];
 
@@ -851,9 +838,7 @@ export default {
       });
       return availableSelections;
     },
-    nextMorph() {
-      this.morphGroupModel = this.nextMorphStep[this.morphGroupModel];
-    },
+   
     updateFretboard() {
       let theShapes = [];
       this.resetFretboard();
@@ -2103,14 +2088,23 @@ export default {
 
       this.allShapes.clear();
     },
+     refreshUI() {
+      this.resetFretboard();
+      // hide disabled toggles
+      hideDisabled();
+      this.toggleResultPanel(false)
+
+      this.updateFretboard();
+      
+    },
     resetFilters() {
       this.accBoxes = [];
       this.accBoxes = [];
       this.accPatterns = [];
       this.accScales = [];
       this.accRootNotes = [];
-      // $("input[type=radio]").prop("checked", false);
-      // $("input[type=checkbox]").prop("checked", false);
+    
+      this.refreshUI();
     },
     getDotID(fret, offset, string) {
       return "#Dot-" + (fret + offset) + "-" + string;
