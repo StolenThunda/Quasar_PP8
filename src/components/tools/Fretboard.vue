@@ -33,7 +33,7 @@
           label="Close"
           color="secondary"
           icon="close"
-          size="md"
+          size="xl"
           @click.prevent="logout_user"
           flat
           dense
@@ -53,162 +53,173 @@
       elevated
     >
       <!-- <div class=""> -->
-        <!-- <q-scroll-area class="fit"> -->
+      <!-- <q-scroll-area class="fit"> -->
 
-        <q-list padding class="q-gutter-y-xl">
-          <q-expansion-item group="filters">
-            <template v-slot:header>
-              <q-item-section avatar class="">
-                <q-avatar size='2.75em' icon="widgets" class="q-ml-none" />
-              </q-item-section>
-              <q-item-section class="text-h6 text-weight-bold"> Boxes </q-item-section>
-            </template>
-            <div class="bg-black">
-              <q-option-group
-                v-model="accBoxes"
-                :options="boxSelections"
-                class="q-py-lg"
-                color="accent"
-                type="toggle"
-                @input="updateFretboard"
-              />
-              <q-separator />
-            </div>
-          </q-expansion-item>
-
-          <q-expansion-item
-            group="filters"
-            icon="rounded_corner"
-          >
+      <q-list dense class="q-gutter-y-xl">
+        <q-item class="q-mini-drawer-hide content-center" v-show="selectionsAvaliable">
+          <q-btn
+            class="glossy"
+            icon="restart_alt"
+            color="accent"
+            @click="resetFilters"
+            label="Reset Filters"
+            push
+          />
+        </q-item>
+        <q-expansion-item group="filters">
           <template v-slot:header>
-              <q-item-section avatar>
-                <q-avatar size="2.75em" icon="rounded_corner" />
-              </q-item-section>
-              <q-item-section class="text-h6 text-weight-bold"> Patterns </q-item-section>
-            </template>
-            <div class="bg-black">
-              <q-option-group
-                v-model="accPatterns"
-                :options="patternSelections"
-                color="accent"
-                type="toggle"
-                @input="updateFretboard"
-              />
-              <q-separator />
-            </div>
-          </q-expansion-item>
-
-          <q-expansion-item group="filters">
-              <template v-slot:header>
-              <q-item-section avatar>
-                <q-avatar size="2.75em" icon="queue_music" />
-              </q-item-section>
-              <q-item-section class="text-h6 text-weight-bold"> Scales </q-item-section>
-            </template>
-            <div class="bg-black">
-              <q-option-group
-                v-model="accScales"
-                :options="scaleFilters"
-                color="accent"
-                type="toggle"
-                @input="updateFretboard"
-              />
-              <q-separator />
-            </div>
-          </q-expansion-item>
-
-          <q-expansion-item
-            group="filters"
-            icon="music_note"
-            label="Root Notes"
-          >
-           <template v-slot:header>
-              <q-item-section avatar>
-                <q-avatar size="2.75em" icon="music_note" />
-              </q-item-section>
-              <q-item-section class="text-h6 text-weight-bold"> Root Notes </q-item-section>
-            </template>
-            <div class="bg-black">
-              <q-option-group
-                v-model="accRootNotes"
-                :options="rootNoteFilters"
-                color="accent"
-                type="toggle"
-                @input="updateFretboard"
-              />
-              <q-separator />
-            </div>
-          </q-expansion-item>
-
-          <q-item class="q-mini-drawer-hide content-center" >
-            <q-btn
-              class="glossy"
-              icon="restart_alt"
+            <q-item-section avatar class="">
+              <q-avatar size="2.75em" icon="widgets" class="q-ml-none" />
+            </q-item-section>
+            <q-item-section class="text-body1 text-weight-bold">
+              Boxes
+            </q-item-section>
+          </template>
+          <div class="bg-black">
+            <q-option-group
+              v-model="accBoxes"
+              :options="boxSelections"
+              class="q-py-lg"
               color="accent"
-              @click="resetFilters"
-              label="Reset Filters"
-              push
+              type="toggle"
+              @input="updateFretboard"
             />
-          </q-item>
-        
-      <div class="q-mini-drawer-hide absolute" style="top: 15px; right: -40px">
-        <q-btn
-          v-if="!selectionsAvaliable"
-          color="accent"
-          push
-          icon="chevron_left"
-          @click="miniState = true"
-          fab
-          glossy
-          round
-          />
-        <q-fab
-          v-else
-          :disable="!selectionsAvaliable"
-          color="accent"
-          push
-          icon="chevron_left"
-          direction="right"
-          glossy
-          >
-          <q-fab-action
-            color="orange-5"
+            <q-separator />
+          </div>
+        </q-expansion-item>
+
+        <q-expansion-item group="filters" icon="rounded_corner">
+          <template v-slot:header>
+            <q-item-section avatar>
+              <q-avatar size="2.75em" icon="rounded_corner" />
+            </q-item-section>
+            <q-item-section class="text-body1 text-weight-bold">
+              Patterns
+            </q-item-section>
+          </template>
+          <div class="bg-black">
+            <q-option-group
+              v-model="accPatterns"
+              :options="patternSelections"
+              color="accent"
+              type="toggle"
+              @input="updateFretboard"
+            />
+            <q-separator />
+          </div>
+        </q-expansion-item>
+
+        <q-expansion-item group="filters">
+          <template v-slot:header>
+            <q-item-section avatar>
+              <q-avatar size="2.75em" icon="queue_music" />
+            </q-item-section>
+            <q-item-section class="text-body1 text-weight-bold">
+              Scales
+            </q-item-section>
+          </template>
+          <div class="bg-black">
+            <q-option-group
+              v-model="accScales"
+              :options="scaleFilters"
+              color="accent"
+              type="toggle"
+              @input="updateFretboard"
+            />
+            <q-separator />
+          </div>
+        </q-expansion-item>
+
+        <q-expansion-item group="filters" icon="music_note" label="Root Notes">
+          <template v-slot:header>
+            <q-item-section avatar>
+              <q-avatar size="2.75em" icon="music_note" />
+            </q-item-section>
+            <q-item-section class="text-body1 text-weight-bold">
+              Root Notes
+            </q-item-section>
+          </template>
+          <div class="bg-black">
+            <q-option-group
+              v-model="accRootNotes"
+              :options="rootNoteFilters"
+              color="accent"
+              type="toggle"
+              @input="updateFretboard"
+            />
+            <q-separator />
+          </div>
+        </q-expansion-item>
+
+      
+
+        <div
+          class="q-mini-drawer-hide absolute"
+          style="top: 15px; right: -40px"
+        >
+          <q-btn
+            v-if="!selectionsAvaliable"
+            color="accent"
+            push
+            icon="chevron_left"
             @click="miniState = true"
-            icon="drag_handle"
-            title="Mini Mode"
+            fab
+            glossy
+            round
           />
-          <q-fab-action
-            v-morph:btn:mygroup:300.resize="morphGroupModel"
-            color="orange-2 text-orange-10"
-            icon="rule"
-            title="Selections"
-            @click="toggleResultPanel"
-          />
-        </q-fab>
-      </div>
-        </q-list>
-        <!-- </q-scroll-area> -->
+          <q-fab
+            v-else
+            :disable="!selectionsAvaliable"
+            color="accent"
+            push
+            title="Options"
+            icon="tune"
+            direction="right"
+            glossy
+          >
+            <q-fab-action
+              color="orange-5"
+              @click="miniState = true"
+              icon="drag_handle"
+              label="Mini Mode"
+              
+            />
+            <q-fab-action
+              v-morph:btn:mygroup:300.resize="morphGroupModel"
+              color="orange-2 text-orange-10"
+              icon="rule"
+              label="Selections"
+              @click="toggleResultPanel"
+             
+            />
+          </q-fab>
+        </div>
+      </q-list>
+      <!-- </q-scroll-area> -->
       <!-- </div> -->
     </q-drawer>
 
     <q-drawer side="right" v-model="rightDrawerOpen" overlay>
+     <div class="q-pa-md">
       <q-card
         v-morph:selections:mygroup:500.resize="morphGroupModel"
-        class="q-mx-md bottom-left column wrap justify-evenly items-center bg-primary text-white content-around"
+        class="q-mx-md bottom-left column wrap justify-evenly items-center bg-black text-white content-around"
         style="
-          top:50px
-          width: 300px;
+          
+          width: 275px;
           border-top-right-radius: 2.75em;
           border-bottom-left-radius: 2.75em;
         "
       >
         <q-card-section>
-          <q-list padding>
-            <q-item class="text-accent text-weight-bolder">
+          <q-list dense>
+            <q-item class="text-accent">
               <q-item-section avatar>
-                <q-icon name="done_all" />
+                <q-icon size='lg' name="done_all" />
               </q-item-section>
-              <q-item-section class="text-h4 text-weight-bolder"> Selections </q-item-section>
+              <q-item-section class="text-h5 text-weight-bolder">
+                Selections
+              </q-item-section>
             </q-item>
           </q-list>
         </q-card-section>
@@ -217,12 +228,18 @@
             <q-item>
               <div>
                 <q-chip
+                square
+                class="glossy "
                   v-for="(sel, i) in selectedOptions"
                   :key="i"
-                  :color="sel.color || 'accent'"
-                  :icon="sel.icon"
-                  :label="sel.label"
-                />
+                  @remove="removeFilter(sel)"
+                  color="primary"
+                  removable
+                  dense
+                >
+                   <q-avatar :icon="sel.icon" :color="sel.color || 'deep-orange'" text-color="white" />
+                   {{ sel.label}}
+                </q-chip>
               </div>
             </q-item>
           </q-list>
@@ -236,6 +253,7 @@
           <q-btn flat label="Close" @click="toggleResultPanel" />
         </q-card-actions>
       </q-card>
+    </div>
     </q-drawer>
 
     <q-page-container>
@@ -275,15 +293,15 @@ export default {
   props: {
     fetchDrawer: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   data: () => ({
     miniState: false,
     morphGroupModel: "btn",
     nextMorphStep: {
       btn: "selections",
-      selections: "btn",
+      selections: "btn"
     },
     leftDrawerOpen: true,
     rightDrawerOpen: false,
@@ -300,7 +318,7 @@ export default {
       "C",
       "Db",
       "D",
-      "Eb",
+      "Eb"
     ],
     Drawing: null,
     Fretboard: null,
@@ -386,7 +404,7 @@ export default {
       [1, 8, 1, 5], //C
       [0, 11, 0, 4], //Db
       [0, 10, 0, 4], //D
-      [0, 10, 0, 4], //Eb
+      [0, 10, 0, 4] //Eb
     ],
     boxFilters: [
       {
@@ -394,112 +412,112 @@ export default {
         position: 2,
         rootOffset: -9,
         id: "box2Lower",
-        label: "Box 2 (lower)",
+        label: "Box 2 (lower)"
       },
       {
         shapeType: "box2",
         position: 3,
         rootOffset: -7,
         id: "box3Lower",
-        label: "Box 3 (lower)",
+        label: "Box 3 (lower)"
       },
       {
         shapeType: "box4",
         position: 4,
         rootOffset: -5,
         id: "box4Lower",
-        label: "Box 4 (lower)",
+        label: "Box 4 (lower)"
       },
       {
         shapeType: "box1",
         position: 5,
         rootOffset: -3,
         id: "box5Lower",
-        label: "Box 5 (lower)",
+        label: "Box 5 (lower)"
       },
       {
         shapeType: "box1",
         position: 1,
         rootOffset: 0,
         id: "box1Root",
-        label: "Box 1",
+        label: "Box 1"
       },
       {
         shapeType: "box2",
         position: 2,
         rootOffset: 3,
         id: "box2Root",
-        label: "Box 2",
+        label: "Box 2"
       },
       {
         shapeType: "box2",
         position: 3,
         rootOffset: 5,
         id: "box3Root",
-        label: "Box 3",
+        label: "Box 3"
       },
       {
         shapeType: "box4",
         position: 4,
         rootOffset: 7,
         id: "box4Root",
-        label: "Box 4",
+        label: "Box 4"
       },
       {
         id: "box5Root",
         rootOffset: 9,
         position: 5,
         shapeType: "box1",
-        label: "Box 5",
+        label: "Box 5"
       },
       {
         shapeType: "box1",
         position: 1,
         rootOffset: 12,
         id: "box1Upper",
-        label: "Box 1 (upper)",
+        label: "Box 1 (upper)"
       },
       {
         shapeType: "box2",
         position: 2,
         rootOffset: 15,
         id: "box2Upper",
-        label: "Box 2 (upper)",
+        label: "Box 2 (upper)"
       },
       {
         shapeType: "box2",
         position: 3,
         rootOffset: 17,
         id: "box3Upper",
-        label: "Box 3 (upper)",
+        label: "Box 3 (upper)"
       },
       {
         shapeType: "box1",
         position: 4,
         rootOffset: 19,
         id: "box4Upper",
-        label: "Box 4 (upper)",
-      },
+        label: "Box 4 (upper)"
+      }
     ],
     scaleFilters: [
       {
         value: "majorScale",
         label: "Major Scale",
-        disable: true,
+        disable: true
       },
       {
         value: "minorScale",
         label: "Minor Scale",
-        disable: true,
+        disable: true
       },
       {
         value: "majorPentatonic",
-        label: "Major Pentatonic",
+        label: "Major Pentatonic"
       },
       {
         value: "minorPentatonic",
-        label: "Minor Pentatonic",
-      },
+        label: "Minor Pentatonic"
+      }
     ],
     patternFilters: [
       {
@@ -507,86 +525,86 @@ export default {
         position: 2,
         rootOffset: -9,
         id: "backdoor2Lower",
-        label: "Backdoor Pattern 2 (lower)",
+        label: "Backdoor Pattern 2 (lower)"
       },
       {
         shapeType: "backdoor2",
         position: 3,
         rootOffset: -5,
         id: "backdoor3Lower",
-        label: "Backdoor Pattern 3 (lower)",
+        label: "Backdoor Pattern 3 (lower)"
       },
       {
         shapeType: "backdoor2",
         position: 4,
         rootOffset: -2,
         id: "backdoor4Lower",
-        label: "Backdoor Pattern 1",
+        label: "Backdoor Pattern 1"
       },
       {
         shapeType: "backdoor1",
         position: 1,
         rootOffset: 0,
         id: "backdoor1Root",
-        label: "Backdoor Pattern 1",
+        label: "Backdoor Pattern 1"
       },
       {
         shapeType: "backdoor2",
         position: 2,
         rootOffset: 3,
         id: "backdoor2Root",
-        label: "Backdoor Pattern 2",
+        label: "Backdoor Pattern 2"
       },
       {
         shapeType: "backdoor1",
         position: 3,
         rootOffset: 7,
         id: "backdoor3Root",
-        label: "Backdoor Pattern 3",
+        label: "Backdoor Pattern 3"
       },
       {
         shapeType: "backdoor2",
         position: 4,
         rootOffset: 20,
         id: "backdoor4Root",
-        label: "Backdoor Pattern 4",
+        label: "Backdoor Pattern 4"
       },
       {
         shapeType: "backdoor1",
         position: 1,
         rootOffset: 12,
         id: "backdoor1Upper",
-        label: "Backdoor Pattern 1 (upper)",
+        label: "Backdoor Pattern 1 (upper)"
       },
       {
         shapeType: "backdoor1",
         position: 2,
         rootOffset: 15,
         id: "backdoor2Upper",
-        label: "Backdoor Pattern 2 (upper)",
+        label: "Backdoor Pattern 2 (upper)"
       },
       {
         shapeType: "backdoor2",
         position: 3,
         rootOffset: 19,
         id: "backdoor3Upper",
-        label: "Backdoor Pattern 3 (upper)",
-      },
+        label: "Backdoor Pattern 3 (upper)"
+      }
     ],
     rootNoteFilters: [
       {
         value: "root1Notes",
-        label: "I Chord Root Notes",
+        label: "I Chord Root Notes"
       },
       {
         value: "root4Notes",
-        label: "IV Chord Root Notes",
+        label: "IV Chord Root Notes"
       },
       {
         value: "root5Notes",
-        label: "V Chord Root Notes",
-      },
-    ],
+        label: "V Chord Root Notes"
+      }
+    ]
   }),
   mounted() {
     var FastClick = require("fastclick");
@@ -594,7 +612,7 @@ export default {
     window.canvas = SVG().addTo("body");
     this.Drawing = SVG("#fretboard-wrapper").panZoom({
       zoomMin: 0.3,
-      zoomMax: 1.5,
+      zoomMax: 1.5
     });
     this.Body = this.Drawing.path(
       "M2832.6,721.7 C2744.0,725.3 2674.1,735.3 2623.1,751.7 C2546.6,776.2 2299.6,869.2 2178.5,877.7 C2060.6,886.0 1892.3,886.0 1821.0,786.2 C1783.5,733.7 1782.0,696.6 1806.0,670.1 C1830.0,643.6 1953.5,647.6 2025.5,624.6 C2097.5,601.6 2173.0,515.6 2186.5,451.1 C2200.0,386.6 2186.3,340.7 2145.0,309.5 C2078.0,258.8 2070.2,157.7 2121.5,15.9 C2203.8,12.3 2278.7,10.4 2346.1,10.4 C2379.6,10.4 2428.1,-109.1 2420.6,-167.6 C2413.1,-226.1 2386.6,-301.2 2306.1,-341.7 C2225.5,-382.2 2114.5,-352.2 2097.5,-437.2 C2083.9,-505.3 2161.0,-544.7 2248.1,-568.7 C2335.1,-592.7 2439.6,-571.2 2540.1,-539.2 C2640.6,-507.2 2751.5,-445.2 2828.6,-445.2 C2832.4,-445.2 2833.7,-56.2 2832.6,721.7 Z"
@@ -616,14 +634,14 @@ export default {
 
     this.Fretboard.front();
 
-    this.Fretboard.filterWith(function (add) {
+    this.Fretboard.filterWith(function(add) {
       var blur = add.offset(10, 10).gaussianBlur(15);
       blur.in(add.sourceAlpha);
       add.blend(add.source, blur);
       this.size("200%", "200%").move("-50%", "-50%");
     });
 
-    this.fretGradient = this.Drawing.gradient("linear", function (add) {
+    this.fretGradient = this.Drawing.gradient("linear", function(add) {
       add.stop(0, "#333");
       add.stop(0.5, "#444");
       add.stop(1, "#222");
@@ -664,7 +682,7 @@ export default {
     },
     boxSelections: {
       handler: hideDisabled,
-      immediate: true,
+      immediate: true
     },
     patternSelections: {
       handler(val) {
@@ -676,16 +694,16 @@ export default {
           node.classList.add("hidden");
         });
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   computed: {
     selectedOptions() {
       return [
-        ...this.boxSelected,
+        ...this.boxesSelected,
         ...this.patternsSelected,
         ...this.scalesSelected,
-        ...this.rootsSelected,
+        ...this.rootsSelected
       ];
     },
 
@@ -694,7 +712,7 @@ export default {
         this.accBoxes.length +
           this.accPatterns.length +
           this.accScales.length +
-          this.accRootNotes >
+          this.accRootNotes.length >
         0
       );
     },
@@ -706,7 +724,7 @@ export default {
         return {
           label,
           value,
-          icon: "queue_music",
+          icon: "queue_music"
         };
       });
     },
@@ -718,11 +736,11 @@ export default {
         return {
           label,
           value,
-          icon: "music_note",
+          icon: "music_note"
         };
       });
     },
-    boxSelected() {
+    boxesSelected() {
       let selection = this.boxFilters.filter(({ label, id }) => {
         if (this.accBoxes.includes(id)) return label;
       });
@@ -730,7 +748,7 @@ export default {
         return {
           label,
           value: id,
-          icon: "widgets",
+          icon: "widgets"
         };
       });
     },
@@ -739,7 +757,7 @@ export default {
 
       let selection = this.boxFilters.map(({ label, id }) => ({
         value: id,
-        label: label,
+        label: label
       }));
       selection.forEach((sel, i) => {
         sel.disable = i < theLimits[0] || i > theLimits[1];
@@ -754,7 +772,7 @@ export default {
         return {
           label,
           value,
-          icon: "rounded_corner",
+          icon: "rounded_corner"
         };
       });
     },
@@ -763,7 +781,7 @@ export default {
 
       let selection = this.patternFilters.map(({ label, id }) => ({
         value: id,
-        label: label,
+        label: label
       }));
       selection.forEach((sel, i) => {
         sel.disable = i < theLimits[0] || i > theLimits[1];
@@ -774,18 +792,40 @@ export default {
     selectedBoxData() {
       let theShapes = [];
       let box;
-      this.accBoxes.forEach((box_id) => {
-        box = this.boxFilters.filter((item) => item.id == box_id);
+      this.accBoxes.forEach(box_id => {
+        box = this.boxFilters.filter(item => item.id == box_id);
         theShapes.push(box);
       });
       return theShapes;
-    },
+    }
   },
   methods: {
     ...mapActions("auth", ["logout_user"]),
+    log(desert) {
+      console.log(`${JSON.stringify(desert)} has been removed`);
+    },
+    removeFilter(chip) {
+      let val = chip.value;
+      if (val.includes("box")) {
+        console.log(`Removing type: box`)
+        this.accBoxes = [...this.accBoxes.filter(e => e != val)];
+      } else if (val.includes("backdoor")) {
+        console.log(`Removing type: backdoor`)
+        this.accPatterns = [...this.accPatterns.filter(e => e != val)];
+      } else if (["minor", "major"].some((el => val.includes(el)))) {
+        console.log(`Removing type: scales `)
+        this.accScales = [...this.accScales.filter(e => e != val)];
+      } else {
+        console.log(`Removing type: roots `)
+        this.accRootNotes = [...this.accRootNotes.filter(e => e != val)];
+      }
+    },
     toggleResultPanel() {
       this.nextMorph();
       this.rightDrawerOpen = !this.rightDrawerOpen;
+    },
+    toggleLeftDrawer() {
+      this.leftDrawerOpen = !this.leftDrawerOpen;
     },
     drawerClick(e) {
       // if in "mini" state and user
@@ -804,15 +844,12 @@ export default {
 
       let availableSelections = collection.map(({ label, id }) => ({
         value: id,
-        label: label,
+        label: label
       }));
       availableSelections.forEach((sel, i) => {
         sel.disabled = i < theLimits[0] || i > theLimits[1];
       });
       return availableSelections;
-    },
-    toggleLeftDrawer() {
-      this.leftDrawerOpen = !this.leftDrawerOpen;
     },
     nextMorph() {
       this.morphGroupModel = this.nextMorphStep[this.morphGroupModel];
@@ -821,15 +858,15 @@ export default {
       let theShapes = [];
       this.resetFretboard();
       this.rootFret = parseInt(this.keyOptions.indexOf(this.key));
-      this.accBoxes.forEach((box_id) => {
-        let box = this.boxFilters.filter((item) => item.id == box_id);
+      this.accBoxes.forEach(box_id => {
+        let box = this.boxFilters.filter(item => item.id == box_id);
         theShapes = [...theShapes, ...box];
         // console.log(`boxes: ${JSON.stringify(theShapes)}`);
       });
-      this.accPatterns.forEach((box_id) => {
-        let box = this.patternFilters.filter((item) => item.id == box_id);
+      this.accPatterns.forEach(box_id => {
+        let box = this.patternFilters.filter(item => item.id == box_id);
         theShapes = [...theShapes, ...box];
-        console.log(`boxes: ${JSON.stringify(theShapes)}`);
+        // console.log(`boxes: ${JSON.stringify(theShapes)}`);
       });
 
       this.drawFretMarker(this.rootFret - 7, this.CHORDIV);
@@ -911,7 +948,7 @@ export default {
       //   drawRootNotes(rootFret, 5, false);
       // }
 
-      this.allShapes.filterWith(function (add) {
+      this.allShapes.filterWith(function(add) {
         var blur = add.offset(5, 5).gaussianBlur(5);
         blur.in(add.sourceAlpha);
         add.blend(add.source, blur);
@@ -919,7 +956,7 @@ export default {
       });
       this.allNotes.front();
 
-      this.allNotes.filterWith(function (add) {
+      this.allNotes.filterWith(function(add) {
         var blur = add.offset(2, 2).gaussianBlur(2);
         blur.in(add.sourceAlpha);
         add.blend(add.source, blur);
@@ -982,14 +1019,14 @@ export default {
           x: this.Strings[0].pt1.x,
           y:
             this.Strings[0].pt1.y -
-            (this.Strings[1].pt1.y - this.Strings[0].pt1.y) / 2.0,
+            (this.Strings[1].pt1.y - this.Strings[0].pt1.y) / 2.0
         },
         pt2: {
           x: this.Strings[0].pt2.x,
           y:
             this.Strings[0].pt2.y -
-            (this.Strings[1].pt2.y - this.Strings[0].pt2.y) / 2.0,
-        },
+            (this.Strings[1].pt2.y - this.Strings[0].pt2.y) / 2.0
+        }
       });
 
       //Guide between E & B
@@ -998,14 +1035,14 @@ export default {
           x: this.Strings[1].pt1.x,
           y:
             this.Strings[0].pt1.y +
-            (this.Strings[1].pt1.y - this.Strings[0].pt1.y) / 2.0,
+            (this.Strings[1].pt1.y - this.Strings[0].pt1.y) / 2.0
         },
         pt2: {
           x: this.Strings[1].pt2.x,
           y:
             this.Strings[0].pt2.y +
-            (this.Strings[1].pt2.y - this.Strings[0].pt2.y) / 2.0,
-        },
+            (this.Strings[1].pt2.y - this.Strings[0].pt2.y) / 2.0
+        }
       });
 
       //Guide between G & B
@@ -1014,14 +1051,14 @@ export default {
           x: this.Strings[2].pt1.x,
           y:
             this.Strings[1].pt1.y +
-            (this.Strings[2].pt1.y - this.Strings[1].pt1.y) / 2.0,
+            (this.Strings[2].pt1.y - this.Strings[1].pt1.y) / 2.0
         },
         pt2: {
           x: this.Strings[2].pt2.x,
           y:
             this.Strings[1].pt2.y +
-            (this.Strings[2].pt2.y - this.Strings[1].pt2.y) / 2.0,
-        },
+            (this.Strings[2].pt2.y - this.Strings[1].pt2.y) / 2.0
+        }
       });
 
       //Guide between D & G
@@ -1030,14 +1067,14 @@ export default {
           x: this.Strings[3].pt1.x,
           y:
             this.Strings[2].pt1.y +
-            (this.Strings[3].pt1.y - this.Strings[2].pt1.y) / 2.0,
+            (this.Strings[3].pt1.y - this.Strings[2].pt1.y) / 2.0
         },
         pt2: {
           x: this.Strings[3].pt2.x,
           y:
             this.Strings[2].pt2.y +
-            (this.Strings[3].pt2.y - this.Strings[2].pt2.y) / 2.0,
-        },
+            (this.Strings[3].pt2.y - this.Strings[2].pt2.y) / 2.0
+        }
       });
 
       //Guide between A & D
@@ -1046,14 +1083,14 @@ export default {
           x: this.Strings[4].pt1.x,
           y:
             this.Strings[3].pt1.y +
-            (this.Strings[4].pt1.y - this.Strings[3].pt1.y) / 2.0,
+            (this.Strings[4].pt1.y - this.Strings[3].pt1.y) / 2.0
         },
         pt2: {
           x: this.Strings[4].pt2.x,
           y:
             this.Strings[3].pt2.y +
-            (this.Strings[4].pt2.y - this.Strings[3].pt2.y) / 2.0,
-        },
+            (this.Strings[4].pt2.y - this.Strings[3].pt2.y) / 2.0
+        }
       });
 
       //Guide between E & A
@@ -1062,14 +1099,14 @@ export default {
           x: this.Strings[5].pt1.x,
           y:
             this.Strings[4].pt1.y +
-            (this.Strings[5].pt1.y - this.Strings[4].pt1.y) / 2.0,
+            (this.Strings[5].pt1.y - this.Strings[4].pt1.y) / 2.0
         },
         pt2: {
           x: this.Strings[5].pt2.x,
           y:
             this.Strings[4].pt2.y +
-            (this.Strings[5].pt2.y - this.Strings[4].pt2.y) / 2.0,
-        },
+            (this.Strings[5].pt2.y - this.Strings[4].pt2.y) / 2.0
+        }
       });
 
       //Guide past E string
@@ -1078,14 +1115,14 @@ export default {
           x: this.Strings[5].pt1.x,
           y:
             this.Strings[5].pt1.y +
-            (this.Strings[5].pt1.y - this.Strings[4].pt1.y) / 2.0,
+            (this.Strings[5].pt1.y - this.Strings[4].pt1.y) / 2.0
         },
         pt2: {
           x: this.Strings[5].pt2.x,
           y:
             this.Strings[5].pt2.y +
-            (this.Strings[5].pt2.y - this.Strings[4].pt2.y) / 2.0,
-        },
+            (this.Strings[5].pt2.y - this.Strings[4].pt2.y) / 2.0
+        }
       });
 
       var stringWidths = [3, 4, 5, 6, 7, 8];
@@ -1118,7 +1155,7 @@ export default {
 
         this.Strings[i].svgElement = theString;
       }
-      this.allStrings.filterWith(function (add) {
+      this.allStrings.filterWith(function(add) {
         var blur = add.offset(5, 5).gaussianBlur(5);
         blur.in(add.sourceAlpha);
         add.blend(add.source, blur);
@@ -1669,7 +1706,7 @@ export default {
           ["L", 0, 5, 5],
           ["R", 0, 5, 7],
           ["L", 0, 0, 7],
-          ["R", 0, 0, 1],
+          ["R", 0, 0, 1]
         ],
         extras: [
           {
@@ -1678,18 +1715,18 @@ export default {
             notes: [
               [2, 0],
               [2, 1],
-              [1, 2],
-            ],
+              [1, 2]
+            ]
           },
           {
             name: "Minor Notes",
             class: "minor",
             notes: [
               [-1, 2],
-              [1, 1],
-            ],
-          },
-        ],
+              [1, 1]
+            ]
+          }
+        ]
       };
 
       this.drawShape(fret, data.points);
@@ -1766,8 +1803,8 @@ export default {
           ["L", 0, 1, 5],
           ["R", 0, 1, 7],
           ["L", 0, 0, 7],
-          ["R", 0, 0, 1],
-        ],
+          ["R", 0, 0, 1]
+        ]
       };
 
       this.drawShape(fret, data.points);
@@ -1806,8 +1843,8 @@ export default {
           ["L", 1, 1, 0],
           ["L", 0, 0, 5],
           ["R", 0, 0, 7],
-          ["R", 0, 0, 1],
-        ],
+          ["R", 0, 0, 1]
+        ]
       };
 
       this.drawShape(fret, data.points);
@@ -1857,8 +1894,8 @@ export default {
           ["R", 4, 5, 5],
           ["L", 0, 5, 5],
           ["R", 0, 5, 7],
-          ["R", 0, 5, 1],
-        ],
+          ["R", 0, 5, 1]
+        ]
       };
 
       this.drawShape(fret, data.points);
@@ -1950,7 +1987,7 @@ export default {
 
       polygonString += "Z";
 
-      var theBox = allShapes
+      var theBox = this.allShapes
         .path(polygonString)
         .fill(this.SHAPEFILL)
         .stroke(this.SHAPESTROKE);
@@ -2082,7 +2119,7 @@ export default {
       if (fret >= 0 && fret < 22) {
         this.fretMarkers[fret].fill({
           color: chord,
-          opacity: this.CHORDOPACITY,
+          opacity: this.CHORDOPACITY
         });
         this.fretMarkers[fret].show();
       }
@@ -2103,91 +2140,91 @@ export default {
       this.allFrets = this.Drawing.group();
       this.Frets.push({
         pt1: { x: 47.33, y: 54.2 },
-        pt2: { x: 47.33, y: 264.5 },
+        pt2: { x: 47.33, y: 264.5 }
       });
       this.Frets.push({
         pt1: { x: 241.33, y: 48 },
-        pt2: { x: 241.33, y: 265 },
+        pt2: { x: 241.33, y: 265 }
       });
       this.Frets.push({
         pt1: { x: 417.33, y: 46 },
-        pt2: { x: 417.33, y: 270 },
+        pt2: { x: 417.33, y: 270 }
       });
       this.Frets.push({
         pt1: { x: 583.33, y: 41 },
-        pt2: { x: 583.33, y: 273 },
+        pt2: { x: 583.33, y: 273 }
       });
       this.Frets.push({
         pt1: { x: 743.33, y: 37.36 },
-        pt2: { x: 743.33, y: 276.49 },
+        pt2: { x: 743.33, y: 276.49 }
       });
       this.Frets.push({
         pt1: { x: 892.33, y: 35 },
-        pt2: { x: 892.33, y: 279.49 },
+        pt2: { x: 892.33, y: 279.49 }
       });
       this.Frets.push({
         pt1: { x: 1036.33, y: 31 },
-        pt2: { x: 1036.33, y: 281.49 },
+        pt2: { x: 1036.33, y: 281.49 }
       });
       this.Frets.push({
         pt1: { x: 1171.33, y: 29 },
-        pt2: { x: 1171.33, y: 282.49 },
+        pt2: { x: 1171.33, y: 282.49 }
       });
       this.Frets.push({
         pt1: { x: 1298.33, y: 27 },
-        pt2: { x: 1298.33, y: 283.49 },
+        pt2: { x: 1298.33, y: 283.49 }
       });
       this.Frets.push({
         pt1: { x: 1417.33, y: 23 },
-        pt2: { x: 1417.33, y: 284.49 },
+        pt2: { x: 1417.33, y: 284.49 }
       });
       this.Frets.push({
         pt1: { x: 1531.33, y: 22 },
-        pt2: { x: 1531.33, y: 287.49 },
+        pt2: { x: 1531.33, y: 287.49 }
       });
       this.Frets.push({
         pt1: { x: 1640.33, y: 19 },
-        pt2: { x: 1640.33, y: 287.49 },
+        pt2: { x: 1640.33, y: 287.49 }
       });
       this.Frets.push({
         pt1: { x: 1740.33, y: 18.41 },
-        pt2: { x: 1740.33, y: 290.49 },
+        pt2: { x: 1740.33, y: 290.49 }
       });
       this.Frets.push({
         pt1: { x: 1836.33, y: 16 },
-        pt2: { x: 1836.33, y: 291.49 },
+        pt2: { x: 1836.33, y: 291.49 }
       });
       this.Frets.push({
         pt1: { x: 1926.33, y: 14 },
-        pt2: { x: 1926.33, y: 292.49 },
+        pt2: { x: 1926.33, y: 292.49 }
       });
       this.Frets.push({
         pt1: { x: 2012.33, y: 12 },
-        pt2: { x: 2012.33, y: 293.49 },
+        pt2: { x: 2012.33, y: 293.49 }
       });
       this.Frets.push({
         pt1: { x: 2093.33, y: 10 },
-        pt2: { x: 2093.33, y: 294.49 },
+        pt2: { x: 2093.33, y: 294.49 }
       });
       this.Frets.push({
         pt1: { x: 2168.33, y: 9 },
-        pt2: { x: 2168.33, y: 296.49 },
+        pt2: { x: 2168.33, y: 296.49 }
       });
       this.Frets.push({
         pt1: { x: 2241.33, y: 5 },
-        pt2: { x: 2241.33, y: 297.49 },
+        pt2: { x: 2241.33, y: 297.49 }
       });
       this.Frets.push({
         pt1: { x: 2308.33, y: 6 },
-        pt2: { x: 2308.33, y: 297.49 },
+        pt2: { x: 2308.33, y: 297.49 }
       });
       this.Frets.push({
         pt1: { x: 2372.33, y: 6 },
-        pt2: { x: 2372.33, y: 299.49 },
+        pt2: { x: 2372.33, y: 299.49 }
       });
       this.Frets.push({
         pt1: { x: 2433.33, y: 5 },
-        pt2: { x: 2433.33, y: 299.49 },
+        pt2: { x: 2433.33, y: 299.49 }
       });
 
       for (let i = 0; i < this.Frets.length; i++) {
@@ -2261,8 +2298,8 @@ export default {
         theFretMarker.stroke("none");
         this.fretMarkers.push(theFretMarker);
       }
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="sass" scoped>
