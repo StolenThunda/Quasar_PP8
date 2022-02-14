@@ -194,7 +194,7 @@
     <q-drawer side="right" v-model="rightDrawerOpen" overlay>
       <q-card
         v-morph:selections:mygroup:500.resize="morphGroupModel"
-        class="q-mx-md column wrap justify-evenly items-center bg-primary text-white content-around"
+        class="q-mx-md bottom-left column wrap justify-evenly items-center bg-primary text-white content-around"
         style="
           top:50px
           width: 300px;
