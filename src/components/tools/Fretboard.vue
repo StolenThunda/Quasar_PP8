@@ -838,7 +838,12 @@ export default {
       });
       return availableSelections;
     },
-   
+    refreshUI() {
+      this.resetFretboard();
+      // hide disabled toggles
+      hideDisabled();
+      this.updateFretboard();
+    },
     updateFretboard() {
       let theShapes = [];
       this.resetFretboard();
