@@ -130,7 +130,7 @@
       </div>
       <div
         class="q-mini-drawer-hide absolute"
-        style="bottom: 15px; right: -35px"
+        style="top: 15px; right: -40px"
       >
         <q-fab color="accent" push icon="chevron_left" direction="right" glossy>
           <q-fab-action
@@ -153,7 +153,7 @@
     <q-page-container>
       <q-card
         v-morph:selections:mygroup:500.resize="morphGroupModel"
-        class="absolute-center row wrap justify-evenly items-center bg-primary text-white content-around"
+        class="bottom-right row wrap justify-evenly items-center bg-primary text-white content-around"
         style="
           width: 300px;
           border-top-right-radius: 2em;
@@ -166,7 +166,6 @@
               <q-item-section avatar>
                 <q-icon name="done_all" />
               </q-item-section>
-              Selections
               <q-item-section class="text-h4"> Selections </q-item-section>
             </q-item>
           </q-list>
@@ -621,18 +620,18 @@ export default {
       handler: hideDisabled,
       immediate: true,
     },
-    // patternSelections: {
-    //   handler(val) {
-    //     let disabledSelections = document.querySelectorAll(
-    //       "[role=checkbox].disabled"
-    //     );
-    //     disabledSelections.forEach((node, i) => {
-    //       // console.log("node", node.classList);
-    //       node.classList.add("hidden");
-    //     });
-    //   },
-    //   immediate: true,
-    // },
+    patternSelections: {
+      handler(val) {
+        let disabledSelections = document.querySelectorAll(
+          "[role=checkbox].disabled"
+        );
+        disabledSelections.forEach((node, i) => {
+          // console.log("node", node.classList);
+          node.classList.add("hidden");
+        });
+      },
+      immediate: true,
+    },
   },
   computed: {
     selectedOptions() {
