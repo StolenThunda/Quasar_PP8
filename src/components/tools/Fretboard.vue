@@ -19,8 +19,9 @@
           label-color="deep-orange"
           options-selected-class="accent"
           :display-value="`Selected Key: ${key}`"
-          borderless
-          dense
+          standout="bg-accent text-white"
+          behavior="dialog"
+          rounded
         >
           <template v-slot:append>
             <q-icon name="mdi-key-variant" />
@@ -45,57 +46,75 @@
       side="left"
       :mini="!leftDrawerOpen || miniState"
       @click.capture="drawerClick"
-      :width="200"
+      :width="250"
       :breakpoint="500"
-      bordered
-      class="bg-grey-3"
       show-if-above
       overlay
       elevated
     >
-      <div class="fit" style="top: 155px">
-        <q-list padding>
-          <q-expansion-item group="filters" icon="widgets" label="Boxes">
-            <q-card class="bg-grey-9">
-              <q-card-section>
-                <q-option-group
-                  v-model="accBoxes"
-                  :options="boxSelections"
-                  color="accent"
-                  type="toggle"
-                  @input="updateFretboard"
-                />
-              </q-card-section>
-            </q-card>
+      <!-- <div class=""> -->
+        <!-- <q-scroll-area class="fit"> -->
+
+        <q-list padding class="q-gutter-y-xl">
+          <q-expansion-item group="filters">
+            <template v-slot:header>
+              <q-item-section avatar class="">
+                <q-avatar size='2.75em' icon="widgets" class="q-ml-none" />
+              </q-item-section>
+              <q-item-section class="text-h6 text-weight-bold"> Boxes </q-item-section>
+            </template>
+            <div class="bg-black">
+              <q-option-group
+                v-model="accBoxes"
+                :options="boxSelections"
+                class="q-py-lg"
+                color="accent"
+                type="toggle"
+                @input="updateFretboard"
+              />
+              <q-separator />
+            </div>
           </q-expansion-item>
 
           <q-expansion-item
             group="filters"
             icon="rounded_corner"
-            label="Patterns"
-            class="bg-grey-9"
           >
-            <q-option-group
-              v-model="accPatterns"
-              :options="patternSelections"
-              color="accent"
-              type="toggle"
-              @input="updateFretboard"
-            />
+          <template v-slot:header>
+              <q-item-section avatar>
+                <q-avatar size="2.75em" icon="rounded_corner" />
+              </q-item-section>
+              <q-item-section class="text-h6 text-weight-bold"> Patterns </q-item-section>
+            </template>
+            <div class="bg-black">
+              <q-option-group
+                v-model="accPatterns"
+                :options="patternSelections"
+                color="accent"
+                type="toggle"
+                @input="updateFretboard"
+              />
+              <q-separator />
+            </div>
           </q-expansion-item>
 
-          <q-expansion-item group="filters" icon="queue_music" label="Scales">
-            <q-card class="bg-grey-9">
-              <q-card-section>
-                <q-option-group
-                  v-model="accScales"
-                  :options="scaleFilters"
-                  color="accent"
-                  type="toggle"
-                  @input="updateFretboard"
-                />
-              </q-card-section>
-            </q-card>
+          <q-expansion-item group="filters">
+              <template v-slot:header>
+              <q-item-section avatar>
+                <q-avatar size="2.75em" icon="queue_music" />
+              </q-item-section>
+              <q-item-section class="text-h6 text-weight-bold"> Scales </q-item-section>
+            </template>
+            <div class="bg-black">
+              <q-option-group
+                v-model="accScales"
+                :options="scaleFilters"
+                color="accent"
+                type="toggle"
+                @input="updateFretboard"
+              />
+              <q-separator />
+            </div>
           </q-expansion-item>
 
           <q-expansion-item
@@ -103,20 +122,25 @@
             icon="music_note"
             label="Root Notes"
           >
-            <q-card class="bg-grey-9">
-              <q-card-section>
-                <q-option-group
-                  v-model="accRootNotes"
-                  :options="rootNoteFilters"
-                  color="accent"
-                  type="toggle"
-                  @input="updateFretboard"
-                />
-              </q-card-section>
-            </q-card>
+           <template v-slot:header>
+              <q-item-section avatar>
+                <q-avatar size="2.75em" icon="music_note" />
+              </q-item-section>
+              <q-item-section class="text-h6 text-weight-bold"> Root Notes </q-item-section>
+            </template>
+            <div class="bg-black">
+              <q-option-group
+                v-model="accRootNotes"
+                :options="rootNoteFilters"
+                color="accent"
+                type="toggle"
+                @input="updateFretboard"
+              />
+              <q-separator />
+            </div>
           </q-expansion-item>
 
-          <q-item class="q-mini-drawer-hide" vertical align="center">
+          <q-item class="q-mini-drawer-hide content-center" >
             <q-btn
               class="glossy"
               icon="restart_alt"
@@ -126,13 +150,27 @@
               push
             />
           </q-item>
-        </q-list>
-      </div>
-      <div
-        class="q-mini-drawer-hide absolute"
-        style="bottom: 15px; right: -35px"
-      >
-        <q-fab color="accent" push icon="chevron_left" direction="right" glossy>
+        
+      <div class="q-mini-drawer-hide absolute" style="top: 15px; right: -40px">
+        <q-btn
+          v-if="!selectionsAvaliable"
+          color="accent"
+          push
+          icon="chevron_left"
+          @click="miniState = true"
+          fab
+          glossy
+          round
+          />
+        <q-fab
+          v-else
+          :disable="!selectionsAvaliable"
+          color="accent"
+          push
+          icon="chevron_left"
+          direction="right"
+          glossy
+          >
           <q-fab-action
             color="orange-5"
             @click="miniState = true"
@@ -144,20 +182,24 @@
             color="orange-2 text-orange-10"
             icon="rule"
             title="Selections"
-            @click="nextMorph"
+            @click="toggleResultPanel"
           />
         </q-fab>
       </div>
+        </q-list>
+        <!-- </q-scroll-area> -->
+      <!-- </div> -->
     </q-drawer>
 
-    <q-page-container>
+    <q-drawer side="right" v-model="rightDrawerOpen" overlay>
       <q-card
         v-morph:selections:mygroup:500.resize="morphGroupModel"
-        class="absolute-center row wrap justify-evenly items-center bg-primary text-white content-around"
+        class="q-mx-md column wrap justify-evenly items-center bg-primary text-white content-around"
         style="
+          top:50px
           width: 300px;
-          border-top-right-radius: 2em;
-          border-bottom-left-radius: 2em;
+          border-top-right-radius: 2.75em;
+          border-bottom-left-radius: 2.75em;
         "
       >
         <q-card-section>
@@ -166,8 +208,7 @@
               <q-item-section avatar>
                 <q-icon name="done_all" />
               </q-item-section>
-              Selections
-              <q-item-section class="text-h4"> Selections </q-item-section>
+              <q-item-section class="text-h4 text-weight-bolder"> Selections </q-item-section>
             </q-item>
           </q-list>
         </q-card-section>
@@ -192,9 +233,12 @@
           </div>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat label="Close" @click="nextMorph" />
+          <q-btn flat label="Close" @click="toggleResultPanel" />
         </q-card-actions>
       </q-card>
+    </q-drawer>
+
+    <q-page-container>
       <div id="fretboard-container" class="bg-black">
         <div id="fretboard-zoom-wrapper">
           <div id="fretboard">
@@ -242,6 +286,7 @@ export default {
       selections: "btn",
     },
     leftDrawerOpen: true,
+    rightDrawerOpen: false,
     key: "E",
     keyOptions: [
       "E",
@@ -621,18 +666,18 @@ export default {
       handler: hideDisabled,
       immediate: true,
     },
-    // patternSelections: {
-    //   handler(val) {
-    //     let disabledSelections = document.querySelectorAll(
-    //       "[role=checkbox].disabled"
-    //     );
-    //     disabledSelections.forEach((node, i) => {
-    //       // console.log("node", node.classList);
-    //       node.classList.add("hidden");
-    //     });
-    //   },
-    //   immediate: true,
-    // },
+    patternSelections: {
+      handler(val) {
+        let disabledSelections = document.querySelectorAll(
+          "[role=checkbox].disabled"
+        );
+        disabledSelections.forEach((node, i) => {
+          // console.log("node", node.classList);
+          node.classList.add("hidden");
+        });
+      },
+      immediate: true,
+    },
   },
   computed: {
     selectedOptions() {
@@ -738,6 +783,10 @@ export default {
   },
   methods: {
     ...mapActions("auth", ["logout_user"]),
+    toggleResultPanel() {
+      this.nextMorph();
+      this.rightDrawerOpen = !this.rightDrawerOpen;
+    },
     drawerClick(e) {
       // if in "mini" state and user
       // click on drawer, we switch it to "normal" mode
@@ -775,7 +824,7 @@ export default {
       this.accBoxes.forEach((box_id) => {
         let box = this.boxFilters.filter((item) => item.id == box_id);
         theShapes = [...theShapes, ...box];
-        console.log(`boxes: ${JSON.stringify(theShapes)}`);
+        // console.log(`boxes: ${JSON.stringify(theShapes)}`);
       });
       this.accPatterns.forEach((box_id) => {
         let box = this.patternFilters.filter((item) => item.id == box_id);
@@ -1413,7 +1462,7 @@ export default {
         );
       }
       polygonString += "Z";
-      console.log("strPoly", polygonString);
+      // console.log("strPoly", polygonString);
       var theBox = this.allShapes
         .path(polygonString)
         .fill(this.SHAPEFILL)
@@ -1840,7 +1889,7 @@ export default {
       var note6 = this.notes[theFret + 6][this.GSTRING];
       var note7 = this.notes[theFret + 4][this.DSTRING];
       var note8 = this.notes[theFret + 4][this.ASTRING];
-      var note9 = this.notes[theFret + 2][ESTRING2];
+      var note9 = this.notes[theFret + 2][this.ESTRING2];
 
       var polygonString =
         "M" + this.addPointToString(note1.box[7].x, note1.box[7].y);
