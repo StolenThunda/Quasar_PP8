@@ -272,7 +272,7 @@ function hideDisabled() {
     "[role=checkbox].disabled"
   );
   disabledSelections.forEach((node, i) => {
-    console.log("node", node.classList);
+    // console.log("node", node.classList);
     node.classList.add("hidden");
   });
 }
@@ -820,7 +820,11 @@ export default {
     },
     toggleResultPanel(val) {
       this.nextMorph();
-      this.rightDrawerOpen = val ? val : !this.rightDrawerOpen;
+      let status = typeof val == 'boolean' ? val : !this.rightDrawerOpen;
+      console.log( `val (${typeof val}): ${val}`)
+      console.log( `drawer ${!status ? "closed" : "open"}`)
+      this.rightDrawerOpen = status
+      // this.rightDrawerOpen = (typeof val == 'boolean' && val) ? val : !this.rightDrawerOpen;
     },
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
@@ -837,13 +841,7 @@ export default {
         sel.disabled = i < theLimits[0] || i > theLimits[1];
       });
       return availableSelections;
-    },
-    refreshUI() {
-      this.resetFretboard();
-      // hide disabled toggles
-      hideDisabled();
-      this.updateFretboard();
-    },
+    },    
     updateFretboard() {
       let theShapes = [];
       this.resetFretboard();
@@ -2097,7 +2095,7 @@ export default {
       this.resetFretboard();
       // hide disabled toggles
       hideDisabled();
-      this.toggleResultPanel(false)
+      if (!this.selectionsAvaliable && this.rightDrawerOpen) this.toggleResultPanel(false)
 
       this.updateFretboard();
       
