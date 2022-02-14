@@ -838,7 +838,6 @@ export default {
       });
       return availableSelections;
     },
-   
     updateFretboard() {
       let theShapes = [];
       this.resetFretboard();

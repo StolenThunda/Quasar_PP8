@@ -6,11 +6,13 @@
   "author": "Tony Moses <tonym415@gmail.com>",
   "private": true,
   "scripts": {
-    "start": "quasar d",
-    "dev": "export NODE_OPTIONS=--openssl-legacy-provider && npx quasar d",
+    "build" : "npx quasar b --debug",
+    "build:deploy": "yarn run build && yarn run propogate",
+    "dev": " npx quasar d",
     "dev:electron": "unset NODE_OPTIONS && npx quasar dev -m electron -- --no-sandbox --disable-setuid-sandbox",
-    "build_deploy": "quasar build && ../deployProjects.sh",
-    "lint": "eslint --ext .js,.vue ./"
+    "lint": "eslint --ext .js,.vue ./",
+    "propogate": "cp --update --recursive --verbose --force dist/spa/* ../txba-demo",
+    "start": "quasar d"
   },
   "dependencies": {
     "@capacitor/android": "^2.4.1",
