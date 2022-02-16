@@ -190,7 +190,8 @@ module.exports = function (/* ctx */ ) {
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-capacitor-apps/configuring-capacitor
     capacitor: {
-      hideSplashscreen: false
+      hideSplashscreen: false,
+      iosStatusBarPadding: true
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-electron-apps/configuring-electron

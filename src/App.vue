@@ -24,5 +24,6 @@ export default {
 /* @import 'https://fonts.googleapis.com/css?family=Oswald' */
 * {
     font-family: "Oswald","Open Sans","Lucida Grande","Lucida Sans Unicode",Helvetica,Sans-Serif  ;
+
 }
 </style>
