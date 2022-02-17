@@ -8,9 +8,11 @@
   "scripts": {
     "build" : "npx quasar b --debug",
     "build:deploy": "yarn run build && yarn run propogate",
+    "build:electron": "npx quasar build -m capacitor -T android --scan --ide",
+    "build:ios": "npx quasar build -m capacitor -T ios --debug --ide",
     "dev": " npx quasar d",
     "dev:electron": "unset NODE_OPTIONS && npx quasar dev -m electron -- --no-sandbox --disable-setuid-sandbox",
-    "dev:ios": "npx quasar dev -m capacitor -T ios",
+    "dev:ios": "npx quasar dev -m capacitor -T ios --ide",
     "lint": "eslint --ext .js,.vue ./",
     "propogate": "cp --update --recursive --verbose --force dist/spa/* ../txba-demo",
     "start": "quasar d"

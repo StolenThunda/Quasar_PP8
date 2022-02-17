@@ -30,13 +30,20 @@ l<template>
         outlined
         stack-label
         v-model="formData.password"
-        type="password"
+        :type="passwordVisible ? 'text' : 'password'"
         label="Password"
         :rules="[
           val => val.length >= 6 || 'Please enter at least six characters'
         ]"
         lazy-rules
-      />
+      >
+      <template v-slot:append>
+          <q-icon 
+            :name="passwordVisible ? 'visibility_off' : 'visibility'" 
+            @click="passwordVisible = !passwordVisible"
+          />
+        </template>
+      </q-input>
     </div>
     <div class="row">
       <q-btn label="Cancel" icon="close" color="primary" v-close-popup />
@@ -51,6 +58,7 @@ import { mapActions } from "vuex";
 export default {
   props: ['tab'],
   data: () => ({
+    passwordVisible: false,
     formData: {
       email: "",
       password: ""

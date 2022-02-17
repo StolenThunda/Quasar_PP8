@@ -1,7 +1,7 @@
 <template>
-  <div>
-    
-    <q-carousel
+  <div class='column fit'>
+   
+    <!-- <q-carousel
       v-model="slide"
       height="95vh"
       ref="carousel"
@@ -31,7 +31,19 @@
           />
         </div>
       </q-carousel-slide>
-    </q-carousel>
+    </q-carousel> -->
+     <q-tab-panel
+      name="title"
+      class="bg-none absolute-center text-weight-bold text-center text-h2"
+      style="height: 130px; width: 250px"
+    >
+      <q-img 
+      :src="images[0].src"
+      :contain="images[0].contain"
+      > 
+
+      </q-img>
+    </q-tab-panel>
     <q-dialog v-model="card">
       <q-card class="auth-tabs">
         <q-tabs
@@ -66,15 +78,9 @@
       push
       icon-right="key"
       label="Enter"
-      color="deep-orange"  
+      color="deep-orange"
       size="lg"
-      
-      class="
-        q-mt-xl q-mr-lg
-        absolute-top-right 
-        q-electron-drag--exception
-        shadow-2
-        "
+      class="q-mt-xl q-mr-lg absolute-top-right q-electron-drag--exception shadow-2"
       @click="card = !card"
     />
   </div>
@@ -88,6 +94,7 @@ export default {
     fullscreen: false,
     slide: 1,
     tab: "login",
+    dialog: true,
     card: false,
     autoplay: true,
     images: [

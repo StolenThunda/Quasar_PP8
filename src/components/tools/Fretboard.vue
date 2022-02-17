@@ -210,7 +210,7 @@
 
     <q-drawer side="right" v-model="rightDrawerOpen" overlay> -->
           <!-- v-morph:selections:mygroup:800.resize="morphGroupModel" -->
-      <q-banner v-model="selectionDialog">
+      <q-dialog v-model="selectionDialog">
         <q-card
           class="q-mx-sm column wrap justify-evenly items-center bg-primary content-around"
           style="
@@ -256,7 +256,7 @@
             <q-btn flat label="Close" @click="selectionDialog = false" />
           </q-card-actions>
         </q-card>
-      </q-banner>
+      </q-dialog>
     </q-drawer>
 
     <q-page-container>
