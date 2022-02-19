@@ -6,7 +6,7 @@
   "author": "Tony Moses <tonym415@gmail.com>",
   "private": true,
   "scripts": {
-    "build" : "npx quasar b --debug",
+    "build": "npx quasar b --debug",
     "build:deploy": "yarn run build && yarn run propogate",
     "build:electron": "npx quasar build -m capacitor -T android --scan --ide",
     "build:ios": "npx quasar build -m capacitor -T ios --debug --ide",
@@ -26,6 +26,7 @@
     "@svgdotjs/svg.filter.js": "^3.0.8",
     "@svgdotjs/svg.js": "^3.1.2",
     "@svgdotjs/svg.panzoom.js": "^2.1.2",
+    "aubiojs": "^0.0.1",
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.3",
     "cordova": "^10.0.0",
@@ -34,6 +35,7 @@
     "firebase": "^8.2.6",
     "global": "^4.4.0",
     "quasar": "^1.18.2",
+    "sweetalert2": "^11.4.0",
     "vue-plyr": "^6.0.4",
     "webpack": "^5.20.2",
     "x-frame-bypass": "^1.0.2"

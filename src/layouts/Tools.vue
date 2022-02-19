@@ -1,38 +1,43 @@
 <template>
   <!--q-layout view="hHh lpR fFf">  <q-layout view="hHh Lpr lff"> -->
-  <div class="q-pa-md">
-     <q-layout view="lHh Lpr lff">
+     <q-layout view="lHh Lpr lff" container style="height: 100vh" class="shadow-2 rounded-borders">
     <q-header elevated reveal>
       <q-toolbar >
         <q-btn
-        color="secondary"
+        color="accent"
         icon="menu"
         aria-label="menu"
         @click="retrieveDrawer = !retrieveDrawer"
       />
+      <q-space />
         <q-toolbar-title class="text-capitalize text-subtitle2">
-          {{ $route.meta.name }}
+          {{ $route.meta.name || 'TXBA TOOLS'}}
         </q-toolbar-title>
         
-        <q-btn label="Close" color="secondary" icon="close" to="/" />
+        <q-btn label="Back" color="accent" icon="close" to="/tools" />
       </q-toolbar>
     </q-header>
 
     <q-page-container>
-    <!-- //  <q-scroll-area> -->
-      <router-view :fetchDrawer="retrieveDrawer" />
-      <!-- // </q-scroll-area> -->
+      <router-view />
     </q-page-container>
   </q-layout>
-  </div>
    
 </template>
 
 <script>
+import { mapActions } from "vuex"
 export default {
   name: "ToolsLayout",
   data: () => ({
-    retrieveDrawer: false
-  })
+    retrieveDrawer: false,
+    tab: ''
+  }),
+  computed: { 
+    ...mapActions('auth', ['logout_user'])
+  }
 };
 </script>
+<style scoped>
+@import url('https://texasbluesalley.com/?css=proplayer7-5/css-TunerTool.v.1601956345');
+</style>

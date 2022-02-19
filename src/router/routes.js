@@ -3,20 +3,20 @@ const routes = [
     path: "/auth",
     component: () => import("src/pages/AuthPage.vue")
   },
-  {
-    path: "/",
-    component: () => import("components/tools/Fretboard")
-  },
   // {
   //   path: "/",
   //   component: () => import("layouts/MainLayout.vue"),
   //   children: [{ path: "", component: () => import("pages/Index.vue") }]
   // },
   {
-    path: "/tools",
+    path: "/",
     component: () => import("src/layouts/Tools.vue"),
     // beforeEnter: authGuard,
     children: [
+      {
+        path: "",
+        component: () => import("pages/Tools")
+      },
       {
         name: "external",
         path: "/tools/ex/:dest",
@@ -32,7 +32,7 @@ const routes = [
       {
         name: "tuner",
         path: "/tools/tuner",
-        component: () => import("pages/Tools"),
+        component: () => import("components/tools/Tuner"),
         meta: {
           src: "/dev/tuner",
           name: "Tuner"
@@ -41,7 +41,7 @@ const routes = [
       {
         name: "spider",
         path: "/tools/spider",
-        component: () => import("pages/Tools"),
+        component: () => import("components/tools/Spider"),
         meta: {
           src: "/dev/spider",
           name: "Spider Drills"

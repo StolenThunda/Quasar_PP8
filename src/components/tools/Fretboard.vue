@@ -41,7 +41,7 @@
           label="Close"
           color="secondary"
           icon="close"
-          @click.prevent="logout_user"
+          to="/"
           flat
           dense
         />
@@ -798,7 +798,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions("auth", ["logout_user"]),
     log(desert) {
       console.log(`${JSON.stringify(desert)} has been removed`);
     },

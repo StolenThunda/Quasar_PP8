@@ -21,7 +21,13 @@ l<template>
         class="col"
         label="Email"
         stack-label
-      />
+      >
+      <template v-slot:prepend>
+          <q-icon 
+            name="email"
+          />
+        </template>
+      </q-input>
     </div>
     <div class="row q-mb-md">
       <q-input
@@ -37,7 +43,7 @@ l<template>
         ]"
         lazy-rules
       >
-      <template v-slot:append>
+      <template v-slot:prepend>
           <q-icon 
             :name="passwordVisible ? 'visibility_off' : 'visibility'" 
             @click="passwordVisible = !passwordVisible"
