@@ -5,7 +5,7 @@
     class="shadow-2 rounded-borders"
   >
     <!-- <q-layout view="lHh Lpr lff"> -->
-    <q-footer elevated>
+    <q-header elevated>
       <q-toolbar class="q-electron-drag">
         <drawer-toggle
           v-if="loggedIn"
@@ -67,7 +67,7 @@
           </q-card>
         </q-dialog>
       </q-toolbar>
-    </q-footer>
+    </q-header>
 
     <q-drawer
       v-if="loggedIn"

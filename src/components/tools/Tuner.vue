@@ -7,7 +7,7 @@
         >
         <q-space />
 
-        <q-btn label="Back" color="accent" icon="close" to="/tools" />
+       <q-btn label="Back" color="accent" icon="close" to="/tools" push glossy />
       </q-toolbar>
     </q-header>
     <q-page-container>

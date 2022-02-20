@@ -10,8 +10,7 @@
 
      <q-btn
       icon="list"
-        label=""
-        size="2em"
+        size="xl"
         to="/tools/fretboard"
         class="bg-primary q-pa-xl"
         exact
@@ -20,32 +19,33 @@
         >Fretboard <br />Tool</q-btn>
 
       <q-btn
-        label=""
-        size="2em"
+        title="Under Construction"
+        size="xl"
         to="/tools/spider"
         class="bg-primary q-pa-xl"
         exact
         stack
         glossy
         disable
-        title="Under Construction"
-        icon="bug_report">Spider <br />Tool</q-btn>
+        icon="bug_report"
+        >
+        Spider <br />Tool
+        </q-btn>
 
      <q-btn
-        label="Tuner"
-        size="2.5em"
+        size="xl"
         icon="speed"
-        stack
-        glossy
         class="bg-primary q-pa-xl"
         to="/tools/tuner"
-        exact></q-btn>
+        stack
+        glossy
+        exact>Chromatic <br />Tuner</q-btn>
     </q-page>
 </template>
 
 <script>
 export default {
-
+  name: 'Tool Index'
 }
 </script>
 

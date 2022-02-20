@@ -3,18 +3,18 @@ const routes = [
     path: "/auth",
     component: () => import("src/pages/AuthPage.vue")
   },
-  // {
-  //   path: "/",
-  //   component: () => import("layouts/MainLayout.vue"),
-  //   children: [{ path: "", component: () => import("pages/Index.vue") }]
-  // },
+  {
+    path: "/",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [{ path: "", component: () => import("pages/Index.vue") }]
+  },
   {
     path: "/",
     component: () => import("src/layouts/Tools.vue"),
     // beforeEnter: authGuard,
     children: [
       {
-        path: "",
+        path: "/tools",
         component: () => import("pages/Tools")
       },
       {
@@ -23,11 +23,6 @@ const routes = [
         beforeEnter() {
           location.href = `https://texasbluesalley.com/${dest}`;
         }
-      },
-      {
-        name: "browser",
-        path: "/tools/browser",
-        component: () => import("pages/Browser")
       },
       {
         name: "tuner",
