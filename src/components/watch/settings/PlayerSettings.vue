@@ -17,7 +17,7 @@
             </div>
           </q-img>
           <q-card-section>
-            <pre>{{ getSetup }}</pre>
+            <pre>{{ $store.state.watch.currentSetup }}</pre>
           </q-card-section>
         </q-card>
       </q-dialog>

@@ -11,8 +11,6 @@
       >
         <template #header>
           {{ item }}
-          <q-space />
-          <q-badge color="accent" floating>{{ favs[item].length }} </q-badge>
         </template>
         <q-list class="q-py-sm rounded-borders" bordered dense>
           <template v-for="fav in favs[item]">
@@ -62,24 +60,17 @@ export default {
   },
   methods: {
     link(fav) {
-      // // this.fetchPackage(fav.id)
-      // this.fetchPackage(fav.id).then(() =>
-      // this.fetchDefaultMedia())
-      // return false
-      // this.setCurrentSegmentSetup(fav.id).then(id => {
       if (fav.src !== "Imported") {
         this.$router.push(`/watch/${fav.id}`);
       } else {
         this.$router.push(`/watch/${fav.id}/${fav.id}`);
       }
-      // });
     },
     getFavs() {
       this.favs = this.$store.getters["default/getFavsByType"];
     },
     ...mapActions("default", ["removeFavorite"]),
     ...mapActions("watch", ["playSegment", "fetchPackage", "fetchDefaultMedia"])
-
   }
 };
 </script>
