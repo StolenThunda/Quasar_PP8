@@ -1,12 +1,12 @@
 
 <script>
-import { createNamespacedHelpers } from "vuex";
-const { mapActions, mapState } = createNamespacedHelpers("browser");
-import { ProPlayerBrowser} from "components/browse/logic";
+import {
+  Browser,
+} from "../../middleware/ProPlayerCore.js";
 export default {
   name: 'withBrowser',
   data: () => ({
-    browserTool: new ProPlayerBrowser(this)
+    browserTool: new Browser(this)
   }),
   mounted() { 
     console.log('I AM HERE')

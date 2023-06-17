@@ -154,7 +154,8 @@ export default {
     }
   },
   actions: {
-    async gotoPage({state, dispatch, rootState, getters}, url) {
+    async gotoPage ( { state, dispatch, rootState, getters }, url ) {
+      
       const searchEntries = await rootState.TXBA_UTILS.getSearchEntries(
         state.activeCategory,
         getters.getAuthObject.params,
@@ -224,7 +225,8 @@ export default {
       });
       return q_string.join("&") + '&' + getters.getFilterList;
     },
-    async getFilteredResults({ rootState, dispatch }, queryString) {
+    async getFilteredResults ( { rootState, dispatch }, queryString ) {
+      console.log('q', queryString)
       const entries = await rootState.TXBA_UTILS.postAsyncData(queryString)
         .then(data => {
           console.log(

@@ -35,7 +35,7 @@
 
 <script>
 export default {
-  name: "TXBA Hero",
+  name: "TXBA_Hero",
   data: () => ({
     fullscreen: false,
     slide: 1,

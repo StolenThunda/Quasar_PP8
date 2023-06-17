@@ -1,15 +1,15 @@
 <template>
   <q-list id="progressSliderWrapper" dense>
-    <q-item>
+    <!-- <q-item v-if="activeLoop">
       <q-item-section></q-item-section>
       <q-item-section side>
-        <q-badge v-if="activeLoop" color="accent" transparent rounded>
+        <q-badge color="accent" transparent rounded>
           <span class="text-center">
             <span class="text-caption">
-              Current Loop
+              {{ loopMessage }}
             </span>
             <br />
-            <span class="text-weight-bolder">
+            <span class="text-weight-lighter">
               Start: {{ minTime(Math.floor(getLoopStart)) }} to End:
               {{ maxTime(Math.floor(getLoopStop)) }}
             </span>
@@ -17,7 +17,7 @@
         </q-badge>
       </q-item-section>
       <q-item-section></q-item-section>
-    </q-item>
+    </q-item> -->
     <q-item>
       <q-item-section
         id="current-time"
@@ -28,18 +28,17 @@
       </q-item-section>
       <q-item-section id="progressSlider">
         <q-slider
+          v-if="!activeLoop"
           dense
           label
-          v-if="!activeLoop"
           v-model="progress"
-          color="secondary"
-          :min="ctime"
+          :color="trackColor"
+          :min="0"
           :max="duration"
           :label-value="elapsedTime"
           @change="sliderChanged"
           @pan="sliderSliding"
         />
-        <!-- <div > -->
         <q-range
           id="loop-region"
           v-else
@@ -47,12 +46,25 @@
           v-model="activeLoop"
           dense
           label
+          :min="activeLoop.min"
+          :max="activeLoop.max"
           :left-label-value="minTime(activeLoop.min)"
           :right-label-value="maxTime(activeLoop.max)"
           readonly
         />
-        <!-- </div> -->
-        <!-- <div id="chapters-wrapper"></div> -->
+        <!-- <q-slider
+          dense
+          label
+          v-model="progress"
+          :color="trackColor"
+          :min="0"
+          :inner-min="getLoopStart"
+          :inner-max="getLoopStop"
+          :max="duration"
+          :label-value="elapsedTime"
+          @change="sliderChanged"
+          @pan="sliderSliding"
+        /> -->
       </q-item-section>
       <q-item-section
         id="time-left"
@@ -81,10 +93,26 @@ export default {
   computed: {
     ...mapState("watch", ["playerSettings"]),
     ...mapGetters("watch", ["isValidLoop", "getLoopStart", "getLoopStop"]),
+
+    loopMessage() {
+      return this.playerSettings.looping ? "Currently Looping:" : "Loop Set";
+    },
+    trackColor() {
+      return !this.activeLoop
+        ? "secondary"
+        : this.playerSettings.playing && this.playerSettings.looping
+        ? "accent"
+        : "secondary";
+    },
     duration() {
       return this.playerSettings.duration;
     },
-
+    getALMin() {
+      return this.activeLoop ? this.activeLoop.min : 0;
+    },
+    getALMax() {
+      return this.activeLoop ? this.activeLoop.max : 0;
+    },
     activeLoop() {
       return this.isValidLoop
         ? this.playerSettings.looping

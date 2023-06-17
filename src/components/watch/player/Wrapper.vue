@@ -1,8 +1,7 @@
 <template>
-  <div>
-    Type: {{ mediaType }}
+  <q-page class="media-container">
+    <!-- Type: {{ mediaType }} -->
     <div
-      class="q-pa-lg media-content-wrapper"
       v-if="mediaType === 'html'"
       v-html="ProPlayer.theSegment.getHTMLContent().replaceAll('h2', 'h5')"
     />
@@ -16,6 +15,7 @@
     </template>
     <div
       v-else-if="currentSetup.sources"
+      class="media-container"
       id="mediaPlayerWrapper"
       :set="(s = currentSetup.sources[0])"
     >
@@ -25,7 +25,7 @@
         :src="s.src"
       />
     </div>
-  </div>
+  </q-page>
 </template>
 
 <script>
@@ -70,9 +70,9 @@ export default {
 };
 </script>
 <style>
-#mediaPlayerWrapper {
-  bottom: 0;
-  position: absolute;
+ #mediaPlayerWrappers {
+  /* bottom: 0; */
+  /* position: absolute; */
   top: 0;
   left: 0;
   right: 0;
@@ -82,27 +82,27 @@ export default {
   margin: 0;
 }
 .media-content-wrapper {
-  position: absolute;
+  /* position: absolute; */
   top: 0;
   left: 0;
   width: 100%;
-  bottom: 0;
-  padding: 1rem;
+  /* bottom: 0; */
+  /* padding: 1rem; */
   background: #222;
-  overflow: auto;
+  /* overflow: auto; */
 }
-
+/*
 #mediaPlayer iframe {
   height: 100%;
   width: 100%;
-  bottom: 0;
+   bottom: 0; 
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  overflow: hidden;
+  overflow: hidden; 
   border: none;
   padding: 0;
   margin: 0;
-}
+} */
 </style>

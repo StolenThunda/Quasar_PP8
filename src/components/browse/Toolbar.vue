@@ -9,8 +9,6 @@
       </q-toolbar-title>
       <q-btn label="Close" color="secondary" icon="close" to="/" />
     </q-toolbar>
-
-    <!-- <q-toolbar inset> -->
       <center>
       
         <div id="browser-wrapper">
@@ -42,10 +40,8 @@
             </ul>
           </div>
       </q-scroll-area>
-        </div>
-          
+        </div>          
       </center>
-    <!-- </q-toolbar> -->
   </div>
 </template>
 

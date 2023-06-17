@@ -48,15 +48,15 @@ export default {
     this.myTabs = this.sortedTabs(this.tabList);
   },
   watch: {
-    // tabList: {
-    //   handler: function(val, old) {
-    //     // console.log('val', val)
-    //     // console.log('old', old)
-    //     // this.getFirst();
-    //     this.componentKey++
-    //   },
-    //   deep: true
-    // }
+    tabList: {
+      handler: function(val, old) {
+        // console.log('val', val)
+        // console.log('old', old)
+        this.getFirst();
+        this.componentKey++
+      },
+      deep: true
+    }
   }, 
   methods: {
     sortedTabs(list) {
@@ -83,7 +83,7 @@ export default {
       const firstName = list[0]?.name || 0;
       // console.log(`Loading Tab: ${firstName} of ${JSON.stringify(list)}`)
       this.selectedTab = typeof list[0]?.name === "undefined" ? "" : firstName;
-      // console.log(`Selected Sidebar Tab: ${this.selectedTab}`)
+      console.log(`Selected Sidebar Tab: ${this.selectedTab}`)
     }
   }
 };

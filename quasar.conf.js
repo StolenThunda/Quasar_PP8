@@ -78,11 +78,12 @@ cfg.module.rules.push({
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      // host: '172.17.0.3',
-      host: 'localhost',
+      host: '0.0.0.0',
+      useLocalIp: true,
+      //host: 'localhost',
       https: false,
       port: 3000,
-       watchOptions: {
+      watchOptions: {
         poll: 1000
       },
       open: true, // opens browser window automatically

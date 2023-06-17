@@ -1,6 +1,6 @@
 <template>
   <q-list>
-    <template v-for="section in sections">
+    <template v-for="(section, id) in sections">
       <q-expansion-item
         group="somegroup"
         :key="section.sectionID"
@@ -8,7 +8,7 @@
         header-style="background-color:#464646; min-width: 250px;"
         style="max-width: 350px"
         expand-separator
-        default-opened
+        :default-opened="id == 0"
         switch-toggle-side
       >
         <template #header>
@@ -70,12 +70,12 @@ export default {
     loadSegment(seg) {
       const id = seg.segmentID;
       const route = `/watch/${this.packID}/${id}`;
+      console.log('route', route)
       this.$store.commit("watch/SET_ACTIVE_SEGMENT", seg);
       this.$router.push({ path: `${route}` }).catch(err => {});
     },
     getSegIco(seg) {
       var ico = {};
-      // switch (seg.sources[0].type) {
       switch (this.ProPlayer.getSegmentClass(seg)) {
         case "audio":
           ico = {

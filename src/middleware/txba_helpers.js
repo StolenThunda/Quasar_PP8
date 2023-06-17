@@ -54,7 +54,7 @@ export default class TXBA_Utilities {
       headers: { "Content-Type": "application/x-www-form-urlencoded" }
     })
       .then(response => {
-        console.log("response", response);
+        // console.log("response", response);
         return response;
       })
       .catch(function(response) {

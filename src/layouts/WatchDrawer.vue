@@ -1,7 +1,15 @@
 <template>
-  <q-layout view="hhh lpR lFr">
-     <!-- <q-layout view="hHh lpR lff"> -->
-    <q-header >
+  <q-layout
+    style="height: 100vh"
+    class="shadow-2 rounded-borders"
+    view="hhh lpR lFr"
+  >
+    <!-- 
+    <q-layout 
+    view="hHh lpR lff"
+    view="hHh Lpr lff"
+  > -->
+    <q-header v-show="showHeader">
       <watch-toolbar class="q-electron-drag">
         <template #toggle>
           <q-btn
@@ -18,10 +26,8 @@
       </watch-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawer" side="left" >
-      <div
-      class="row lt-md"
-      >
+    <q-drawer v-model="leftDrawer" side="left">
+      <div class="row lt-md">
         <q-btn
           class="offset-5 col"
           flat
@@ -33,9 +39,31 @@
       <dynamic-tab :tabList="tabs" />
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container class="q-ma-none q-pa-none">
       <router-view :key="$route.fullPath" />
     </q-page-container>
+
+    <q-footer>
+      <q-toolbar>
+        <q-btn
+          class="q-pr-md"
+          fab-mini
+          glossy
+          dense
+          ripple
+          color="accent"
+          v-if="headerInvisible"
+          title="Toggle Sidebar"
+          :icon="drawerIcon"
+          @click="leftDrawer = !leftDrawer"
+        />
+        <player-controls :currentTime="currentTime">
+          <template #slider>
+            <media-progress-slider :ctime="currentTime" />
+          </template>
+        </player-controls>
+      </q-toolbar>
+    </q-footer>
   </q-layout>
 </template>
 
@@ -46,11 +74,24 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "WatchLayout",
   components: {
-     DynamicTab: () => import(/* webpackMode: "lazy", webpackPrefetch: true, webpackPreload: true */"components/base/DynamicTab.vue"),
+    DynamicTab: () =>
+      import(
+        /* webpackMode: "lazy", webpackPrefetch: true, webpackPreload: true */ "components/base/DynamicTab.vue"
+      ),
     WatchToolbar,
-    AuthButton
+    AuthButton,
+    "media-progress-slider": () =>
+      import(
+        /* webpackChunkName: "watch-player" */ "src/components/watch/player/MediaProgressSlider.vue"
+      ),
+    "player-controls": () =>
+      import(
+        /* webpackChunkName: "watch-player" */ "src/components/watch/player/PlayerControls.vue"
+      )
   },
   data: () => ({
+    showHeader: true,
+    currentTime: -1,
     leftDrawer: true,
     currentTab: null,
     favs: false,
@@ -64,7 +105,12 @@ export default {
     }
   }),
   computed: {
-    drawerIcon(){ return this.leftDrawer ? 'mdi-backburger' : 'menu'},
+    headerInvisible() {
+      return this.showHeader === false;
+    },
+    drawerIcon() {
+      return this.leftDrawer ? "mdi-backburger" : "menu";
+    },
     getTabs() {
       return this.tabs;
     },
@@ -80,6 +126,9 @@ export default {
     }
   },
   created() {
+    this.$root.$on("ctime-update", this.currentTimeUpdate);
+    this.$root.$on("toggle_header", this.toggleHeader);
+    this.getPackageData();
     this.getPackageData();
     this.addSidebarTabs([
       {
@@ -87,20 +136,35 @@ export default {
         componentName: "SegmentsManager",
         icon: "mdi-segment",
         iconOnly: true,
-        cmp: () => import(/* webpackChunkName: "watch-sidebar" */"components/watch/sidebar/segmentTab/Segments"),
-        menu: () => import(/* webpackChunkName: "watch-sidebar", webpackMode: "lazy" */"components/watch/settings/playerSettings")
+        cmp: () =>
+          import(
+            /* webpackChunkName: "watch-sidebar" */ "components/watch/sidebar/segmentTab/Segments"
+          ),
+        menu: () =>
+          import(
+            /* webpackChunkName: "watch-sidebar", webpackMode: "lazy" */ "components/watch/settings/playerSettings"
+          )
       },
       {
         name: "Comments",
         componentName: "CommentsManager",
         icon: "mdi-comment-multiple-outline",
         iconOnly: true,
-        cmp: () => import(/* webpackChunkName: "watch-sidebar", webpackMode: "lazy" */"components/watch/sidebar/commentTab/Comments")
+        cmp: () =>
+          import(
+            /* webpackChunkName: "watch-sidebar", webpackMode: "lazy" */ "components/watch/sidebar/commentTab/Comments"
+          )
       }
     ]);
   },
   methods: {
-    
+    toggleHeader(){
+      this.showHeader = !this.showHeader
+      console.log('head-togg', this.showHeader)
+    },
+    currentTimeUpdate(val) {
+      this.currentTime = val;
+    },
     showTab(tab) {
       this.currentTab = tab;
     },
@@ -117,7 +181,8 @@ export default {
   }
 };
 </script>
-<style lang="sass" scoped>
-.menu-list .q-item
-  border-radius: 0 32px 32px 0
+<style lang="scss" scoped>
+.menu-list .q-item {
+  border-radius: 0 32px 32px 0;
+}
 </style>

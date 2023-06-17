@@ -7,17 +7,20 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     _spinnerState: false,
-    TXBA_UTILS: null
+    TXBA_UTILS:  new TXBA_Utilities()
   },
   mutations: {
-    SET_UTILITIES(ctx) {
-      ctx.TXBA_UTILS = new TXBA_Utilities();
-    }
+  //   SET_UTILITIES ( ctx ) {
+  //     const u = new TXBA_Utilities()
+  //     console.log( "SET_UTILITIES", u )
+      
+  //     ctx.TXBA_UTILS = u;
+  //   }
   },
   actions: {
-    async initSearchUTIL(ctx) {
-      ctx.commit("SET_UTILITIES");
-    },
+    // async initSearchUTIL(ctx) {
+    //   ctx.commit("SET_UTILITIES");
+    // },
     loadModules() {
       // auto init namespaced stores if the have an "initStore" action
       for (const moduleName of Object.keys(modules)) {
@@ -30,7 +33,7 @@ const store = new Vuex.Store({
       }
     },
     initStore() {
-      store.dispatch("initSearchUTIL");
+      // store.dispatch("initSearchUTIL");
       store.dispatch("loadModules");
     }
   },

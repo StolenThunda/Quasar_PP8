@@ -196,7 +196,12 @@ export default {
       ctx.loopManager.loopSelected(nCollectionID, nListIndex, nLoopIndex);
     },
     TOGGLE_LOOPING(ctx, val) {
-      ctx.playerSettings.looping = val ? val : !ctx.playerSettings.looping;
+      if ( val ) {
+        ctx.playerSettings.looping = val
+        ctx.playerSettings.playing = val
+      } else {
+        ctx.playerSettings.looping =  !ctx.playerSettings.looping;
+      }
     },
     TOGGLE_ACTIVE_LOOP_STATUS(ctx, obj) {
       ctx.playerSettings.activeList[obj.key] = obj.active;
@@ -224,11 +229,12 @@ export default {
       commit("TOGGLE_PLAYING", false);
     },
     setLoopStart({ commit, state }, time) {
-      console.log("start time", time);
+      // console.log( "start time", time );
+      if ( time == state.playerSettings.loop_start ) return;
       const current = time; //? time : -1;
-      console.log("set start:", current);
+      // console.log("set start:", current);
       commit("SET_LOOP_START", current);
-      if (state.playerSettings.loop_stop <= current)
+      if (state.playerSettings.loop_stop < current)
         commit("SET_LOOP_STOP", -1);
     },
     setLoopStop({ commit, state }, time) {
@@ -258,7 +264,7 @@ export default {
         }
       } else {
         if (state.playerSettings.bLoadingLoopData) {
-          console.log("set stop:", current);
+          // console.log("set stop:", current);
           commit("SET_LOOP_STOP", current);
           info = {
             type: "positive",

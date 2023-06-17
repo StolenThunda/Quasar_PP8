@@ -1,8 +1,7 @@
 <template>
-  <div>
-    
-    <!-- <pan-zoom> -->
-    <vue-plyr ref="mediaPlayer">
+  <q-card>
+    <q-card-section class="q-ma-none q-pa-none">
+          <vue-plyr ref="mediaPlayer">
       <!-- Begin Audio Interface -->
       <video
         v-if="this.type == 'audio'"
@@ -39,17 +38,15 @@
         />
       </video>
       <!-- End Video Interface -->
+      
     </vue-plyr>
     <!-- </pan-zoom> -->
     <!-- <button is="google-cast-button" id="cast">Cast</button> -->
-    <player-controls :currentTime="ctime" >
-      <template #slider>
-        <media-progress-slider
-          :ctime="ctime"
-        />
-      </template>
-    </player-controls>
-  </div>
+   
+    <!-- <pan-zoom> -->
+    </q-card-section>
+
+  </q-card>
 </template>
 
 <script>
@@ -119,12 +116,6 @@ export default {
     this.player.on("clear-loop", this.clearLoop);
     this.player.on("playing play pause", this.stateChange);
   },
-  components: {
-    "media-progress-slider": () =>
-        import(/* webpackChunkName: "watch-player" */"src/components/watch/player/MediaProgressSlider.vue"),
-    "player-controls": () =>
-      import(/* webpackChunkName: "watch-player" */"src/components/watch/player/PlayerControls.vue")
-  },
   watch: {
     looping() {
       console.log("looptoggle");
@@ -142,6 +133,9 @@ export default {
         message: this.looping ? "Loop Active" : "Loop Stopped",
         icon: this.loopIcon
       });
+    },
+    ctime() {
+      this.$root.$emit('ctime-update', this.ctime)
     }
   },
   computed: {
@@ -216,7 +210,7 @@ export default {
       this.$store.commit('watch/SET_SEGMENT_DURATION',  this.player.duration);
       this.ctime = this.player.currentTime;
       if (this.looping) {
-        if (this.ctime >= this.stop) {
+        if (this.ctime >= this.stop && this.stop > 0) {
           this.seekTo(this.start);
           this.showMessage({
             message: "Loop Rewound",
@@ -238,13 +232,14 @@ export default {
       this.seekTo(0);
     },
     togglePlay() {
-      if (!this.player) return;
-      if (this.player.playing) {
-        this.player.pause();
+      // if (!this.player) return;
+      if (this.player?.playing) {
+        this.player?.pause();
       } else {
-        this.player.play();
+        this.player?.play();
       }
-      this.$store.commit('watch/TOGGLE_PLAYING', this.player.playing)
+      this.$root.$emit('toggle_header');
+      this.$store.commit('watch/TOGGLE_PLAYING', this.player?.playing)
       console.log("isisPlaying?: ", this.isPlaying);
     },
     setloopStart(time) {
@@ -277,12 +272,9 @@ export default {
 <style>
 @import "https://cdn.plyr.io/3.6.2/plyr.css";
 
-.container {
-  position: relative;
-  width: 100%;
-  height: 0;
-  /* padding-bottom: 39%; */
-}
+/* .media-container { 
+ padding-bottom: 39% !important; 
+ } */
 
 .videoWrapper {
   position: relative;
